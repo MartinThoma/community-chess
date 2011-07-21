@@ -1,0 +1,24 @@
+#summary Here are some other OpenSource chess projects and links related to chess.
+
+= OpenSource Chess programs =
+  * [http://en.wikipedia.org/wiki/Gnu_chess GNU Chess]: a computer program which plays a full game of chess against a human or other computer program.
+  * [http://de.wikipedia.org/wiki/OpenChess OpenChess] (de)
+  * [http://en.wikipedia.org/wiki/ChessV ChessV]
+  * [http://en.wikipedia.org/wiki/Crafty Crafty]
+  * [http://en.wikipedia.org/wiki/Fruit_(chess_engine) Fruit]
+
+= Notation =
+  * [http://en.wikipedia.org/wiki/Portable_Game_Notation Portable Game Notation]
+
+= Datastructures and algorithms =
+  * [http://en.wikipedia.org/wiki/Bitboard Bitboard]
+  * [http://en.wikipedia.org/wiki/GBR_code GBR code]
+
+= Chess variations =
+  * [http://en.wikipedia.org/wiki/Capablanca_random_chess Capablance random chess]
+
+= Other Links =
+  * [http://en.wikipedia.org/wiki/World_Computer_Chess_Championship WCCC]
+  * [http://en.wikipedia.org/wiki/Three-dimensional_chess 3D Chess]
+  * [http://de.wikipedia.org/wiki/BT2450 BT2450] (de) - testing the quality of your chess bot
+  * [http://de.wikipedia.org/wiki/Computerschach_und_Spiele Computerschach und Spiele] (de) - a magazine about computer chess
