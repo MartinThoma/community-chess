@@ -1,0 +1,18 @@
+#summary Which medals should the game have?
+
+= Introduction =
+
+Medals can be given players for various reasons. Here are some ideas:
+
+
+== Fast player ==
+
+It is important for the game, that players continue their games quite fast. If the sum of time the player needed to respond is smaller than 1 hour (no matter if he won or not), he will be given the fast player medal
+
+== Supporter ==
+
+This medal may only be given to a player by a former winner of a tournament. He can give this medal to other players, if they gave him hints how to win a chess game.
+
+== Turnament winnter ==
+
+Awarded when a turnament is won.
