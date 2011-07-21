@@ -1,6 +1,8 @@
-#summary Here are some other OpenSource chess projects and links related to chess.
+#summary Here are some other Open Source chess projects and links related to chess.
 
 = OpenSource Chess programs =
+Here are some Open Source chess programs. A longer list is on [http://en.wikipedia.org/wiki/List_of_chess_software wikipedia].
+
   * [http://en.wikipedia.org/wiki/Gnu_chess GNU Chess]: a computer program which plays a full game of chess against a human or other computer program.
   * [http://de.wikipedia.org/wiki/OpenChess OpenChess] (de)
   * [http://en.wikipedia.org/wiki/ChessV ChessV]
