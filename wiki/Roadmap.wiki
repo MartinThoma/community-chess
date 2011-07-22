@@ -1,0 +1,3 @@
+#summary Roadmap. Sounds better than "ToDo-list".
+
+Make a basic chess game possible.
