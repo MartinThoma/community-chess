@@ -1,0 +1,16 @@
+#summary The name of the chess pieces
+
+= Introduction =
+
+Every player has:
+  * 1 [http://en.wikipedia.org/wiki/King_(chess) king]
+  * 1 [http://en.wikipedia.org/wiki/Queen_(chess) queen]
+  * 2 [http://en.wikipedia.org/wiki/Rook_(chess) rooks]
+  * 2 [http://en.wikipedia.org/wiki/Bishop_(chess) bishops]
+  * 2 [http://en.wikipedia.org/wiki/Knight_(chess) knights]
+  * 8 [http://en.wikipedia.org/wiki/Pawn_(chess) pawns]
+
+
+= Links =
+
+  * [http://en.wikipedia.org/wiki/Chess_piece Chess piece]
