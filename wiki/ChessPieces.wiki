@@ -3,12 +3,13 @@
 = Introduction =
 
 Every player has:
-  * 1 [http://en.wikipedia.org/wiki/King_(chess) king]
-  * 1 [http://en.wikipedia.org/wiki/Queen_(chess) queen]
-  * 2 [http://en.wikipedia.org/wiki/Rook_(chess) rooks]
-  * 2 [http://en.wikipedia.org/wiki/Bishop_(chess) bishops]
-  * 2 [http://en.wikipedia.org/wiki/Knight_(chess) knights]
-  * 8 [http://en.wikipedia.org/wiki/Pawn_(chess) pawns]
+|| *number* || *name*                                                || *White* || *Black* ||
+|| 1        || [http://en.wikipedia.org/wiki/King_(chess) king]      || K       || k       ||
+|| 1        || [http://en.wikipedia.org/wiki/Queen_(chess) queen]    || Q       || q       ||
+|| 2        || [http://en.wikipedia.org/wiki/Rook_(chess) rooks]     || R       || r       ||
+|| 2        || [http://en.wikipedia.org/wiki/Bishop_(chess) bishops] || B       || b       ||
+|| 2        || [http://en.wikipedia.org/wiki/Knight_(chess) knights] || N       || n       ||
+|| 8        || [http://en.wikipedia.org/wiki/Pawn_(chess) pawns]     || P       || p       ||
 
 
 = Links =
