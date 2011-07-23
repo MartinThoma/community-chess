@@ -3,17 +3,11 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 22, 2011 at 03:41 PM
+-- Generation Time: Jul 23, 2011 at 10:26 PM
 -- Server version: 5.1.49
 -- PHP Version: 5.3.3-1ubuntu9.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
 
 --
 -- Database: `chess`
@@ -27,19 +21,17 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `currentBoard` varchar(64) NOT NULL COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
+  `currentBoard` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
+  `moveList` text NOT NULL,
   `whitePlayerID` int(11) NOT NULL,
   `blackPlayerID` int(11) NOT NULL,
-  `whitePlayerSoftwareID` int(11) NOT NULL,
-  `blackPlayerSoftwareID` int(11) NOT NULL,
-  `whoseTurnIsIt` tinyint(4) NOT NULL COMMENT '0 means white, 1 means black',
+  `whitePlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
+  `blackPlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
+  `whoseTurnIsIt` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 means white, 1 means black',
+  `startTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastMove` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_currentGames`
---
-
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -48,11 +40,11 @@ CREATE TABLE IF NOT EXISTS `chess_currentGames` (
 --
 
 CREATE TABLE IF NOT EXISTS `chess_medalPlayerCorrelation` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `playerID` int(11) NOT NULL,
   `medalID` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
 
 --
 -- Dumping data for table `chess_medalPlayerCorrelation`
@@ -92,6 +84,8 @@ CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `whitePlayerSoftwareID` int(11) NOT NULL,
   `blackPlayerSoftwareID` int(11) NOT NULL,
   `outcome` tinyint(4) NOT NULL COMMENT '0 means white won, 1 means black won, 2 means draw',
+  `startTime` datetime NOT NULL,
+  `endTime` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -111,12 +105,15 @@ CREATE TABLE IF NOT EXISTS `chess_players` (
   `uname` varchar(255) NOT NULL,
   `upass` varchar(32) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `chess_players`
 --
 
+INSERT INTO `chess_players` (`id`, `uname`, `upass`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6');
 
 -- --------------------------------------------------------
 
@@ -194,4 +191,5 @@ CREATE TABLE IF NOT EXISTS `chess_turnaments` (
 --
 -- Dumping data for table `chess_turnaments`
 --
+
 
