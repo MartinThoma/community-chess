@@ -87,5 +87,18 @@ function updateDataInDatabase($query, $table) {
     /* End of code which can be replaced by your code */
 }
 
+function deleteFromDatabase($table, $id) {
+    /* Begin of code which can be replaced by your code */
+    $table = mysql_real_escape_string($table);
+    $id = intval($id);
+    $query = "DELETE FROM `$table` WHERE `$table`.`id` = $id LIMIT 1";
+    mysql_query($query);
+
+    return 0;
+    /* End of code which can be replaced by your code */
+}
+
+    
+
 
 ?>
