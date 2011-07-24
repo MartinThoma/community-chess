@@ -11,22 +11,958 @@ function getIndex($x, $y){
     return ($y-1)*8+($x-1);
 }
 
+function getCoordinates($index){
+    $x = $index % 8;
+    $y = ($index - $x)/8;
+    $x++;
+    $y++;
+    return array($x, $y);
+}
+
 function isPositionValid($x, $y) {
     if (1 <= $x and $x <= 8 and 1 <= $y and $y <= 8){ return true;}
     else {return false;}
 }
 
+function getNewBoard($currentBoard, $from_index, $to_index){
+    $piece    = substr($currentBoard, $from_index, 1);
+    $newBoard = substr($currentBoard, 0, $from_index)."0".substr($currentBoard, $from_index+1);
+    $newBoard = substr($newBoard, 0, $to_index).$piece.substr($newBoard, $to_index+1);
+    return $newBoard;
+}
+
 function hasValidMoves($board, $color){
     #implementieren
-    for($i=0;$i<63;$i++){
-        $piece = substr($board,$i,1);
-        if($piece != '0' and ord($piece) > 96 and $color == 'white'){
-            #make move: $newBoard = $board;
-            if (!isPlayerCheck($newBoard, 'white')){return true;}
+    for($from_index = 0; $from_index < 63; $from_index++){
+        $piece = substr($board,$from_index,1);
+        $coord = getCoordinates($from_index);
+        if($piece != '0' and ord($piece) < 96 and $color == 'white'){
+            if($piece == 'P'){
+                # Which moves could a pawn possibly make?
+                if($coord[1] > 1){
+                    $to_index = getIndex($coord[0],$coord[1]+1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if($targetpiece == '0'){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if($coord[1] == 2){
+                    $to_index = getIndex($coord[0],$coord[1]+2);
+                    $field1   = substr($board,$to_index+8,1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if($targetpiece == '0' and $field1 == '0'){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+
+                if($coord[0] > 1 and $coord[1] > 1){
+                    $to_index = getIndex($coord[0]-1, $coord[1]+1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if(ord($targetpiece)> 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if($coord[0] < 8 and $coord[1] > 1){
+                    $to_index = getIndex($coord[0]+1, $coord[1]+1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if(ord($targetpiece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+            }
+            if($piece == 'N'){
+                # Which moves could a knight possibly make?
+                if(  isPositionValid($coord[0]+1,$coord[1]+2)  ){
+                    $to_index    = getIndex($coord[0]+1, $coord[1]+2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]+1,$coord[1]-2)  ){
+                    $to_index    = getIndex($coord[0]+1, $coord[1]-2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]+2,$coord[1]+1)  ){
+                    $to_index    = getIndex($coord[0]+2, $coord[1]+1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]+2,$coord[1]-1)  ){
+                    $to_index    = getIndex($coord[0]+2, $coord[1]-1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-2,$coord[1]-1)  ){
+                    $to_index    = getIndex($coord[0]-2, $coord[1]-1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-2,$coord[1]+1)  ){
+                    $to_index    = getIndex($coord[0]-2, $coord[1]+1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-1,$coord[1]+2)  ){
+                    $to_index    = getIndex($coord[0]-1, $coord[1]+2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-1,$coord[1]-2)  ){
+                    $to_index    = getIndex($coord[0]-1, $coord[1]-2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) > 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+            }
+            if($piece == 'B'){
+                # Which moves could a bishop possibly make?
+                # diagonal right up
+                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # diagonal right down
+                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # diagonal left up
+                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # diagonal left down
+                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+            }
+            if($piece == 'R'){
+                # Which moves could a rook possibly make?
+                # top
+                $tmp_x = $coord[0];
+                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # down
+                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # left
+                $tmp_y = $coord[1];
+                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # right
+                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+            }
+            if($piece == 'Q'){
+                # Which moves could a queen possibly make?
+                # All of rook:
+                # top
+                $tmp_x = $coord[0];
+                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # down
+                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # left
+                $tmp_y = $coord[1];
+                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # right
+                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # All of bishop
+                # diagonal right up
+                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # diagonal right down
+                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # diagonal left up
+                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                # diagonal left down
+                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) > 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'white')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+            }
+            if($piece == 'K'){
+                # Which moves could a king possibly make?
+                $tmp_x = $coord[0]+0;
+                $tmp_y = $coord[1]+1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+1;
+                $tmp_y = $coord[1]+1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+1;
+                $tmp_y = $coord[1]+0;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+1;
+                $tmp_y = $coord[1]-1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+0;
+                $tmp_y = $coord[1]-1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]-1;
+                $tmp_y = $coord[1]-1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]-1;
+                $tmp_y = $coord[1]-0;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]-1;
+                $tmp_y = $coord[1]+1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) > 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                    }
+                }
+            }
         }
-        if($piece != '0' and ord($piece) > 96 and $color == 'black'){
-            #make move: $newBoard = $board;
-            if (!isPlayerCheck($newBoard, 'white')){return true;}
+        if($piece != '0' and ord($piece) > 97 and $color == 'black'){
+            #only the following is different to the white-part:
+            # * always when a comparison like ord($piece)>97 is made, it is 
+            #   changed to ord($piece)<97
+            # * all "white" strings are changed to "black"
+            # * the pawns
+            #   * may only move down, not up like for white
+            #   * have another home row
+
+            if($piece == 'P'){
+                # Which moves could a pawn possibly make?
+                if($coord[1] > 1){
+                    $to_index = getIndex($coord[0],$coord[1]-1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if($targetpiece == '0'){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if($coord[1] == 7){
+                    $to_index = getIndex($coord[0],$coord[1]-2);
+                    $field1   = substr($board,$to_index-8,1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if($targetpiece == '0' and $field1 == '0'){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+
+                if($coord[0] > 1 and $coord[1] > 1){
+                    $to_index = getIndex($coord[0]-1, $coord[1]-1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if(ord($targetpiece)< 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if($coord[0] < 8 and $coord[1] > 1){
+                    $to_index = getIndex($coord[0]+1, $coord[1]-1);
+                    $targetpiece = substr($board,$to_index,1);
+                    if(ord($targetpiece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+            }
+            if($piece == 'N'){
+                # Which moves could a knight possibly make?
+                if(  isPositionValid($coord[0]+1,$coord[1]+2)  ){
+                    $to_index    = getIndex($coord[0]+1, $coord[1]+2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]+1,$coord[1]-2)  ){
+                    $to_index    = getIndex($coord[0]+1, $coord[1]-2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]+2,$coord[1]+1)  ){
+                    $to_index    = getIndex($coord[0]+2, $coord[1]+1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]+2,$coord[1]-1)  ){
+                    $to_index    = getIndex($coord[0]+2, $coord[1]-1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-2,$coord[1]-1)  ){
+                    $to_index    = getIndex($coord[0]-2, $coord[1]-1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-2,$coord[1]+1)  ){
+                    $to_index    = getIndex($coord[0]-2, $coord[1]+1);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-1,$coord[1]+2)  ){
+                    $to_index    = getIndex($coord[0]-1, $coord[1]+2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                if(  isPositionValid($coord[0]-1,$coord[1]-2)  ){
+                    $to_index    = getIndex($coord[0]-1, $coord[1]-2);
+                    $targetPiece = substr($board,$to_index,1);
+                    if(  $targetPiece == '0' or ord($targetPiece) < 97  ) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+            }
+            if($piece == 'B'){
+                # Which moves could a bishop possibly make?
+                # diagonal right up
+                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # diagonal right down
+                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # diagonal left up
+                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # diagonal left down
+                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+            }
+            if($piece == 'R'){
+                # Which moves could a rook possibly make?
+                # top
+                $tmp_x = $coord[0];
+                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # down
+                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # left
+                $tmp_y = $coord[1];
+                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # right
+                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+            }
+            if($piece == 'Q'){
+                # Which moves could a queen possibly make?
+                # All of rook:
+                # top
+                $tmp_x = $coord[0];
+                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # down
+                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # left
+                $tmp_y = $coord[1];
+                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # right
+                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # All of bishop
+                # diagonal right up
+                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # diagonal right down
+                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
+                    $tmp_x = $coord[0] + $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # diagonal left up
+                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] + $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                # diagonal left down
+                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
+                    $tmp_x = $coord[0] - $i;
+                    $tmp_y = $coord[1] - $i;
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece != '0') {
+                        if(ord($piece) < 97){
+                            $newBoard=getNewBoard($board,$from_index,$to_index);
+                            if(!isPlayerCheck($newBoard, 'black')){return true;}
+                        }
+                        break;
+                    } else{
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+            }
+            if($piece == 'K'){
+                # Which moves could a king possibly make?
+                $tmp_x = $coord[0]+0;
+                $tmp_y = $coord[1]+1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+1;
+                $tmp_y = $coord[1]+1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+1;
+                $tmp_y = $coord[1]+0;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+1;
+                $tmp_y = $coord[1]-1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]+0;
+                $tmp_y = $coord[1]-1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]-1;
+                $tmp_y = $coord[1]-1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]-1;
+                $tmp_y = $coord[1]-0;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+                $tmp_x = $coord[0]-1;
+                $tmp_y = $coord[1]+1;
+                if(isPositionValid($tmp_x, $tmp_y)){
+                    $to_index = getIndex($tmp_x, $tmp_y);
+                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
+                    if($piece == '0' or ord($piece) < 97){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                    }
+                }
+            }
         }
     }
     return false;
@@ -38,10 +974,9 @@ function isPlayerCheck($newBoard, $yourColor){
     } else {
         $king_index = strpos($newBoard, 'k');
     }
-    $king_x = $king_index % 8;
-    $king_y = ($king_index - $king_x)/8;
-    $king_x += 1;
-    $king_y += 1;
+    $coord  = getCoordinates($king_index);
+    $king_x = $coord[0];
+    $king_y = $coord[1];
 
     # danger from top?
     for($tmp_y = $king_y + 1; $tmp_y < 8; $tmp_y++){
@@ -115,7 +1050,7 @@ function isPlayerCheck($newBoard, $yourColor){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?i");}
         else if ($piece == 'q'){return true;}
         else if ($piece == 'b'){return true;}
-        else if ($piece == 'p'){return true;}
+        else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
     } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
         if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?j");}
         else if ($piece == 'Q'){return true;}
@@ -132,7 +1067,7 @@ function isPlayerCheck($newBoard, $yourColor){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?k");}
         else if ($piece == 'q'){return true;}
         else if ($piece == 'b'){return true;}
-        else if ($piece == 'p'){return true;}
+        else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
     } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
         if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?l");}
         else if ($piece == 'Q'){return true;}
@@ -153,7 +1088,7 @@ function isPlayerCheck($newBoard, $yourColor){
         if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?n");}
         else if ($piece == 'Q'){return true;}
         else if ($piece == 'B'){return true;}
-        else if ($piece == 'P'){return true;}
+        else if ($piece == 'P' and abs($tmp_x-$king_x)==1){return true;}
     }
     # danger from diagonal left bottom?
     for($i=1; $i <= min($king_x, $king_y)-1; $i++){
@@ -166,12 +1101,12 @@ function isPlayerCheck($newBoard, $yourColor){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?o");}
         else if ($piece == 'q'){return true;}
         else if ($piece == 'b'){return true;}
-        else if ($piece == 'p'){return true;}
+        else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
     } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
         if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?p");}
         else if ($piece == 'Q'){return true;}
         else if ($piece == 'B'){return true;}
-        else if ($piece == 'P'){return true;}
+        else if ($piece == 'P' and abs($tmp_x-$king_x)==1){return true;}
     }
 
     # danger from knights?
@@ -336,10 +1271,10 @@ function isBishopMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
             for($i=1; $i < ($from_x - $to_x);$i++){
                 $x_tmp = $from_x - $i;
                 $y_tmp = $from_y - $i;
-                $index = getIndex($x_tmp, $from_y);
+                $index = getIndex($x_tmp, $y_tmp);
                 $piece = substr($currentBoard, $index, 1);
                 if($piece != '0'){
-                    exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    exit("ERROR: On ($x_tmp | $y_tmp) isb $piece.");
                 }
             }
         }
@@ -565,31 +1500,46 @@ function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCo
 
 }
 
-function makeMove($from_index, $to_index, $currentBoard, $move){
-    # Implement Promotion: http://en.wikipedia.org/wiki/Promotion_(chess)
+function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     $piece        = substr($currentBoard, $from_index, 1);
+    $to_coord     = getCoordinates($to_index);
+    if(strlen($move) == 5){
+        $promotion    = strtolower(substr($move, 4,1));
+        if(!($promotion == 'q' or $promotion == 'r' or $promotion == 'b' 
+                               or $promotion == 'n')){
+            exit("ERROR: You can only promote to queen (q), rook (r),
+                  bishop (b) or knight (n)");
+        }
+        if($color == 'white'){$promotion = strtoupper($promotion);}
+        if(! ( ($piece == 'p' and $to_coord[1] == 1) or
+               ($piece == 'P' and $to_coord[1] == 8)    )){
+            exit("ERROR: You may only promote when your pawn reaches the 
+                         first line of the opponent.");
+        }
+        $move = substr($move,0,4).$promotion;
+        $piece = $promotion;
+    }
+    if( ($piece == 'p' and $to_coord[1] == 1 and $promotion == '') or
+        ($piece == 'P' and $to_coord[1] == 8 and $promotion == '')    ){
+        exit("ERROR: You have to promote. 
+                     Add a single letter at the move-request");
+    }
     $currentBoard = substr($currentBoard, 0, $from_index)."0"
                                           .substr($currentBoard, $from_index+1);
     $currentBoard = substr($currentBoard, 0, $to_index).$piece
                                           .substr($currentBoard, $to_index+1);
     $table = "chess_currentGames";
     $cond  = "WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+
     $query = "UPDATE  `$table` SET  ";
     $query.= "`currentBoard` =  '$currentBoard', ";
     $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
     $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
     $query.= "`lastMove` = CURRENT_TIMESTAMP ";
     $query.= $cond;
+
     updateDataInDatabase($query, $table);
 }
-
-
-
-
-
-
-
-
 
 if(isset($_GET['gameID'])){
     $gameID = intval($_GET['gameID']);
@@ -677,11 +1627,9 @@ if(isset($_GET['move'])){
     }
 
     # Do you set yourself check with this move?
-    $piece    = substr($currentBoard, $from_index, 1);
-    $newBoard = substr($currentBoard, 0, $from_index)."0".substr($currentBoard, $from_index+1);
-    $newBoard = substr($newBoard, 0, $to_index).$piece.substr($newBoard, $to_index+1);
+    $newBoard = getNewBoard($currentBoard, $from_index, $to_index);
     if (isPlayerCheck($newBoard, $yourColor)){
-        exit("ERROR: You set yourself check!");
+        exit("ERROR: You may not be check at end of your turn!");
     }
     # Everything is ok => move!
     makeMove($from_index, $to_index, $currentBoard, $move);
@@ -691,7 +1639,6 @@ if(isset($_GET['move'])){
         # 50-move rule: http://en.wikipedia.org/wiki/Fifty-move_rule
         # Check: http://en.wikipedia.org/wiki/Check_(chess)
 }
-
 
 if(isset($_GET['gameID'])){
     $gameID = intval($_GET['gameID']);
@@ -714,8 +1661,10 @@ if(isset($_GET['gameID'])){
         }
         if($result['whitePlayerID'] == USER_ID){
             $yourColor = 'white';
+            $opponentColor = 'black';
         } else {
             $yourColor = 'black';
+            $opponentColor = 'white';
         }
         define('CURRENT_GAME_ID', $gameID);
     }
@@ -736,6 +1685,13 @@ echo substr ($currentBoard , 0, 8)."<br/>";
 
 echo "</pre>";
 echo "Next turn: ".$whoseTurnIsItLanguage."<br/>";
-echo "You are: ".$yourColor;
+echo "You are: ".$yourColor."<br/>";
+if(isPlayerCheck($currentBoard, $yourColor)){$youCheck = 'Yes';}
+else {$youCheck = 'No';}
+
+if(isPlayerCheck($currentBoard, $opponentColor)){$opponentCheck = 'Yes';}
+else {$opponentCheck = 'No';}
+echo "You are check: $youCheck.<br/>";
+echo "Opponent is check: $opponentCheck.<br/>";
 
 ?>
