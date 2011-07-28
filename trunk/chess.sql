@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 23, 2011 at 10:26 PM
+-- Generation Time: Jul 28, 2011 at 02:42 PM
 -- Server version: 5.1.49
 -- PHP Version: 5.3.3-1ubuntu9.5
 
@@ -21,8 +21,12 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `currentBoard` varchar(64) CHARACTER SET utf8 NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
+  `currentBoard` varchar(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
   `moveList` text NOT NULL,
+  `whiteCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
+  `whiteCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
+  `blackCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
+  `blackCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `whitePlayerID` int(11) NOT NULL,
   `blackPlayerID` int(11) NOT NULL,
   `whitePlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
@@ -40,11 +44,11 @@ CREATE TABLE IF NOT EXISTS `chess_currentGames` (
 --
 
 CREATE TABLE IF NOT EXISTS `chess_medalPlayerCorrelation` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL,
   `playerID` int(11) NOT NULL,
   `medalID` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `chess_medalPlayerCorrelation`
@@ -87,12 +91,14 @@ CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `startTime` datetime NOT NULL,
   `endTime` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Dumping data for table `chess_pastGames`
 --
 
+INSERT INTO `chess_pastGames` (`id`, `moveList`, `whitePlayerID`, `blackPlayerID`, `whitePlayerSoftwareID`, `blackPlayerSoftwareID`, `outcome`, `startTime`, `endTime`) VALUES
+(1, 'dsfadf', 2, 1, 0, 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
