@@ -1239,10 +1239,83 @@ function isKnightMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
 function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
                                                                     $yourColor){
     if (abs($from_x - $to_x) <= 1 and abs($from_y - $to_y) <= 1){
-        # Everything is ok.
+        # Everything is ok, standard king move
+    } else if (abs($from_x - $to_x) == 2 and ($from_y - $to_y) == 0) {
+        # castling?
+        if( ($yourColor == 'white' and $from_x ==  4) or
+            ($yourColor == 'black' and $from_x == 60)    ){
+            $table = "chess_currentGames";
+            $rows  = array('whiteCastlingKingsidePossible', 
+                           'whiteCastlingQueensidePossible',
+                           'blackCastlingKingsidePossible',
+                           'blackCastlingQueensidePossible');
+            $cond  = "WHERE `id` = ".CURRENT_GAME_ID;
+
+            $query = "SELECT `whiteCastlingKingsidePossible`, ";
+            $query.= "`whiteCastlingQueensidePossible`, ";
+            $query.= "`blackCastlingKingsidePossible`, ";
+            $query.= "`blackCastlingQueensidePossible` ";
+            $query.= "FROM `$table` $cond";
+            $result= selectFromDatabase($query, $rows, $table, $cond);
+            if($yourColor == 'white'){
+                if($to_x == 2){
+                    if($result['whiteCastlingQueensidePossible'] == 0){
+                        exit("ERROR: You've already moved your King or your ".
+                                    "rook");
+                    }
+                }
+                if($to_x == 6){
+                    if($result['whiteCastlingKingsidePossible'] == 0){
+                        exit("ERROR: You've allready moved your King or your ".
+                                    "rook");
+                    }
+                }
+            } else {
+                if($to_x == 58){
+                    if($result['blackCastlingQueensidePossible'] == 0){
+                        exit("ERROR: You've already moved your King or your ".
+                                    "rook");
+                    }
+                }
+                if($to_x == 62){
+                    if($result['blackCastlingKingsidePossible'] == 0){
+                        exit("ERROR: You've already moved your King or your ".
+                                    "rook");
+                    }
+                }
+            }
+            # Is anything in between King and Rook?
+            if($from_x < $to_x){
+                for($x_tmp = $from_x+1; $x_tmp < $to_x; $x_tmp++){
+                    $index = getIndex($x_tmp, $from_y);
+                    $piece = substr($currentBoard, $index, 1);
+                    if($piece != '0'){
+                        exit("ERROR: $piece is between your King and your ".
+                                    "rook. Castling is not possible.");
+                    }
+                }
+            } else {
+                for($x_tmp = $from_x-1; $x_tmp > $to_x; $x_tmp--){
+                    $index = getIndex($x_tmp, $from_y);
+                    $piece = substr($currentBoard, $index, 1);
+                    if($piece != '0'){
+                        exit("ERROR: $piece is between your King and your ".
+                                    "rook. Castling is not possible.");
+                    }
+                }
+            }
+
+            # Is player currently in chess?
+            if(isPlayerCheck($currentBoard, $yourColor)){
+                exit("ERROR: You may only use castling if you are not check.");
+            }
+        } else {
+            exit("ERROR: Castling is only possible, if you didn't move your".
+                        "King before.");
+        }
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid
-              move for a king.");
+        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid".
+                    "move for a king.");
     }
 
     $index = getIndex($to_x, $to_y);
@@ -1506,8 +1579,119 @@ function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
 }
 
 function makeMove($from_index, $to_index, $currentBoard, $move, $color){
+    /* This function submits the move to the database. All checks if this move
+       is possible have been done before. 
+       All database-changes of the current game are done in this function.
+       Nothing else. */
+
     $piece        = substr($currentBoard, $from_index, 1);
     $to_coord     = getCoordinates($to_index);
+    $from_coord   = getCoordinates($from_index);
+    // Is this move castling?
+    if(    ($piece == 'K' or $piece == 'k') and 
+        abs($from_coord[0] - $to_coord[0]) == 2  ){
+        // Move tower (only tower! The king will be moved in the rest of this 
+        // function.
+        $table = "chess_currentGames";
+        $cond  = "WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+        if($color == 'white'){
+            if($to_index == 6){
+                // Kingside Castling for white
+                $currentBoard = substr($currentBoard, 0, 7).'0'
+                                          .substr($currentBoard, $from_index+1);
+                $currentBoard = substr($currentBoard, 0, 5).'R'
+                                          .substr($currentBoard, $to_index+1);
+
+                $query = "UPDATE  `$table` SET  ";
+                $query.= "`currentBoard` =  '$currentBoard', ";
+                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
+                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
+                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
+                $query.= $cond;
+                updateDataInDatabase($query, $table);
+            } else {
+                // Queenside Castling for white
+                $currentBoard = substr($currentBoard, 0, 0).'0'
+                                          .substr($currentBoard, $from_index+1);
+                $currentBoard = substr($currentBoard, 0, 3).'R'
+                                          .substr($currentBoard, $to_index+1);
+
+                $query = "UPDATE  `$table` SET  ";
+                $query.= "`currentBoard` =  '$currentBoard', ";
+                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
+                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
+                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
+                $query.= $cond;
+                updateDataInDatabase($query, $table);
+            }
+        } else {
+            if($to_index == 62){
+                // Kingside Castling for black
+                $currentBoard = substr($currentBoard, 0, 63).'0'
+                                          .substr($currentBoard, $from_index+1);
+                $currentBoard = substr($currentBoard, 0, 61).'r'
+                                          .substr($currentBoard, $to_index+1);
+
+                $query = "UPDATE  `$table` SET  ";
+                $query.= "`currentBoard` =  '$currentBoard', ";
+                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
+                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
+                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
+                $query.= $cond;
+                updateDataInDatabase($query, $table);
+            } else {
+                // Queenside Castling for black
+                $currentBoard = substr($currentBoard, 0, 56).'0'
+                                          .substr($currentBoard, $from_index+1);
+                $currentBoard = substr($currentBoard, 0, 59).'r'
+                                          .substr($currentBoard, $to_index+1);
+
+                $query = "UPDATE  `$table` SET  ";
+                $query.= "`currentBoard` =  '$currentBoard', ";
+                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
+                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
+                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
+                $query.= $cond;
+                updateDataInDatabase($query, $table);
+            }
+        }
+    }
+
+    // Is this piece relevant for castling?
+    // White - Kingside Castling
+    if ($piece == 'K' or ($piece == 'R' and $from_index == 7)){
+        $table = "chess_currentGames";
+        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+        $query = "UPDATE  `$table` SET  `whiteCastlingKingsidePossible` = '0'";
+        $query.= " $cond";
+        updateDataInDatabase($query, $table);
+    }
+    // White - Queenside Castling
+    if ($piece == 'K' or ($piece == 'R' and $from_index == 0)){
+        $table = "chess_currentGames";
+        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+        $query = "UPDATE  `$table` SET  `whiteCastlingQueensidePossible` = '0'";
+        $query.= " $cond";
+        updateDataInDatabase($query, $table);
+    }
+    // Black - Kingside Castling
+    if ($piece == 'K' or ($piece == 'R' and $from_index == 63)){
+        $table = "chess_currentGames";
+        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+        $query = "UPDATE  `$table` SET  `blackCastlingKingsidePossible` = '0'";
+        $query.= " $cond";
+        updateDataInDatabase($query, $table);
+    }
+    // Black - Queenside Castling
+    if ($piece == 'K' or ($piece == 'R' and $from_index == 56)){
+        $table = "chess_currentGames";
+        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+        $query = "UPDATE  `$table` SET  `blackCastlingQueensidePossible` = '0'";
+        $query.= " $cond";
+        updateDataInDatabase($query, $table);
+    }
+
+
     if(strlen($move) == 5){
         $promotion    = strtolower(substr($move, 4,1));
         if(!($promotion == 'q' or $promotion == 'r' or $promotion == 'b' 
