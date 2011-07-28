@@ -1,8 +1,8 @@
 #summary Roadmap. Sounds better than "ToDo-list".
 
 = 1. Make a basic chess game possible =
-  * ~~Add [http://en.wikipedia.org/wiki/En_passant en passant]~~ (done) 
-  * Add [http://en.wikipedia.org/wiki/Fifty-move_rule Fifty-move rule]
+  * ~~Add [http://en.wikipedia.org/wiki/En_passant en passant]~~ (done: 2011-07-28) 
+  * ~~Add [http://en.wikipedia.org/wiki/Fifty-move_rule Fifty-move rule]~~ (done: 2011-07-28)
   * Add [http://en.wikipedia.org/wiki/Threefold_repetition Threefold repetition]
   * Add [http://en.wikipedia.org/wiki/Perpetual_check Perpetual check]
   * Add [http://de.wikipedia.org/wiki/Tote_Stellung Tote Stellung]
