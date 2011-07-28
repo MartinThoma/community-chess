@@ -1433,8 +1433,7 @@ function isRookMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
 }
 
 function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                                    $yourColor){
-    #to implement: http://en.wikipedia.org/wiki/En_passant
+                                                         $yourColor, $moveList){
     if($from_x == $to_x and abs($from_y - $to_y) <= 2){
         #moving up / down
         $index = getIndex($to_x, $to_y);
@@ -1459,22 +1458,49 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
         # pawns capturing move
         $index = getIndex($to_x, $to_y);
         $piece_target = substr($currentBoard, $index, 1);
+
+        # For en passant:
+        $moveArray = explode("\n", trim($moveList));
+        $lastMove = $moveArray[-1];
+        $lastFromX= substr($lastMove, 0, 1);
+        $lastFromY= substr($lastMove, 1, 1);
+        $lastToX  = substr($lastMove, 2, 1);
+        $lastToY  = substr($lastMove, 3, 1);
+
+
         if($yourColor == 'white'){
             if($from_y > $to_y) {
                 exit("ERROR: White may only move up with pawns.");
             }
             if($piece_target == '0' or ord($piece_target) < 96) {
-                exit("ERROR: You may only make the pawn capture move if a ".
+                $shouldBePawn = substr($currentBoard, 
+                                       getIndex($to_x, $to_y-1), 1);
+                if ($lastFromX == $lastToX and $lastToX == $to_x and 
+                    $lastFromY - $lastToY == 2 and
+                    $shouldBePawn == 'p'){
+                    # en passant
+                } else {
+                    exit("ERROR: You may only make the pawn capture move if a ".
                             "chess piece of the opponent is on the target ".
                             "field.");
+                }
             }
         } else {
             if($from_y < $to_y) {
                 exit("ERROR: Black may only move down with pawns.");
             }
             if($piece_target == '0' or ord($piece_target) > 96) {
-                exit("ERROR: You may only make the pawn capture move if 
-                      a chess piece of the opponent is on the target field.");
+                $shouldBePawn = substr($currentBoard, 
+                                       getIndex($to_x, $to_y+1), 1);
+                if ($lastFromX == $lastToX and $lastToX == $to_x and 
+                    $lastToY - $lastFromY == 2 and
+                    $shouldBePawn == 'P'){
+                    # en passant
+                } else {
+                    exit("ERROR: You may only make the pawn capture move if a ".
+                            "chess piece of the opponent is on the target ".
+                            "field.");
+                }
             }
         }
     } else {
@@ -1739,16 +1765,17 @@ if(isset($_GET['gameID'])){
     $gameID = intval($_GET['gameID']);
     $table = "chess_currentGames";
     $row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
-                                                   "blackPlayerID");
+                   "blackPlayerID", "moveList");
     $cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
     $cond .= USER_ID.") AND `id` = ".$gameID;
     $query = "SELECT `currentBoard`, `whoseTurnIsIt`, `blackPlayerID`, ";
-    $query.= "`whitePlayerID`  FROM `$table` $cond";
-    $result = selectFromDatabase($query, $row, $table, $condition, $limit = 1);
+    $query.= "`whitePlayerID`, `moveList`  FROM `$table` $cond";
+    $result = selectFromDatabase($query, $row, $table, $condition);
 
     if($result !== false){
         $currentBoard  = $result['currentBoard'];
         $whoseTurnIsIt = $result['whoseTurnIsIt'];
+        $moveList      = $result['moveList'];
         if($whoseTurnIsIt == 0){
             $whoseTurnIsItLanguage = 'white';
         } else {
@@ -1817,7 +1844,7 @@ if(isset($_GET['move'])){
                                                          $yourColor);
     } else if ($piece_lower == 'p') {
         isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                        $yourColor);
+                                                        $yourColor, $moveList);
     } else if ($piece_lower == 'r') {
         isRookMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
                                                         $yourColor);
