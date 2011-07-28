@@ -34,7 +34,6 @@ function getNewBoard($currentBoard, $from_index, $to_index){
 }
 
 function hasValidMoves($board, $color){
-    #implementieren
     for($from_index = 0; $from_index < 63; $from_index++){
         $piece = substr($board,$from_index,1);
         $coord = getCoordinates($from_index);
@@ -997,9 +996,10 @@ function isPlayerCheck($newBoard, $yourColor){
     }
 
     # danger from bottom?
-    for($tmp_y = $king_y - 1; $tmp_y > 1; $tmp_y--){
+    for($tmp_y = $king_y - 1; $tmp_y > 2; $tmp_y--){
         if(  substr($newBoard,getIndex($king_x, $tmp_y),1) != '0'  ) {break;}
     }
+    if($tmp_y<1){$tmp_y=1;}
     $piece = substr($newBoard,getIndex($king_x, $tmp_y),1);
     if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?c");}
@@ -1028,9 +1028,10 @@ function isPlayerCheck($newBoard, $yourColor){
     }
 
     # danger from left?
-    for($tmp_x = $king_x - 1; $tmp_x > 1; $tmp_x--){
+    for($tmp_x = $king_x - 1; $tmp_x > 2; $tmp_x--){
         if(  substr($newBoard,getIndex($king_x, $tmp_y),1) != '0'  ) {break;}
     }
+    if($tmp_x<1){$tmp_x=1;}
     $piece = substr($newBoard,getIndex($king_x, $tmp_y),1);
     if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?g");}
@@ -1221,8 +1222,8 @@ function isKnightMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
     if ($c1 or $c2 or $c3 or $c4 or $c5 or $c6 or $c7 or $c8) {
         # Everything is ok.
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid
-              move for a knight.");
+        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid ".
+                    "move for a knight.");
     }
 
     $index = getIndex($to_x, $to_y);
@@ -1372,7 +1373,6 @@ function isBishopMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
 
 function isRookMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
                                                                     $yourColor){
-    #Castling will be implemented later: http://en.wikipedia.org/wiki/Castling
     if ($from_x == $to_x) {
         #moving straight up / down
         if($from_y < $to_y){
@@ -1417,8 +1417,8 @@ function isRookMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
         }
 
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid
-              move for a rook.");
+        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid ".
+                    "move for a rook.");
     }
 
 
@@ -1452,8 +1452,8 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
             if($from_y == 7) {$isOnHomeRow = true;} else {$isOnHomeRow = false;}
         }
         if(abs($from_y - $to_y) == 2 and $isOnHomeRow == false){
-                exit("ERROR: Pawns may only move two if they are on their home
-                      row.");
+                exit("ERROR: Pawns may only move two if they are on their home".
+                            " row.");
         }
     } else if(abs($from_x-$to_x) == 1 and abs($from_y-$to_y) == 1){
         # pawns capturing move
@@ -1464,8 +1464,9 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
                 exit("ERROR: White may only move up with pawns.");
             }
             if($piece_target == '0' or ord($piece_target) < 96) {
-                exit("ERROR: You may only make the pawn capture move if 
-                      a chess piece of the opponent is on the target field.");
+                exit("ERROR: You may only make the pawn capture move if a ".
+                            "chess piece of the opponent is on the target ".
+                            "field.");
             }
         } else {
             if($from_y < $to_y) {
