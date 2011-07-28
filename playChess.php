@@ -1612,8 +1612,20 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
        Nothing else. */
 
     $piece        = substr($currentBoard, $from_index, 1);
+    $capturedPiece= substr($currentBoard, $to_index, 1);
     $to_coord     = getCoordinates($to_index);
     $from_coord   = getCoordinates($from_index);
+    if ($piece == 'p' or $piece == 'P'){
+        $pawnMoved = true;
+    } else {
+        $pawnMoved = false;
+    }
+    if ($capturedPiece != '0') {
+        $captureMade = true;
+    } else {
+        $captureMade = false;
+    }
+
     // Is this move castling?
     if(    ($piece == 'K' or $piece == 'k') and 
         abs($from_coord[0] - $to_coord[0]) == 2  ){
@@ -1718,7 +1730,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
         updateDataInDatabase($query, $table);
     }
 
-
+    /* Promotion */
     if(strlen($move) == 5){
         $promotion    = strtolower(substr($move, 4,1));
         if(!($promotion == 'q' or $promotion == 'r' or $promotion == 'b' 
@@ -1740,6 +1752,8 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
         exit("ERROR: You have to promote. 
                      Add a single letter at the move-request");
     }
+
+    /* Now update the database with move */
     $currentBoard = substr($currentBoard, 0, $from_index)."0"
                                           .substr($currentBoard, $from_index+1);
     $currentBoard = substr($currentBoard, 0, $to_index).$piece
@@ -1751,7 +1765,14 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     $query.= "`currentBoard` =  '$currentBoard', ";
     $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
     $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
-    $query.= "`lastMove` = CURRENT_TIMESTAMP ";
+    $query.= "`lastMove` = CURRENT_TIMESTAMP, ";
+
+
+    if($pawnMoved == false and $captureMade == false) {    
+        $query.= "`noCaptureAndPawnMoves` = `noCaptureAndPawnMoves` + 1 ";
+    } else {
+        $query.= "`noCaptureAndPawnMoves` = 0 ";
+    }
     $query.= $cond;
 
     updateDataInDatabase($query, $table);
@@ -1765,17 +1786,19 @@ if(isset($_GET['gameID'])){
     $gameID = intval($_GET['gameID']);
     $table = "chess_currentGames";
     $row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
-                   "blackPlayerID", "moveList");
+                   "blackPlayerID", "moveList", "noCaptureAndPawnMoves");
     $cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
     $cond .= USER_ID.") AND `id` = ".$gameID;
     $query = "SELECT `currentBoard`, `whoseTurnIsIt`, `blackPlayerID`, ";
-    $query.= "`whitePlayerID`, `moveList`  FROM `$table` $cond";
+    $query.= "`whitePlayerID`, `moveList`, `noCaptureAndPawnMoves` ";
+    $query.= "FROM `$table` $cond";
     $result = selectFromDatabase($query, $row, $table, $condition);
 
     if($result !== false){
         $currentBoard  = $result['currentBoard'];
         $whoseTurnIsIt = $result['whoseTurnIsIt'];
         $moveList      = $result['moveList'];
+        $noCaptureAndPawnMoves = $result['noCaptureAndPawnMoves'];
         if($whoseTurnIsIt == 0){
             $whoseTurnIsItLanguage = 'white';
         } else {
@@ -1925,6 +1948,56 @@ if(isset($_GET['move'])){
         # Threefold repetition: http://en.wikipedia.org/wiki/Threefold_repetition
         # Stalemate: http://en.wikipedia.org/wiki/Stalemate
         # 50-move rule: http://en.wikipedia.org/wiki/Fifty-move_rule
+}
+
+if(isset($_GET['claim50MoveRule'])){
+    if($noCaptureAndPawnMoves >= 100){
+        $table = "chess_currentGames";
+        $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
+                     'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
+                     'whoseTurnIsIt', 'startTime', 'lastMove');
+        $condition = "WHERE `id` = ".CURRENT_GAME_ID;
+        $query = "SELECT `moveList`, `whitePlayerID`, `blackPlayerID`, 
+                  `whitePlayerSoftwareID`, `blackPlayerSoftwareID`, 
+                  `whoseTurnIsIt`, `startTime`, `lastMove` 
+                  FROM `$table` $condition";
+        $result = selectFromDatabase($query, $row, $table, $condition);
+        $moves  = $result['moves'];
+        $whitePlayerID = $result['whitePlayerID'];
+        $blackPlayerID = $result['blackPlayerID'];
+        $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
+        $blackPlayerSoftwareID = $result['blackPlayerSoftwareID'];
+        $startTime = $result['startTime'];
+        $endTime   = $result['endTime'];
+
+        deleteFromDatabase($table, $id);
+
+        $table = "chess_pastGames";
+        $keyValue   = array();
+        $keyValue['moveList'] = $moves;
+        $keyValue['whitePlayerID'] = $whitePlayerID;
+        $keyValue['blackPlayerID'] = $blackPlayerID;
+        $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
+        $keyValue['blackPlayerSoftwareID'] = $blackPlayerSoftwareID;
+        $keyValue['outcome']   = $outcome;
+        $keyValue['startTime'] = $startTime;
+        $keyValue['endTime']   = $endTime;
+
+        $query = "INSERT INTO `$table` ";
+        $query.= "(`moveList` ,`whitePlayerID` ,`blackPlayerID` ,";
+        $query.= "`whitePlayerSoftwareID` ,`blackPlayerSoftwareID` , ";
+        $query.= "`outcome` ,`startTime` ,`endTime`) ";
+        $query.= "VALUES ('$moves',  '$whitePlayerID',  ";
+        $query.= "'$blackPlayerID',  '$whitePlayerSoftwareID',  ";
+        $query.= "'$blackPlayerSoftwareID',  '2',  ";
+        $query.= "'$startTime',  '$endTime');";
+        insertIntoDatabase($query,$keyValue, $table);
+        exit("Game finished. Draw. You claimed draw by the fifty-move rule.");
+    } else {
+        exit("ERROR: The last $noCaptureAndPawnMoves were no capture or pawn ".
+                    "moves. At least 100 have to be made before you can claim ".
+                    "draw by fifty-move rule.");
+    }
 }
 
 $table = "chess_currentGames";
