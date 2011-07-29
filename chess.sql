@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 28, 2011 at 03:19 PM
+-- Generation Time: Jul 29, 2011 at 12:59 PM
 -- Server version: 5.1.49
 -- PHP Version: 5.3.3-1ubuntu9.5
 
@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `currentBoard` varchar(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
   `moveList` text NOT NULL,
+  `noCaptureAndPawnMoves` int(11) NOT NULL DEFAULT '0',
   `whiteCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `whiteCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `blackCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
@@ -39,6 +40,29 @@ CREATE TABLE IF NOT EXISTS `chess_currentGames` (
 
 --
 -- Dumping data for table `chess_currentGames`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chess_currentGamesThreefoldRepetition`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_currentGamesThreefoldRepetition` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gameID` int(11) NOT NULL,
+  `board` varchar(64) NOT NULL,
+  `whiteCastlingKingsidePossible` tinyint(1) NOT NULL,
+  `whiteCastlingQueensidePossible` tinyint(1) NOT NULL,
+  `blackCastlingKingsidePossible` tinyint(1) NOT NULL,
+  `blackCastlingQueensidePossible` tinyint(1) NOT NULL,
+  `enPassantPossible` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `chess_currentGamesThreefoldRepetition`
 --
 
 
