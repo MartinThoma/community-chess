@@ -16,3 +16,8 @@
 = 3. Frameworks =
   * Make it easy to use it with GWF 3 / wechall
   * phpBB
+
+= 4. Cleanup =
+At the moment, the code is very ugly. I know it. But it was more important to me to get a working piece of fast code than writing it beautiful. 
+
+As soon as all features are implemented, I will clean the code.
