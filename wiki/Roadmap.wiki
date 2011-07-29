@@ -4,7 +4,7 @@
   * ~~Add [http://en.wikipedia.org/wiki/En_passant en passant]~~ (done: 2011-07-28) 
   * ~~Add [http://en.wikipedia.org/wiki/Fifty-move_rule Fifty-move rule]~~ (done: 2011-07-28)
   * ~~Add [http://en.wikipedia.org/wiki/Threefold_repetition Threefold repetition]~~ (done: 2011-07-29)
-  * Add [http://en.wikipedia.org/wiki/Perpetual_check Perpetual check]
+  * ~~Add [http://en.wikipedia.org/wiki/Perpetual_check Perpetual check]~~ (done: 2011-07-29 - it's a special case of threefold repetion or fifty-move rule)
   * Add [http://de.wikipedia.org/wiki/Tote_Stellung Tote Stellung]
 
 = 2. Interfaces =
