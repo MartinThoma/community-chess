@@ -15,9 +15,12 @@ Navigation:<br/>
         A list of all current / past games</li>
     <li><a href="challengePlayer.php">challengePlayer.php</a>:
         Challenge a player</li>
-    <li><a href="playChess.php">playChess.php</a></li>
-    <li><a href="board.php">board.php</a></li>
-    <li><a href="submitMove.php">submitMove.php</a></li>
+    <li><a href="playChess.php">playChess.php</a>: play a game. You have to
+        provide a gameID via GET.</li>
+    <li><a href="my_software.php">my_software.php</a>: provide information 
+        about the chess software you have written.</li>
+    <li><a href="tournaments.php">tournaments.php</a>: create tournaments or
+        participate in a tournament</li>
 </ul>
 <?
 }

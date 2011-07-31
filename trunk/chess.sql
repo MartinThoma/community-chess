@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 29, 2011 at 12:59 PM
+-- Generation Time: Jul 31, 2011 at 08:54 PM
 -- Server version: 5.1.49
 -- PHP Version: 5.3.3-1ubuntu9.5
 
@@ -21,6 +21,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
   `currentBoard` varchar(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
   `moveList` text NOT NULL,
   `noCaptureAndPawnMoves` int(11) NOT NULL DEFAULT '0',
@@ -69,6 +70,32 @@ CREATE TABLE IF NOT EXISTS `chess_currentGamesThreefoldRepetition` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `chess_languages`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_languages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+
+--
+-- Dumping data for table `chess_languages`
+--
+
+INSERT INTO `chess_languages` (`id`, `name`) VALUES
+(1, '0'),
+(2, '0'),
+(3, 'Python'),
+(4, 'C'),
+(5, 'C++'),
+(6, 'Java'),
+(7, 'PHP'),
+(8, 'Delphi');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `chess_medalPlayerCorrelation`
 --
 
@@ -111,6 +138,7 @@ CREATE TABLE IF NOT EXISTS `chess_medals` (
 
 CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
   `moveList` text NOT NULL,
   `whitePlayerID` int(11) NOT NULL,
   `blackPlayerID` int(11) NOT NULL,
@@ -120,14 +148,12 @@ CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `startTime` datetime NOT NULL,
   `endTime` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `chess_pastGames`
 --
 
-INSERT INTO `chess_pastGames` (`id`, `moveList`, `whitePlayerID`, `blackPlayerID`, `whitePlayerSoftwareID`, `blackPlayerSoftwareID`, `outcome`, `startTime`, `endTime`) VALUES
-(1, 'dsfadf', 2, 1, 0, 0, 1, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -139,6 +165,7 @@ CREATE TABLE IF NOT EXISTS `chess_players` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `uname` varchar(255) NOT NULL,
   `upass` varchar(32) NOT NULL,
+  `currentChessSoftware` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
@@ -146,9 +173,9 @@ CREATE TABLE IF NOT EXISTS `chess_players` (
 -- Dumping data for table `chess_players`
 --
 
-INSERT INTO `chess_players` (`id`, `uname`, `upass`) VALUES
-(1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
-(2, 'test', '098f6bcd4621d373cade4e832627b4f6');
+INSERT INTO `chess_players` (`id`, `uname`, `upass`, `currentChessSoftware`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 0),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 0);
 
 -- --------------------------------------------------------
 
@@ -194,6 +221,24 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `chess_softwareLangages`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `softwareID` int(11) NOT NULL,
+  `languageID` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `chess_softwareLangages`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `chess_turnamentGames`
 --
 
@@ -220,6 +265,10 @@ CREATE TABLE IF NOT EXISTS `chess_turnaments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `description` text NOT NULL,
+  `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `closingDate` datetime NOT NULL,
+  `finishedDate` datetime NOT NULL,
+  `status` varchar(18) NOT NULL DEFAULT 'openForInvitations' COMMENT 'openForInvitations, closed, running, finished',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
