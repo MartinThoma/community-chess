@@ -23,9 +23,29 @@ if(isset($_GET['playerID'])){
             echo "You've already challenged the player '".$challengedUser."'. ";
             echo "The current game has the id '".$row['id']."'.";
         } else {
-            $keyValuePairs= array('whitePlayerID'=>USER_ID, 'blackPlayerID'=>$id);
-            $query = "INSERT INTO `$table` (`whitePlayerID` ,`blackPlayerID`) ";
-            $query.= "VALUES ('".USER_ID."',  '$id');";
+            $table = "chess_players";    
+            $cond  = "WHERE `id` = ".USER_ID." OR `id`=$id";      
+            $rows  = array('id', 'currentChessSoftware');  
+            $query = "SELECT `id`, `currentChessSoftware` ";
+            $query.= "FROM `$table` $cond";
+            $result = selectFromDatabase($query, $rows, $table, $condition, 2);
+
+            if($result[0]['id'] == USER_ID){
+                $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
+                $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
+            } else {
+                $blackPlayerSoftwareID = $result[0]['currentChessSoftware'];
+                $whitePlayerSoftwareID = $result[1]['currentChessSoftware'];
+            }
+            $table = 'chess_currentGames';
+            $keyValuePairs= array('whitePlayerID'=>USER_ID, 
+                                  'blackPlayerID'=>$id,
+                                  'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
+                                  'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
+            $query = "INSERT INTO `$table` (`whitePlayerID` ,`blackPlayerID`, ";
+            $query.= "`whitePlayerSoftwareID`, `blackPlayerSoftwareID`) ";
+            $query.= "VALUES ('".USER_ID."',  '$id', '$whitePlayerSoftwareID', '$blackPlayerSoftwareID');";
+
             insertIntoDatabase($query, $keyValuePairs, $table);
 
             echo "You have started a game against the player with the ID ".$id.". ";

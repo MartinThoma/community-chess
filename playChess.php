@@ -8,7 +8,7 @@ require ('wrapper.inc.php');
 if(USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
 
 function getIndex($x, $y){
-    return ($y-1)*8+($x-1);
+    return ($y-1) * 8 + ($x-1);
 }
 
 function getCoordinates($index){
@@ -20,7 +20,7 @@ function getCoordinates($index){
 }
 
 function isPositionValid($x, $y) {
-    if (1 <= $x and $x <= 8 and 1 <= $y and $y <= 8){ return true;}
+    if (1 <= $x and $x <= 8 and 1 <= $y and $y <= 8){return true;}
     else {return false;}
 }
 
@@ -31,6 +31,102 @@ function getNewBoard($currentBoard, $from_index, $to_index){
     $newBoard = substr($newBoard, 0, $to_index).$piece.
                 substr($newBoard, $to_index+1);
     return $newBoard;
+}
+
+function getAllStraightFields($board, $x, $y) {
+    /**This function returns a 2-dimensional array:
+     * array[0] = array('0','0','P') # to the top
+     * array[1] = array('p')         # to the right
+     * array[2] = array('0','0','0','0','0', 'Q') # to the bottom
+     * array[3] = array('N')                      # to the left
+     * */
+
+    $straights = array();
+
+    # Which moves could a rook possibly make?
+    # top
+    $tmp_x = $x; $tmp_y = $y;
+    for($tmp_y=$y+1; $i <= 8; $i++){
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $straights[0][] = $piece;
+        if($piece != '0') {break;}
+    }
+    # right
+    $tmp_x = $x; $tmp_y = $y;
+    for($tmp_x=$y+1; $i <= 8; $i++){
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $straights[1][] = $piece;
+        if($piece != '0') {break;}
+    }
+    # down
+    $tmp_x = $x; $tmp_y = $y;
+    for($tmp_y=$y-1; $i >= 1; $i++){
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $straights[2][] = $piece;
+        if($piece != '0') {break;}
+    }
+    # left
+    $tmp_x = $x; $tmp_y = $y;
+    for($tmp_x=$y-1; $i >= 1; $i++){
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $straights[3][] = $piece;
+        if($piece != '0') {break;}
+    }
+    return $straights;
+}
+
+function getAllDiagonalFields($board, $x, $y) {
+    /**This function returns a 2-dimensional array:
+     * array[0] = array('0','0','P') # to the top-right
+     * array[1] = array('p')         # to the bottom-right
+     * array[2] = array('0','0','0','0','0', 'Q') # to the top-left
+     * array[3] = array('N')                      # to the bottom-left
+     * */
+
+    $diagonals = array();
+
+    # Which moves could a bishop possibly make?
+    # diagonal right up
+    for($i=1; $i <= 8 - max($x, $y); $i++){
+        $tmp_x = $x + $i;
+        $tmp_y = $y + $i;
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $diagonals[0][] = $piece;
+        if($piece != '0') {break;}
+    }
+    # diagonal right down
+    for($i=1; $i <= 8 - max($x, 9 - $y); $i++){
+        $tmp_x = $x + $i;
+        $tmp_y = $y - $i;
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $diagonals[1][] = $piece;
+        if($piece != '0') {break;}
+    }
+    # diagonal left up
+    for($i=1; $i <= 8 - max(9-$x, $y); $i++){
+        $tmp_x = $x - $i;
+        $tmp_y = $y + $i;
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $diagonals[2][] = $piece;
+        if($piece != '0') {break;}
+    }
+    # diagonal left down
+    for($i=1; $i <= min($x, $y)-1; $i++){
+        $tmp_x = $x - $i;
+        $tmp_y = $y - $i;
+        $index = getIndex($tmp_x, $tmp_y);
+        $piece = substr($board,$index,1);
+        $diagonals[3][] = $piece;
+        if($piece != '0') {break;}
+    }
+    return $diagonals;
 }
 
 function hasValidMoves($board, $color){
@@ -142,274 +238,120 @@ function hasValidMoves($board, $color){
                     }
                 }
             }
-            if($piece == 'B'){
+            if($piece == 'B' and $piece == 'Q'){
                 # Which moves could a bishop possibly make?
+                # (Queen can do the same)
+                $dia = getAllDiagonalFields($board, $coord[0], $coord[1]);
                 # diagonal right up
-                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($dia[0] as $key=>$piece){
+                    $x = $coord[0] + $key + 1;
+                    $y = $coord[1] + $key + 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
+
                 # diagonal right down
-                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($dia[1] as $key=>$piece){
+                    $x = $coord[0] + $key + 1;
+                    $y = $coord[1] - $key - 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
+
                 # diagonal left up
-                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($dia[2] as $key=>$piece){
+                    $x = $coord[0] - $key - 1;
+                    $y = $coord[1] + $key + 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
+
                 # diagonal left down
-                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($dia[3] as $key=>$piece){
+                    $x = $coord[0] - $key - 1;
+                    $y = $coord[1] - $key - 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
             }
-            if($piece == 'R'){
-                # Which moves could a rook possibly make?
+            if($piece == 'R' or $piece == 'Q'){
+                # Which moves could a rook possibly make? 
+                # (Queen can do the same)
+                $straight = getAllStraightFields($board, $coord[0], $coord[1]);
                 # top
-                $tmp_x = $coord[0];
-                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($straight[0] as $key=>$piece) {
+                    $x = $coord[0];
+                    $y = $coord[1] + $key + 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # down
-                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # left
-                $tmp_y = $coord[1];
-                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 # right
-                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($straight[1] as $key=>$piece) {
+                    $x = $coord[0] + $key + 1;
+                    $y = $coord[1];
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-            }
-            if($piece == 'Q'){
-                # Which moves could a queen possibly make?
-                # All of rook:
-                # top
-                $tmp_x = $coord[0];
-                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 # down
-                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($straight[2] as $key=>$piece) {
+                    $x = $coord[0];
+                    $y = $coord[1] - $key - 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 # left
-                $tmp_y = $coord[1];
-                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
+                foreach($straight[3] as $key=>$piece) {
+                    $x = $coord[0] - $key - 1;
+                    $y = $coord[1];
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) > 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # right
-                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # All of bishop
-                # diagonal right up
-                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # diagonal right down
-                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # diagonal left up
-                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
-                    }
-                }
-                # diagonal left down
-                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) > 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'white')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
             }
@@ -422,7 +364,7 @@ function hasValidMoves($board, $color){
                     $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
                     if($piece == '0' or ord($piece) > 97){
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'white')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 $tmp_x = $coord[0]+1;
@@ -611,274 +553,120 @@ function hasValidMoves($board, $color){
                     }
                 }
             }
-            if($piece == 'b'){
+            if($piece == 'b' and $piece == 'q'){
                 # Which moves could a bishop possibly make?
+                # (Queen can do the same)
+                $dia = getAllDiagonalFields($board, $coord[0], $coord[1]);
                 # diagonal right up
-                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
+                foreach($dia[0] as $key=>$piece){
+                    $x = $coord[0] + $key + 1;
+                    $y = $coord[1] + $key + 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) < 97) {
                             $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                            if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
+
                 # diagonal right down
-                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($dia[1] as $key=>$piece){
+                    $x = $coord[0] + $key + 1;
+                    $y = $coord[1] - $key - 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
+
                 # diagonal left up
-                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($dia[2] as $key=>$piece){
+                    $x = $coord[0] - $key - 1;
+                    $y = $coord[1] + $key + 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
+
                 # diagonal left down
-                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($dia[3] as $key=>$piece){
+                    $x = $coord[0] - $key - 1;
+                    $y = $coord[1] - $key - 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' or ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
             }
-            if($piece == 'r'){
-                # Which moves could a rook possibly make?
+            if($piece == 'r' or $piece == 'q'){
+                # Which moves could a rook possibly make? 
+                # (Queen can do the same)
+                $straight = getAllStraightFields($board, $coord[0], $coord[1]);
                 # top
-                $tmp_x = $coord[0];
-                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($straight[0] as $key=>$piece) {
+                    $x = $coord[0];
+                    $y = $coord[1] + $key + 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # down
-                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # left
-                $tmp_y = $coord[1];
-                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 # right
-                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($straight[1] as $key=>$piece) {
+                    $x = $coord[0] + $key + 1;
+                    $y = $coord[1];
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-            }
-            if($piece == 'q'){
-                # Which moves could a queen possibly make?
-                # All of rook:
-                # top
-                $tmp_x = $coord[0];
-                for($tmp_y=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 # down
-                for($tmp_y=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($straight[2] as $key=>$piece) {
+                    $x = $coord[0];
+                    $y = $coord[1] - $key - 1;
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
                 # left
-                $tmp_y = $coord[1];
-                for($tmp_x=$coord[1]-1; $i >= 1; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
+                foreach($straight[3] as $key=>$piece) {
+                    $x = $coord[0] - $key - 1;
+                    $y = $coord[1];
+                    $to_index = getIndex($x, $y);
+                    if($piece != '0' and ord($piece) < 97) {
+                        $newBoard=getNewBoard($board,$from_index,$to_index);
+                        if(!isPlayerCheck($newBoard, $color)){return true;}
                     } else{
                         $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # right
-                for($tmp_x=$coord[1]+1; $i <= 8; $i++){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # All of bishop
-                # diagonal right up
-                for($i=1; $i <= 8 - max($coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # diagonal right down
-                for($i=1; $i <= 8 - max($coord[0], 9 - $coord[1]); $i++){
-                    $tmp_x = $coord[0] + $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # diagonal left up
-                for($i=1; $i <= 8 - max(9-$coord[0], $coord[1]); $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] + $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
-                    }
-                }
-                # diagonal left down
-                for($i=1; $i <= min($coord[0], $coord[1])-1; $i++){
-                    $tmp_x = $coord[0] - $i;
-                    $tmp_y = $coord[1] - $i;
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = substr($board,getIndex($tmp_x, $tmp_y),1);
-                    if($piece != '0') {
-                        if(ord($piece) < 97){
-                            $newBoard=getNewBoard($board,$from_index,$to_index);
-                            if(!isPlayerCheck($newBoard, 'black')){return true;}
-                        }
-                        break;
-                    } else{
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, 'black')){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
             }
@@ -970,21 +758,7 @@ function hasValidMoves($board, $color){
     return false;
 }
 
-function isPlayerCheck($newBoard, $yourColor){
-    if ($yourColor == 'white'){
-        $king_index = strpos($newBoard, 'K');
-    } else {
-        $king_index = strpos($newBoard, 'k');
-    }
-    $coord  = getCoordinates($king_index);
-    $king_x = $coord[0];
-    $king_y = $coord[1];
-
-    # danger from top?
-    for($tmp_y = $king_y + 1; $tmp_y < 8; $tmp_y++){
-        if(  substr($newBoard,getIndex($king_x, $tmp_y),1) != '0'  ) {break;}
-    }
-    $piece = substr($newBoard,getIndex($king_x, $tmp_y),1);
+function isStraightDanger($piece, $yourColor) {
     if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?a");}
         else if ($piece == 'q'){return true;}
@@ -994,63 +768,10 @@ function isPlayerCheck($newBoard, $yourColor){
         else if ($piece == 'Q'){return true;}
         else if ($piece == 'R'){return true;}
     }
+    return false;
+}
 
-    # danger from bottom?
-    for($tmp_y = $king_y - 1; $tmp_y > 2; $tmp_y--){
-        if(  substr($newBoard,getIndex($king_x, $tmp_y),1) != '0'  ) {break;}
-    }
-    if($tmp_y<1){$tmp_y=1;}
-    $piece = substr($newBoard,getIndex($king_x, $tmp_y),1);
-    if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?c");}
-        else if ($piece == 'q'){return true;}
-        else if ($piece == 'r'){return true;}
-    } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?d");}
-        else if ($piece == 'Q'){return true;}
-        else if ($piece == 'R'){return true;}
-    }
-
-    $tmp_y = $king_y;
-    # danger from right?
-    for($tmp_x = $king_x + 1; $tmp_x < 8; $tmp_x++){
-        if(  substr($newBoard,getIndex($tmp_x, $tmp_y),1) != '0'  ) {;break;}
-    }
-    $piece = substr($newBoard,getIndex($tmp_x, $tmp_y),1);
-    if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?e");}
-        else if ($piece == 'q'){return true;}
-        else if ($piece == 'r'){return true;}
-    } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?f");}
-        else if ($piece == 'Q'){return true;}
-        else if ($piece == 'R'){return true;}
-    }
-
-    # danger from left?
-    for($tmp_x = $king_x - 1; $tmp_x > 2; $tmp_x--){
-        if(  substr($newBoard,getIndex($king_x, $tmp_y),1) != '0'  ) {break;}
-    }
-    if($tmp_x<1){$tmp_x=1;}
-    $piece = substr($newBoard,getIndex($king_x, $tmp_y),1);
-    if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?g");}
-        else if ($piece == 'q'){return true;}
-        else if ($piece == 'r'){return true;}
-    } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?h");}
-        else if ($piece == 'Q'){return true;}
-        else if ($piece == 'R'){return true;}
-    }
-
-
-    # danger from diagonal right top?
-    for($i=1; $i <= 8 - max($king_x, $king_y); $i++){
-        $tmp_x = $king_x + $i;
-        $tmp_y = $king_y + $i;
-        $piece = substr($newBoard,getIndex($tmp_x, $tmp_y),1);
-        if($piece != '0') {break;}
-    }
+function isDiagonalDanger($piece, $yourColor){
     if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?i");}
         else if ($piece == 'q'){return true;}
@@ -1061,58 +782,38 @@ function isPlayerCheck($newBoard, $yourColor){
         else if ($piece == 'Q'){return true;}
         else if ($piece == 'B'){return true;}
     }
-    # danger from diagonal left top?
-    for($i=1; $i <= 8 - max(9-$king_x, $king_y); $i++){
-        $tmp_x = $king_x - $i;
-        $tmp_y = $king_y + $i;
-        $piece = substr($newBoard,getIndex($tmp_x, $tmp_y),1);
-        if($piece != '0') {break;}
+    return false;
+}
+
+function isPlayerCheck($newBoard, $yourColor){
+    if ($yourColor == 'white'){
+        $king_index = strpos($newBoard, 'K');
+    } else {
+        $king_index = strpos($newBoard, 'k');
     }
-    if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?k");}
-        else if ($piece == 'q'){return true;}
-        else if ($piece == 'b'){return true;}
-        else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
-    } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?l");}
-        else if ($piece == 'Q'){return true;}
-        else if ($piece == 'B'){return true;}
-    }
+    $coord  = getCoordinates($king_index);
+    $king_x = $coord[0];
+    $king_y = $coord[1];
+
+    $fields = getAllStraightFields($newBoard, $king_x, $king_y);
+    # danger from top?
+    if(isStraightDanger(end($fields[0]), $yourColor)){return true;}
+    # danger from right
+    if(isStraightDanger(end($fields[1]), $yourColor)){return true;}
+    # danger from bottom
+    if(isStraightDanger(end($fields[2]), $yourColor)){return true;}
+    # danger from left
+    if(isStraightDanger(end($fields[3]), $yourColor)){return true;}
+
+    $fields = getAllDiagonalFields($newBoard, $king_x, $king_y);
+    # danger from diagonal right top?
+    if(isStraightDanger(end($fields[0]), $yourColor)){return true;}
     # danger from diagonal right bottom?
-    for($i=1; $i <= 8 - max($king_x, 9 - $king_y); $i++){
-        $tmp_x = $king_x + $i;
-        $tmp_y = $king_y - $i;
-        $piece = substr($newBoard,getIndex($tmp_x, $tmp_y),1);
-        if($piece != '0') {break;}
-    }
-    if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?m");}
-        else if ($piece == 'q'){return true;}
-        else if ($piece == 'b'){return true;}
-    } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?n");}
-        else if ($piece == 'Q'){return true;}
-        else if ($piece == 'B'){return true;}
-        else if ($piece == 'P' and abs($tmp_x-$king_x)==1){return true;}
-    }
+    if(isStraightDanger(end($fields[1]), $yourColor)){return true;}
+    # danger from diagonal left top?
+    if(isStraightDanger(end($fields[2]), $yourColor)){return true;}
     # danger from diagonal left bottom?
-    for($i=1; $i <= min($king_x, $king_y)-1; $i++){
-        $tmp_x = $king_x - $i;
-        $tmp_y = $king_y - $i;
-        $piece = substr($newBoard,getIndex($tmp_x, $tmp_y),1);
-        if($piece != '0') {break;}
-    }
-    if ($piece != '0' and ord($piece) > 96 and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?o");}
-        else if ($piece == 'q'){return true;}
-        else if ($piece == 'b'){return true;}
-        else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
-    } else if ($piece != '0' and ord($piece) < 96 and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?p");}
-        else if ($piece == 'Q'){return true;}
-        else if ($piece == 'B'){return true;}
-        else if ($piece == 'P' and abs($tmp_x-$king_x)==1){return true;}
-    }
+    if(isStraightDanger(end($fields[3]), $yourColor)){return true;}
 
     # danger from knights?
     # from very top left?
@@ -1461,7 +1162,7 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
 
         # For en passant:
         $moveArray = explode("\n", trim($moveList));
-        $lastMove = $moveArray[-1];
+        $lastMove = end($moveArray);
         $lastFromX= substr($lastMove, 0, 1);
         $lastFromY= substr($lastMove, 1, 1);
         $lastToX  = substr($lastMove, 2, 1);
@@ -2087,7 +1788,7 @@ if(isset($_GET['claimThreefoldRepetition'])){
 
     /* is en passant possible now? */
     $moves = explode("\n", trim($result['moveList']));
-    $lastMove = $moves[-1];
+    $lastMove = end($moves);
 
     $lastFromX= substr($lastMove, 0, 1);
     $lastFromY= substr($lastMove, 1, 1);

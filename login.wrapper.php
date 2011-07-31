@@ -16,7 +16,7 @@ function login($uname, $upass) {
     if ($id !== false){
         $_SESSION['UserId']   = $row['id'];
         $_SESSION['Password'] = md5($upass);
-        header('Location: status.php');
+        header('Location: index.php');
     }
 }
 

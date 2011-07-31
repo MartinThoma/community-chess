@@ -69,11 +69,12 @@ function selectFromDatabase($query, $row, $table, $condition, $limit = 1) {
 
 function insertIntoDatabase($query, $keyValuePairs, $table) {
     /* $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
-                VALUES ('value1', 'value2'); */
+                VALUES ('value1', 'value2'); 
+       Returns ID of inserted item */
     /* Begin of code which can be replaced by your code */
     mysql_query($query);
 
-    return 0;
+    return mysql_insert_id();
     /* End of code which can be replaced by your code */
 }
 
@@ -97,8 +98,5 @@ function deleteFromDatabase($table, $id) {
     return 0;
     /* End of code which can be replaced by your code */
 }
-
-    
-
 
 ?>
