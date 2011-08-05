@@ -41,8 +41,8 @@ function getNewBoard($currentBoard, $from_index, $to_index){
 }
 
 function isMyPiece($piece, $myColor) {
-    if( ( (ord($color) < 96 and $myColor == 'white') or
-          (ord($color) > 96 and $myColor == 'black')    )  and $piece != '0'){
+    if( ( (ord($piece) < 96 and $myColor == 'white') or
+          (ord($piece) > 96 and $myColor == 'black')    )  and $piece != '0'){
         return true;
     } else {
         return false;
@@ -50,8 +50,8 @@ function isMyPiece($piece, $myColor) {
 }
 
 function isOpponentsPiece($piece, $myColor) {
-    if( ( (ord($color) < 96 and $myColor == 'black') or
-          (ord($color) > 96 and $myColor == 'white')    )  and $piece != '0'){
+    if( ( (ord($piece) < 96 and $myColor == 'black') or
+          (ord($piece) > 96 and $myColor == 'white')    )  and $piece != '0'){
         return true;
     } else {
         return false;
@@ -66,12 +66,12 @@ function getAllStraightFields($board, $x, $y) {
      * array[3] = array('N')                      # to the left
      * */
 
-    $straights = array();
+    $straights = array(0=>array(), 1=>array(), 2=>array(), 3=>array());
 
     # Which moves could a rook possibly make?
     # top
     $tmp_x = $x; $tmp_y = $y;
-    for($tmp_y=$y+1; $i <= 8; $i++){
+    for($tmp_y=$y+1; $tmp_y <= 8; $tmp_y++){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[0][] = $piece;
@@ -79,7 +79,7 @@ function getAllStraightFields($board, $x, $y) {
     }
     # right
     $tmp_x = $x; $tmp_y = $y;
-    for($tmp_x=$y+1; $i <= 8; $i++){
+    for($tmp_x=$x+1; $tmp_x <= 8; $tmp_x++){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[1][] = $piece;
@@ -87,7 +87,7 @@ function getAllStraightFields($board, $x, $y) {
     }
     # down
     $tmp_x = $x; $tmp_y = $y;
-    for($tmp_y=$y-1; $i >= 1; $i++){
+    for($tmp_y=$y-1; $tmp_y >= 1; $tmp_y--){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[2][] = $piece;
@@ -95,7 +95,7 @@ function getAllStraightFields($board, $x, $y) {
     }
     # left
     $tmp_x = $x; $tmp_y = $y;
-    for($tmp_x=$y-1; $i >= 1; $i++){
+    for($tmp_x=$x-1; $tmp_x >= 1; $tmp_x--){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[3][] = $piece;
@@ -112,7 +112,7 @@ function getAllDiagonalFields($board, $x, $y) {
      * array[3] = array('N')                      # to the bottom-left
      * */
 
-    $diagonals = array();
+    $diagonals = array(0=>array(), 1=>array(), 2=>array(), 3=>array());
 
     # Which moves could a bishop possibly make?
     # diagonal right up
@@ -190,7 +190,7 @@ function hasValidMoves($board, $color){
                     }
                     if($coord[0] < 8){
                         # diagonal right capturing
-                        $to_index = getIndex($coord[0]+1, $coord[1]+1$mul);
+                        $to_index = getIndex($coord[0]+1, $coord[1]+1*$mul);
                         $targetpiece = getPieceByIndex($board,$to_index);
                         if(isOpponentsPiece($targetpiece, $color)){
                         $newBoard = getNewBoard($board, $from_index, 
@@ -464,11 +464,11 @@ function hasValidMoves($board, $color){
 }
 
 function isStraightDanger($piece, $yourColor) {
-    if ( isOpponentsPiece($piece, $color) and $yourColor == 'white'){
+    if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'white'){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?a");}
         else if ($piece == 'q'){return true;}
         else if ($piece == 'r'){return true;}
-    } else if ( isOpponentsPiece($piece, $color) and $yourColor == 'black'){
+    } else if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'black'){
         if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?b");}
         else if ($piece == 'Q'){return true;}
         else if ($piece == 'R'){return true;}
@@ -477,12 +477,12 @@ function isStraightDanger($piece, $yourColor) {
 }
 
 function isDiagonalDanger($piece, $yourColor){
-    if ( isOpponentsPiece($piece, $color) and $yourColor == 'white'){
+    if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'white'){
         if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?i");}
         else if ($piece == 'q'){return true;}
         else if ($piece == 'b'){return true;}
         else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
-    } else if ( isOpponentsPiece($piece, $color) and $yourColor == 'black'){
+    } else if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'black'){
         if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?j");}
         else if ($piece == 'Q'){return true;}
         else if ($piece == 'B'){return true;}
@@ -650,19 +650,12 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
         # castling?
         if( ($yourColor == 'white' and $from_x ==  4) or
             ($yourColor == 'black' and $from_x == 60)    ){
-            $table = "chess_currentGames";
             $rows  = array('whiteCastlingKingsidePossible', 
                            'whiteCastlingQueensidePossible',
                            'blackCastlingKingsidePossible',
                            'blackCastlingQueensidePossible');
             $cond  = "WHERE `id` = ".CURRENT_GAME_ID;
-
-            $query = "SELECT `whiteCastlingKingsidePossible`, ";
-            $query.= "`whiteCastlingQueensidePossible`, ";
-            $query.= "`blackCastlingKingsidePossible`, ";
-            $query.= "`blackCastlingQueensidePossible` ";
-            $query.= "FROM `$table` $cond";
-            $result= selectFromDatabase($query, $rows, $table, $cond);
+            $result= selectFromTable($rows, "chess_currentGames", $cond);
             if($yourColor == 'white'){
                 if($to_x == 2){
                     if($result['whiteCastlingQueensidePossible'] == 0){
@@ -1015,6 +1008,8 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     $capturedPiece= getPieceByIndex($currentBoard, $to_index);
     $to_coord     = getCoordinates($to_index);
     $from_coord   = getCoordinates($from_index);
+    $cond         = "WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+
     if ($piece == 'p' or $piece == 'P'){
         $pawnMoved = true;
     } else {
@@ -1031,8 +1026,6 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
         abs($from_coord[0] - $to_coord[0]) == 2  ){
         // Move tower (only tower! The king will be moved in the rest of this 
         // function.
-        $table = "chess_currentGames";
-        $cond  = "WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
         if($color == 'white'){
             if($to_index == 6){
                 // Kingside Castling for white
@@ -1040,28 +1033,12 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
                                           .substr($currentBoard, $from_index+1);
                 $currentBoard = substr($currentBoard, 0, 5).'R'
                                           .substr($currentBoard, $to_index+1);
-
-                $query = "UPDATE  `$table` SET  ";
-                $query.= "`currentBoard` =  '$currentBoard', ";
-                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
-                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
-                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
-                $query.= $cond;
-                updateDataInDatabase($query, $table);
             } else {
                 // Queenside Castling for white
                 $currentBoard = substr($currentBoard, 0, 0).'0'
                                           .substr($currentBoard, $from_index+1);
                 $currentBoard = substr($currentBoard, 0, 3).'R'
                                           .substr($currentBoard, $to_index+1);
-
-                $query = "UPDATE  `$table` SET  ";
-                $query.= "`currentBoard` =  '$currentBoard', ";
-                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
-                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
-                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
-                $query.= $cond;
-                updateDataInDatabase($query, $table);
             }
         } else {
             if($to_index == 62){
@@ -1070,64 +1047,46 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
                                           .substr($currentBoard, $from_index+1);
                 $currentBoard = substr($currentBoard, 0, 61).'r'
                                           .substr($currentBoard, $to_index+1);
-
-                $query = "UPDATE  `$table` SET  ";
-                $query.= "`currentBoard` =  '$currentBoard', ";
-                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
-                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
-                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
-                $query.= $cond;
-                updateDataInDatabase($query, $table);
             } else {
                 // Queenside Castling for black
                 $currentBoard = substr($currentBoard, 0, 56).'0'
                                           .substr($currentBoard, $from_index+1);
                 $currentBoard = substr($currentBoard, 0, 59).'r'
                                           .substr($currentBoard, $to_index+1);
-
-                $query = "UPDATE  `$table` SET  ";
-                $query.= "`currentBoard` =  '$currentBoard', ";
-                $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
-                $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
-                $query.= "`lastMove` = CURRENT_TIMESTAMP ";
-                $query.= $cond;
-                updateDataInDatabase($query, $table);
             }
         }
+        $keyValue = array();
+        $keyValue['currentBoard'] = $currentBoard;
+        $keyValue['moveList']     = "CONCAT(`moveList`,'$move\n')";
+        $keyValue['whoseTurnIsIt']= "((`whoseTurnIsIt` + 1)%2)";
+        $keyValue['lastMove']     = "CURRENT_TIMESTAMP";
+        updateDataInTable("chess_currentGames", $keyValue, $cond);
     }
 
     // Is this piece relevant for castling?
     // White - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 7)){
-        $table = "chess_currentGames";
-        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
-        $query = "UPDATE  `$table` SET  `whiteCastlingKingsidePossible` = '0'";
-        $query.= " $cond";
-        updateDataInDatabase($query, $table);
+        $keyValue = array();
+        $keyValue['whiteCastlingKingsidePossible'] = 0;
+        updateDataInTable("chess_currentGames", $keyValue, $cond);
     }
     // White - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 0)){
-        $table = "chess_currentGames";
-        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
-        $query = "UPDATE  `$table` SET  `whiteCastlingQueensidePossible` = '0'";
-        $query.= " $cond";
-        updateDataInDatabase($query, $table);
+        $keyValue = array();
+        $keyValue['whiteCastlingQueensidePossible'] = 0;
+        updateDataInTable("chess_currentGames", $keyValue, $cond);
     }
     // Black - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 63)){
-        $table = "chess_currentGames";
-        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
-        $query = "UPDATE  `$table` SET  `blackCastlingKingsidePossible` = '0'";
-        $query.= " $cond";
-        updateDataInDatabase($query, $table);
+        $keyValue = array();
+        $keyValue['blackCastlingKingsidePossible'] = 0;
+        updateDataInTable("chess_currentGames", $keyValue, $cond);
     }
     // Black - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 56)){
-        $table = "chess_currentGames";
-        $cond  = " WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
-        $query = "UPDATE  `$table` SET  `blackCastlingQueensidePossible` = '0'";
-        $query.= " $cond";
-        updateDataInDatabase($query, $table);
+        $keyValue = array();
+        $keyValue['blackCastlingQueensidePossible'] = 0;
+        updateDataInTable("chess_currentGames", $keyValue, $cond);
     }
 
     /* Promotion */
@@ -1158,38 +1117,26 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
                                           .substr($currentBoard, $from_index+1);
     $currentBoard = substr($currentBoard, 0, $to_index).$piece
                                           .substr($currentBoard, $to_index+1);
-    $table = "chess_currentGames";
-    $cond  = "WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
-
-    $query = "UPDATE  `$table` SET  ";
-    $query.= "`currentBoard` =  '$currentBoard', ";
-    $query.= "`moveList` = CONCAT(`moveList`,'$move\n'), ";
-    $query.= "`whoseTurnIsIt` =  ((`whoseTurnIsIt` + 1)%2), ";
-    $query.= "`lastMove` = CURRENT_TIMESTAMP, ";
-
+    $keyValue['currentBoard'] = $currentBoard;
+    $keyValue['moveList']     = "CONCAT(`moveList`,'$move\n')";
+    $keyValue['whoseTurnIsIt']= "((`whoseTurnIsIt` + 1)%2)";
+    $keyValue['lastMove']     = "CURRENT_TIMESTAMP";
 
     if($pawnMoved == false and $captureMade == false) {    
-        $query.= "`noCaptureAndPawnMoves` = `noCaptureAndPawnMoves` + 1 ";
+        $keyValue['noCaptureAndPawnMoves'] = "`noCaptureAndPawnMoves` + 1 ";
     } else {
-        $query.= "`noCaptureAndPawnMoves` = 0 ";
+        $keyValue['noCaptureAndPawnMoves'] = "0";
     }
-    $query.= $cond;
 
-    updateDataInDatabase($query, $table);
+    updateDataInTable("chess_currentGames", $keyValue, $cond);
 
     /* Get all data for the threefold repetition table*/
     /* Castling? */
-    $table = "chess_currentGames";
-    $cond  = "WHERE `id`=".CURRENT_GAME_ID;
     $rows  = array('whiteCastlingKingsidePossible',
                    'whiteCastlingQueensidePossible',
                    'blackCastlingKingsidePossible',
                    'blackCastlingQueensidePossible');
-    $query = "SELECT `whiteCastlingKingsidePossible`, ";
-    $query.= "`whiteCastlingQueensidePossible`, ";
-    $query.= "`blackCastlingKingsidePossible`, ";
-    $query.= "`blackCastlingQueensidePossible` FROM `$table` $cond";
-    $result= selectFromDatabase($query, $rows, $table, $cond);
+    $result= selectFromTable($rows, "chess_currentGames", $cond);
     /* Is en passant possible? */
         /* was last move a pawn-2move? */
         if($pawnMoved and abs($from_coord[1]-$to_coord[1]) == 2){
@@ -1217,7 +1164,6 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
             $enPassant = '0';
         }
     /* Insert the new situation into chess_currentGamesThreefoldRepetition */
-    $table = "chess_currentGamesThreefoldRepetition";
     $keyValuePairs = array();
     $keyValuePairs['gameID'] = CURRENT_GAME_ID;
     $keyValuePairs['board']  = $currentBoard;
@@ -1229,21 +1175,8 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
                                        $result['blackCastlingKingsidePossible'];
     $keyValuePairs['blackCastlingQueensidePossible'] = 
                                       $result['blackCastlingQueensidePossible'];
-    $query = "INSERT INTO  `$table` (`gameID` , `board` , ";
-    $query.= "`whiteCastlingKingsidePossible` ,";
-    $query.= "`whiteCastlingQueensidePossible` ,";
-    $query.= "`blackCastlingKingsidePossible` ,";
-    $query.= "`blackCastlingQueensidePossible` ,";
-    $query.= "`enPassantPossible`";
-    $query.= ") VALUES (";
-    $query.= "'".CURRENT_GAME_ID."',  '$currentBoard', ";
-    $query.= "'".$result['whiteCastlingKingsidePossible']."', ";
-    $query.= "'".$result['whiteCastlingQueensidePossible']."', ";
-    $query.= "'".$result['blackCastlingKingsidePossible']."', ";
-    $query.= "'".$result['blackCastlingQueensidePossible']."', ";
-    $query.= "'$enPassant'";
-    $query.= ");";
-    insertIntoDatabase($query, $keyValuePairs, $table);
+    $keyValuePairs['enPassantPossible'] = $enPassant;
+    insertIntoTable($keyValuePairs, "chess_currentGamesThreefoldRepetition");
 
     return $currentBoard;
 }
@@ -1253,21 +1186,18 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
 
 if(isset($_GET['gameID'])){
     $gameID = intval($_GET['gameID']);
-    $table = "chess_currentGames";
     $row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
-                   "blackPlayerID", "moveList", "noCaptureAndPawnMoves");
+                   "blackPlayerID", "moveList", "noCaptureAndPawnMoves", "id");
     $cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
     $cond .= USER_ID.") AND `id` = ".$gameID;
-    $query = "SELECT `currentBoard`, `whoseTurnIsIt`, `blackPlayerID`, ";
-    $query.= "`whitePlayerID`, `moveList`, `noCaptureAndPawnMoves` ";
-    $query.= "FROM `$table` $cond";
-    $result = selectFromDatabase($query, $row, $table, $condition);
+    $result = selectFromTable($row, "chess_currentGames", $cond);
 
     if($result !== false){
         $currentBoard  = $result['currentBoard'];
         $whoseTurnIsIt = $result['whoseTurnIsIt'];
         $moveList      = $result['moveList'];
         $noCaptureAndPawnMoves = $result['noCaptureAndPawnMoves'];
+        $gameID        = $result['id'];
         if($whoseTurnIsIt == 0){
             $whoseTurnIsItLanguage = 'white';
         } else {
@@ -1371,17 +1301,11 @@ if(isset($_GET['move'])){
                 echo "$opponentColor has no valid moves but is not check. ".
                      "Draw.";
             }
-
-            $table = "chess_currentGames";
             $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
                          'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                          'whoseTurnIsIt', 'startTime', 'lastMove');
             $condition = "WHERE `id` = ".CURRENT_GAME_ID;
-            $query = "SELECT `moveList`, `whitePlayerID`, `blackPlayerID`, 
-                      `whitePlayerSoftwareID`, `blackPlayerSoftwareID`, 
-                      `whoseTurnIsIt`, `startTime`, `lastMove` 
-                      FROM `$table` $condition";
-            $result = selectFromDatabase($query, $row, $table, $condition);
+            $result= selectFromTable($row, "chess_currentGames", $condition);
             $moves = $result['moves'];
             $whitePlayerID = $result['whitePlayerID'];
             $blackPlayerID = $result['blackPlayerID'];
@@ -1390,9 +1314,8 @@ if(isset($_GET['move'])){
             $startTime = $result['startTime'];
             $endTime   = $result['endTime'];
 
-            deleteFromDatabase($table, $id);
+            deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
 
-            $table = "chess_pastGames";
             $keyValue   = array();
             $keyValue['moveList'] = $moves;
             $keyValue['whitePlayerID'] = $whitePlayerID;
@@ -1402,16 +1325,7 @@ if(isset($_GET['move'])){
             $keyValue['outcome']   = $outcome;
             $keyValue['startTime'] = $startTime;
             $keyValue['endTime']   = $endTime;
-
-            $query = "INSERT INTO `$table` ";
-            $query.= "(`moveList` ,`whitePlayerID` ,`blackPlayerID` ,";
-            $query.= "`whitePlayerSoftwareID` ,`blackPlayerSoftwareID` , ";
-            $query.= "`outcome` ,`startTime` ,`endTime`) ";
-            $query.= "VALUES ('$moves',  '$whitePlayerID',  ";
-            $query.= "'$blackPlayerID',  '$whitePlayerSoftwareID',  ";
-            $query.= "'$blackPlayerSoftwareID',  '$outcome',  ";
-            $query.= "'$startTime',  '$endTime');";
-            insertIntoDatabase($query,$keyValue, $table);
+            insertIntoTable($keyValue, "chess_pastGames");
             exit("Game finished.");
         }
         # Threefold repetition: http://en.wikipedia.org/wiki/Threefold_repetition
@@ -1421,16 +1335,11 @@ if(isset($_GET['move'])){
 
 if(isset($_GET['claim50MoveRule'])){
     if($noCaptureAndPawnMoves >= 100){
-        $table = "chess_currentGames";
         $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
                      'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                      'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = "WHERE `id` = ".CURRENT_GAME_ID;
-        $query = "SELECT `moveList`, `whitePlayerID`, `blackPlayerID`, 
-                  `whitePlayerSoftwareID`, `blackPlayerSoftwareID`, 
-                  `whoseTurnIsIt`, `startTime`, `lastMove` 
-                  FROM `$table` $condition";
-        $result = selectFromDatabase($query, $row, $table, $condition);
+        $result = selectFromTable($row, "chess_currentGames", $condition);
         $moves  = $result['moves'];
         $whitePlayerID = $result['whitePlayerID'];
         $blackPlayerID = $result['blackPlayerID'];
@@ -1439,9 +1348,8 @@ if(isset($_GET['claim50MoveRule'])){
         $startTime = $result['startTime'];
         $endTime   = $result['endTime'];
 
-        deleteFromDatabase($table, $id);
+        deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
 
-        $table = "chess_pastGames";
         $keyValue   = array();
         $keyValue['moveList'] = $moves;
         $keyValue['whitePlayerID'] = $whitePlayerID;
@@ -1451,16 +1359,8 @@ if(isset($_GET['claim50MoveRule'])){
         $keyValue['outcome']   = $outcome;
         $keyValue['startTime'] = $startTime;
         $keyValue['endTime']   = $endTime;
+        insertIntoTable($keyValue, "chess_pastGames");
 
-        $query = "INSERT INTO `$table` ";
-        $query.= "(`moveList` ,`whitePlayerID` ,`blackPlayerID` ,";
-        $query.= "`whitePlayerSoftwareID` ,`blackPlayerSoftwareID` , ";
-        $query.= "`outcome` ,`startTime` ,`endTime`) ";
-        $query.= "VALUES ('$moves',  '$whitePlayerID',  ";
-        $query.= "'$blackPlayerID',  '$whitePlayerSoftwareID',  ";
-        $query.= "'$blackPlayerSoftwareID',  '2',  ";
-        $query.= "'$startTime',  '$endTime');";
-        insertIntoDatabase($query,$keyValue, $table);
         exit("Game finished. Draw. You claimed draw by the fifty-move rule.");
     } else {
         exit("ERROR: The last $noCaptureAndPawnMoves were no capture or pawn ".
@@ -1477,13 +1377,7 @@ if(isset($_GET['claimThreefoldRepetition'])){
                    'whiteCastlingQueensidePossible',
                    'blackCastlingKingsidePossible',
                    'blackCastlingQueensidePossible');
-    $table = "chess_currentGames";
-    $query = "SELECT `currentBoard`,`moveList`, ";
-    $query.= "`whiteCastlingKingsidePossible`, ";
-    $query.= "`whiteCastlingQueensidePossible`, ";
-    $query.= "`blackCastlingKingsidePossible`, ";
-    $query.= "`blackCastlingQueensidePossible` FROM `$table` $cond";
-    $result= selectFromDatabase($query, $rows, $table, $cond);
+    $result= selectFromTable($rows, "chess_currentGames", $cond);
 
     /* is en passant possible now? */
     $moves = explode("\n", trim($result['moveList']));
@@ -1527,8 +1421,6 @@ if(isset($_GET['claimThreefoldRepetition'])){
     }
     /* end en passant */
 
-    $row   = array('id');
-    $table = "chess_currentGamesThreefoldRepetition";
     $cond  = "WHERE `gameID` = ".CURRENT_GAME_ID." ";
     $cond .= "AND `board` = ".$result['currentBoard'];
     $cond .= "AND `whiteCastlingKingsidePossible` = ".$result['whiteCastlingKingsidePossible'];
@@ -1536,19 +1428,15 @@ if(isset($_GET['claimThreefoldRepetition'])){
     $cond .= "AND `blackCastlingKingsidePossible` = ".$result['blackCastlingKingsidePossible'];
     $cond .= "AND `blackCastlingQueensidePossible`= ".$result['blackCastlingQueensidePossible'];
     $cond .= "AND `enPassantPossible` = ".$enPassant;
-    $query = "SELECT `id`  FROM `$table` $cond";
-    $result= selectFromDatabase($query, $rows, $table, $cond, 4);
+    $result= selectFromTable(array('id'), 
+                                "chess_currentGamesThreefoldRepetition", 
+                                $cond, 4);
     if(count($result) >= 3){
-        $table = "chess_currentGames";
-        $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
+        $rows = array('moveList', 'whitePlayerID', 'blackPlayerID', 
                      'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                      'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = "WHERE `id` = ".CURRENT_GAME_ID;
-        $query = "SELECT `moveList`, `whitePlayerID`, `blackPlayerID`, 
-                  `whitePlayerSoftwareID`, `blackPlayerSoftwareID`, 
-                  `whoseTurnIsIt`, `startTime`, `lastMove` 
-                  FROM `$table` $condition";
-        $result = selectFromDatabase($query, $row, $table, $condition);
+        $result = selectFromTable($rows, "chess_currentGames", $condition);
         $moves  = $result['moves'];
         $whitePlayerID = $result['whitePlayerID'];
         $blackPlayerID = $result['blackPlayerID'];
@@ -1557,10 +1445,9 @@ if(isset($_GET['claimThreefoldRepetition'])){
         $startTime = $result['startTime'];
         $endTime   = $result['endTime'];
 
-        deleteFromDatabase($table, $id);
+        deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
 
-        $table = "chess_pastGames";
-        $keyValue   = array();
+        $keyValue = array();
         $keyValue['moveList'] = $moves;
         $keyValue['whitePlayerID'] = $whitePlayerID;
         $keyValue['blackPlayerID'] = $blackPlayerID;
@@ -1569,16 +1456,7 @@ if(isset($_GET['claimThreefoldRepetition'])){
         $keyValue['outcome']   = $outcome;
         $keyValue['startTime'] = $startTime;
         $keyValue['endTime']   = $endTime;
-
-        $query = "INSERT INTO `$table` ";
-        $query.= "(`moveList` ,`whitePlayerID` ,`blackPlayerID` ,";
-        $query.= "`whitePlayerSoftwareID` ,`blackPlayerSoftwareID` , ";
-        $query.= "`outcome` ,`startTime` ,`endTime`) ";
-        $query.= "VALUES ('$moves',  '$whitePlayerID',  ";
-        $query.= "'$blackPlayerID',  '$whitePlayerSoftwareID',  ";
-        $query.= "'$blackPlayerSoftwareID',  '2',  ";
-        $query.= "'$startTime',  '$endTime');";
-        insertIntoDatabase($query,$keyValue, $table);
+        insertIntoTable($keyValue, "chess_pastGames");
         exit("Game finished. Draw. You claimed draw by threefold repetition.");
     } else {
         exit("ERROR: Threefold repetition may only be claimed if exactly the ".
@@ -1588,14 +1466,11 @@ if(isset($_GET['claimThreefoldRepetition'])){
     }
 }
 
-$table = "chess_currentGames";
 $row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
                "blackPlayerID");
 $cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
 $cond .= USER_ID.") AND `id` = ".CURRENT_GAME_ID;
-$query = "SELECT `currentBoard`, `whoseTurnIsIt`, `blackPlayerID`, ";
-$query.= "`whitePlayerID`  FROM `$table` $cond";
-$result = selectFromDatabase($query, $row, $table, $condition, $limit = 1);
+$result= selectFromTable($row, "chess_currentGames", $cond);
 
 if($result !== false){
     $currentBoard  = $result['currentBoard'];
@@ -1634,5 +1509,6 @@ echo "Next turn: ".$whoseTurnIsItLanguage."<br/>";
 echo "You are: ".$yourColor."<br/>";
 echo "You are check: $youCheck.<br/>";
 echo "Opponent is check: $opponentCheck.<br/>";
+echo "Game-ID: ".CURRENT_GAME_ID.".<br/>";
 
 ?>

@@ -9,10 +9,8 @@ session_start();
 require ('wrapper.inc.php');
 
 function login($uname, $upass) {
-    $table = 'chess_players';
     $condition = 'WHERE uname="'.mysql_real_escape_string($uname).'" AND upass="'.md5($upass).'"';
-    $query = "SELECT id FROM $table $condition";
-    $row = selectFromDatabase($query, 'id', $table, $condition);
+    $row = selectFromTable(array('id'), 'chess_players', $condition);
     if ($id !== false){
         $_SESSION['UserId']   = $row['id'];
         $_SESSION['Password'] = md5($upass);
