@@ -35,10 +35,8 @@ function getUserID() {
     $uid    = mysql_real_escape_string($_SESSION['UserId']);
     $upass  = mysql_real_escape_string($_SESSION['Password']);
 
-    $table = 'chess_players';
     $condition = "WHERE id='$uid' AND upass='$upass'";
-    $query = "SELECT id FROM `$table` $condition";
-    $row = selectFromDatabase($query, 'id',$table, $condition);
+    $row = selectFromTable(array('id'), 'chess_players', $condition);
 
     if($row['id'] === $_SESSION['UserId'] AND $row['id'] > 0){
         return $row['id'];
@@ -48,12 +46,14 @@ function getUserID() {
     /* End of code which can be replaced by your code */
 }
 
-function selectFromDatabase($query, $row, $table, $condition, $limit = 1) {
-    /* $query = SELECT $row FROM $table WHERE $condition;
-       note that row is an array of all rows. I never use "*"
+function selectFromTable($rows, $table, $condition, $limit = 1) {
+    /* note that row is an array of all rows. I never use "*"
        This function should return the associative array 
-       Its always only the first row */
+       Its always only the first row 
+       $condition might also have ORDER BY */
     /* Begin of code which can be replaced by your code */
+    $row    = implode(",", $rows);
+    $query  = "SELECT $row FROM `$table` $condition LIMIT $limit"; 
     $result = mysql_query($query);
     if($limit == 1){
         $row = mysql_fetch_assoc($result);
@@ -67,28 +67,49 @@ function selectFromDatabase($query, $row, $table, $condition, $limit = 1) {
     /* End of code which can be replaced by your code */
 }
 
-function insertIntoDatabase($query, $keyValuePairs, $table) {
-    /* $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
-                VALUES ('value1', 'value2'); 
-       Returns ID of inserted item */
+function insertIntoTable($keyValuePairs, $table) {
+    /* Returns ID of inserted item */
     /* Begin of code which can be replaced by your code */
+    $query = "INSERT INTO  $table (";
+    $query.= implode(",", array_keys($keyValuePairs));
+    $query.= ")";
+    $query.= "VALUES (";
+    $query.= "'".implode("','", array_values($keyValuePairs))."'";
+    $query.= ");";
     mysql_query($query);
 
     return mysql_insert_id();
     /* End of code which can be replaced by your code */
 }
 
-function updateDataInDatabase($query, $table) {
+function updateDataInTable($table, $keyValue, $cond) {
     /* $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
                 VALUES ('value1', 'value2'); */
     /* Begin of code which can be replaced by your code */
+    $query = "UPDATE  `$table` SET  ";
+
+    $values= "";
+    foreach($keyValue as $key=>$value){
+        if($value == 'CURRENT_TIMESTAMP' or 
+           substr($value, 0, 6) == 'CONCAT' or
+           substr($value, 0, 1) == '(' or
+           substr($value, 0, 1) == '`'){
+            $values.= ", `$key` = $value";
+        } else {
+            $values.= ", `$key` = '$value'";
+        }
+    }
+    # remove first ","
+    $query.= substr($values, 2);
+    $query.= $cond;
+
     mysql_query($query);
 
     return 0;
     /* End of code which can be replaced by your code */
 }
 
-function deleteFromDatabase($table, $id) {
+function deleteFromTable($table, $id) {
     /* Begin of code which can be replaced by your code */
     $table = mysql_real_escape_string($table);
     $id = intval($id);
