@@ -1181,11 +1181,11 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     return $currentBoard;
 }
 /******************************************************************************
- * End of function definitions. Start of the script                           *  
+ * End of function definitions.                                               *
+ * Get CURRENT_GAME_ID and some game-relevant variables                       *  
  ******************************************************************************/
-
-if(isset($_GET['gameID'])){
-    $gameID = intval($_GET['gameID']);
+if(isset($_GET['gameID'])) {
+    $gameID= intval($_GET['gameID']);
     $row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
                    "blackPlayerID", "moveList", "noCaptureAndPawnMoves", "id");
     $cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
@@ -1216,11 +1216,13 @@ if(isset($_GET['gameID'])){
 
 if(!defined('CURRENT_GAME_ID')){exit('ERROR: Wrong gameID.');}
 
+/******************************************************************************
+ * Get MOVE as Number-Notation:                                               *
+ * http://code.google.com/p/community-chess/wiki/NotationOfMoves              *  
+ ******************************************************************************/
 
 if(isset($_GET['move'])){
     $move = mysql_real_escape_string($_GET['move']);
-    # Is it your turn?
-    if($whoseTurnIsItLanguage != $yourColor){exit("ERROR: It's not your turn");}
     # Is the move-query well formed?
     if(strlen($move) > 5 or strlen($move) < 4 ){
         exit("ERROR: Your move-query should have 4 or 5 characters.");
@@ -1244,6 +1246,17 @@ if(isset($_GET['move'])){
     } else {$to_index = getIndex($to_x, $to_y);}
     if ($from_index == $to_index){exit("ERROR: You have to move.");}
 
+    define('MOVE', $move);
+}
+
+if(isset($_GET['pgn'])){
+    # insert Code as soon as possible
+    # define MOVE in my notation
+}
+
+if (defined('MOVE')) {
+    # Is it your turn?
+    if($whoseTurnIsItLanguage != $yourColor){exit("ERROR: It's not your turn");}
     # Is one of your chess pieces on the from-field?
     $piece = getPieceByIndex($currentBoard,$from_index);
     if($piece == '0'){
@@ -1289,7 +1302,7 @@ if(isset($_GET['move'])){
         exit("ERROR: You may not be check at end of your turn!");
     }
     # Everything is ok => move!
-    $currentBoard = makeMove($from_index, $to_index, $currentBoard, $move);
+    $currentBoard = makeMove($from_index, $to_index, $currentBoard, MOVE);
     # Check for:
         if ( !hasValidMoves($currentBoard, $opponentColor) ){ 
             if ( isPlayerCheck($currentBoard, $opponentColor) ){
@@ -1306,7 +1319,7 @@ if(isset($_GET['move'])){
                          'whoseTurnIsIt', 'startTime', 'lastMove');
             $condition = "WHERE `id` = ".CURRENT_GAME_ID;
             $result= selectFromTable($row, "chess_currentGames", $condition);
-            $moves = $result['moves'];
+            $moveList = $result['moveList'];
             $whitePlayerID = $result['whitePlayerID'];
             $blackPlayerID = $result['blackPlayerID'];
             $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
@@ -1317,7 +1330,7 @@ if(isset($_GET['move'])){
             deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
 
             $keyValue   = array();
-            $keyValue['moveList'] = $moves;
+            $keyValue['moveList'] = $moveList;
             $keyValue['whitePlayerID'] = $whitePlayerID;
             $keyValue['blackPlayerID'] = $blackPlayerID;
             $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
@@ -1328,9 +1341,6 @@ if(isset($_GET['move'])){
             insertIntoTable($keyValue, "chess_pastGames");
             exit("Game finished.");
         }
-        # Threefold repetition: http://en.wikipedia.org/wiki/Threefold_repetition
-        # Stalemate: http://en.wikipedia.org/wiki/Stalemate
-        # 50-move rule: http://en.wikipedia.org/wiki/Fifty-move_rule
 }
 
 if(isset($_GET['claim50MoveRule'])){
@@ -1340,7 +1350,7 @@ if(isset($_GET['claim50MoveRule'])){
                      'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = "WHERE `id` = ".CURRENT_GAME_ID;
         $result = selectFromTable($row, "chess_currentGames", $condition);
-        $moves  = $result['moves'];
+        $moveList  = $result['moveList'];
         $whitePlayerID = $result['whitePlayerID'];
         $blackPlayerID = $result['blackPlayerID'];
         $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
@@ -1351,7 +1361,7 @@ if(isset($_GET['claim50MoveRule'])){
         deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
 
         $keyValue   = array();
-        $keyValue['moveList'] = $moves;
+        $keyValue['moveList'] = $moveList;
         $keyValue['whitePlayerID'] = $whitePlayerID;
         $keyValue['blackPlayerID'] = $blackPlayerID;
         $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
@@ -1380,8 +1390,8 @@ if(isset($_GET['claimThreefoldRepetition'])){
     $result= selectFromTable($rows, "chess_currentGames", $cond);
 
     /* is en passant possible now? */
-    $moves = explode("\n", trim($result['moveList']));
-    $lastMove = end($moves);
+    $moveList = explode("\n", trim($result['moveList']));
+    $lastMove = end($moveList);
 
     $lastFromX= substr($lastMove, 0, 1);
     $lastFromY= substr($lastMove, 1, 1);
@@ -1423,10 +1433,14 @@ if(isset($_GET['claimThreefoldRepetition'])){
 
     $cond  = "WHERE `gameID` = ".CURRENT_GAME_ID." ";
     $cond .= "AND `board` = ".$result['currentBoard'];
-    $cond .= "AND `whiteCastlingKingsidePossible` = ".$result['whiteCastlingKingsidePossible'];
-    $cond .= "AND `whiteCastlingQueensidePossible`= ".$result['whiteCastlingQueensidePossible'];
-    $cond .= "AND `blackCastlingKingsidePossible` = ".$result['blackCastlingKingsidePossible'];
-    $cond .= "AND `blackCastlingQueensidePossible`= ".$result['blackCastlingQueensidePossible'];
+    $cond .= "AND `whiteCastlingKingsidePossible` = ";
+    $cond .= $result['whiteCastlingKingsidePossible'];
+    $cond .= "AND `whiteCastlingQueensidePossible`= ";
+    $cond .= $result['whiteCastlingQueensidePossible'];
+    $cond .= "AND `blackCastlingKingsidePossible` = ";
+    $cond .= $result['blackCastlingKingsidePossible'];
+    $cond .= "AND `blackCastlingQueensidePossible`= ";
+    $cond .= $result['blackCastlingQueensidePossible'];
     $cond .= "AND `enPassantPossible` = ".$enPassant;
     $result= selectFromTable(array('id'), 
                                 "chess_currentGamesThreefoldRepetition", 
@@ -1437,7 +1451,7 @@ if(isset($_GET['claimThreefoldRepetition'])){
                      'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = "WHERE `id` = ".CURRENT_GAME_ID;
         $result = selectFromTable($rows, "chess_currentGames", $condition);
-        $moves  = $result['moves'];
+        $moveList  = $result['moveList'];
         $whitePlayerID = $result['whitePlayerID'];
         $blackPlayerID = $result['blackPlayerID'];
         $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
@@ -1448,7 +1462,7 @@ if(isset($_GET['claimThreefoldRepetition'])){
         deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
 
         $keyValue = array();
-        $keyValue['moveList'] = $moves;
+        $keyValue['moveList'] = $moveList;
         $keyValue['whitePlayerID'] = $whitePlayerID;
         $keyValue['blackPlayerID'] = $blackPlayerID;
         $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
