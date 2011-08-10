@@ -2,7 +2,12 @@
 
 = Introduction =
 The moves are submitted like simply by giving a gameID-parameter and a move-parameter via GET to playChess.php:
+
 `www.yourserver.com/chess/playChess.php?gameID=1&move=7274`
+
+which is equivalent to:
+
+`www.yourserver.com/chess/playChess.php?gameID=1&iccfalpha=g2g4`
 
 Keep in mind that you have to submit your session variables, too.
 
@@ -10,7 +15,8 @@ Keep in mind that you have to submit your session variables, too.
 
 Think of the chess board as fields with coordinates:
 
-http://community-chess.googlecode.com/svn/trunk/documentation/Chess-ICCF-Notation.png
+|| playChess?gameID=1&move=2224 || playChess?gameID=1&move=b2b4 ||
+|| http://community-chess.googlecode.com/svn/trunk/documentation/Chess-ICCF-Notation.png || http://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SCD_algebraic_notation.svg/200px-SCD_algebraic_notation.svg.png ||
 
 You always give two coordinates: from and to. In the example given above, from is 72 and to 74. So if this is your first move, you will move your pawn.
 
