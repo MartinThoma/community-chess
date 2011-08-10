@@ -1254,6 +1254,38 @@ if(isset($_GET['pgn'])){
     # define MOVE in my notation
 }
 
+if(isset($_GET['iccfalpha'])){
+    $search = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+    $replace= array(1,2,3,4,5,6,7,8);
+    $move = str_replace($search, $replace, $_GET['move']);
+
+    # like the rest of "if(isset($_GET['move'])){"
+    # Is the move-query well formed?
+    if(strlen($move) > 5 or strlen($move) < 4 ){
+        exit("ERROR: Your move-query should have 4 or 5 characters.");
+    }
+    $from = substr($move, 0, 2);
+    $to   = substr($move, 2, 2);
+    if(strlen($move) == 5){
+        $promotion = substr($move, 4, 1);
+    } else {
+        $promotion = '';
+    }
+    $from_y = $from % 10;
+    $from_x = ($from-$from_y)/10;
+    $to_y = $to % 10;
+    $to_x = ($to-$to_y)/10;
+    if (!(1 <= $from_x and $from_x <= 8 and 1 <= $from_y and $from_y <= 8)){
+        exit("ERROR: Your from-coordinates were wrong.");
+    } else {$from_index = getIndex($from_x, $from_y);}
+    if (!(1 <= $to_x and $to_x <= 8 and 1 <= $to_y and $to_y <= 8)){
+        exit("ERROR: Your to-coordinates were wrong.");
+    } else {$to_index = getIndex($to_x, $to_y);}
+    if ($from_index == $to_index){exit("ERROR: You have to move.");}
+
+    define('MOVE', $move);
+}
+
 if (defined('MOVE')) {
     # Is it your turn?
     if($whoseTurnIsItLanguage != $yourColor){exit("ERROR: It's not your turn");}
