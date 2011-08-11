@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 31, 2011 at 08:54 PM
+-- Generation Time: Aug 11, 2011 at 12:49 PM
 -- Server version: 5.1.49
 -- PHP Version: 5.3.3-1ubuntu9.5
 
@@ -76,22 +76,27 @@ CREATE TABLE IF NOT EXISTS `chess_currentGamesThreefoldRepetition` (
 CREATE TABLE IF NOT EXISTS `chess_languages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+  `used` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
 
 --
 -- Dumping data for table `chess_languages`
 --
 
-INSERT INTO `chess_languages` (`id`, `name`) VALUES
-(1, '0'),
-(2, '0'),
-(3, 'Python'),
-(4, 'C'),
-(5, 'C++'),
-(6, 'Java'),
-(7, 'PHP'),
-(8, 'Delphi');
+INSERT INTO `chess_languages` (`id`, `name`, `used`) VALUES
+(1, 'C', 0),
+(2, 'C#', 0),
+(3, 'C++', 0),
+(4, 'Delphi', 0),
+(5, 'Java', 0),
+(6, 'JavaScript', 0),
+(7, 'LISP', 0),
+(8, 'Perl', 0),
+(9, 'PHP', 0),
+(10, 'Python', 0),
+(11, 'Ruby', 0);
 
 -- --------------------------------------------------------
 
@@ -186,6 +191,7 @@ INSERT INTO `chess_players` (`id`, `uname`, `upass`, `currentChessSoftware`) VAL
 CREATE TABLE IF NOT EXISTS `chess_software` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `adminPlayerID` int(11) NOT NULL,
   `version` varchar(20) NOT NULL,
   `lastVersionID` int(11) NOT NULL COMMENT '0 if this is the first version',
   `changelog` text NOT NULL,
@@ -209,7 +215,7 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `playerID` int(11) NOT NULL,
   `softwareID` int(11) NOT NULL,
-  `task` varchar(255) NOT NULL COMMENT 'What did this person do? What was his/her job?',
+  `task` varchar(255) NOT NULL DEFAULT 'Admin' COMMENT 'What did this person do? What was his/her job?',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -229,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
   `softwareID` int(11) NOT NULL,
   `languageID` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
 -- Dumping data for table `chess_softwareLangages`
