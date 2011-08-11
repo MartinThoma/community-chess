@@ -19,7 +19,6 @@ mysql_set_charset('utf8');
 
 define("USER_ID", getUserID() );
 
-
 /******************************************************************************/
 /* functions
 *******************************************************************************/
@@ -44,6 +43,16 @@ function getUserID() {
         return false;
     }
     /* End of code which can be replaced by your code */
+}
+
+function getUserSoftwareID($UserID){
+    $c = "WHERE id='$UserID'";
+    $row = selectFromTable(array('currentChessSoftware'), 'chess_players', $c);
+    return $row['currentChessSoftware'];
+}
+
+function msg($text) {
+    return '<div class="infobox">'.$text.'</div>';
 }
 
 function selectFromTable($rows, $table, $condition, $limit = 1) {
@@ -72,12 +81,11 @@ function insertIntoTable($keyValuePairs, $table) {
     /* Begin of code which can be replaced by your code */
     $query = "INSERT INTO  $table (";
     $query.= implode(",", array_keys($keyValuePairs));
-    $query.= ")";
+    $query.= ") ";
     $query.= "VALUES (";
     $query.= "'".implode("','", array_values($keyValuePairs))."'";
     $query.= ");";
     mysql_query($query);
-
     return mysql_insert_id();
     /* End of code which can be replaced by your code */
 }
@@ -101,8 +109,7 @@ function updateDataInTable($table, $keyValue, $cond) {
     }
     # remove first ","
     $query.= substr($values, 2);
-    $query.= $cond;
-
+    $query.= " ".$cond;
     mysql_query($query);
 
     return 0;
