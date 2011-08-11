@@ -5,10 +5,10 @@
   * ~~Add [http://en.wikipedia.org/wiki/Fifty-move_rule Fifty-move rule]~~ (done: 2011-07-28)
   * ~~Add [http://en.wikipedia.org/wiki/Threefold_repetition Threefold repetition]~~ (done: 2011-07-29)
   * ~~Add [http://en.wikipedia.org/wiki/Perpetual_check Perpetual check]~~ (done: 2011-07-29 - it's a special case of threefold repetion or fifty-move rule)
-  * Add [http://de.wikipedia.org/wiki/Tote_Stellung Tote Stellung]
+  * ~~Add [http://de.wikipedia.org/wiki/Tote_Stellung Tote Stellung]~~ (done: 2011-07-29 - it's a special case of threefold repetion or fifty-move rule)
 
 = 2. Interfaces =
-  * Create an interface which allows players to specify the software they use.
+  * ~~Create an interface which allows players to specify the software they use.~~ (done: 2011-08-11)
   * Add an interface for starting turnaments
   * Add an interface for specifying medals
   * Add an interface for giving medals to a player
