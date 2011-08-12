@@ -1336,7 +1336,7 @@ if (defined('MOVE')) {
     # Everything is ok => move!
     $currentBoard = makeMove($from_index, $to_index, $currentBoard, MOVE);
     # Check for:
-        if ( !hasValidMoves($currentBoard, $opponentColor) ){ 
+        if ( !hasValidMoves($currentBoard, $opponentColor) ){
             if ( isPlayerCheck($currentBoard, $opponentColor) ){
                 if($yourColor == 'white'){$outcome = 0;}
                 else {$outcome = 1;}

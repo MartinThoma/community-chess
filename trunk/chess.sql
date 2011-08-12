@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 11, 2011 at 12:49 PM
+-- Generation Time: Aug 12, 2011 at 10:34 PM
 -- Server version: 5.1.49
 -- PHP Version: 5.3.3-1ubuntu9.5
 
@@ -21,6 +21,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tournamentID` int(11) NOT NULL DEFAULT '0' COMMENT 'If tournamentID = 0, its not a game of a tournament',
   `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
   `currentBoard` varchar(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
   `moveList` text NOT NULL,
@@ -143,6 +144,7 @@ CREATE TABLE IF NOT EXISTS `chess_medals` (
 
 CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tournamentID` int(11) NOT NULL DEFAULT '0',
   `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
   `moveList` text NOT NULL,
   `whitePlayerID` int(11) NOT NULL,
@@ -235,7 +237,7 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
   `softwareID` int(11) NOT NULL,
   `languageID` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Dumping data for table `chess_softwareLangages`
@@ -245,19 +247,23 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chess_turnamentGames`
+-- Table structure for table `chess_turnamentPlayers`
 --
 
-CREATE TABLE IF NOT EXISTS `chess_turnamentGames` (
+CREATE TABLE IF NOT EXISTS `chess_turnamentPlayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `turnamentID` int(11) NOT NULL,
-  `gameID` int(11) NOT NULL,
-  `status` varchar(10) NOT NULL COMMENT 'current or past game?',
-  PRIMARY KEY (`id`)
+  `playerID` int(11) NOT NULL,
+  `turnamentNumber` int(11) NOT NULL,
+  `joinedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `gamesWon` int(11) NOT NULL DEFAULT '0' COMMENT 'If gamesWon < gamesPlayed, the player can''t play any more games in the current turnament',
+  `gamesPlayed` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `turnamentID` (`turnamentID`,`playerID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Dumping data for table `chess_turnamentGames`
+-- Dumping data for table `chess_turnamentPlayers`
 --
 
 
@@ -270,6 +276,7 @@ CREATE TABLE IF NOT EXISTS `chess_turnamentGames` (
 CREATE TABLE IF NOT EXISTS `chess_turnaments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `password` varchar(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
   `description` text NOT NULL,
   `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `closingDate` datetime NOT NULL,
@@ -281,5 +288,4 @@ CREATE TABLE IF NOT EXISTS `chess_turnaments` (
 --
 -- Dumping data for table `chess_turnaments`
 --
-
 
