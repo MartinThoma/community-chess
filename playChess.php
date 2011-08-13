@@ -647,7 +647,7 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
     if (abs($from_x - $to_x) <= 1 and abs($from_y - $to_y) <= 1){
         # Everything is ok, standard king move
     } else if (abs($from_x - $to_x) == 2 and ($from_y - $to_y) == 0) {
-        # castling?
+        # The Player wants to do castling. Is this valid?
         if( ($yourColor == 'white' and $from_x ==  4) or
             ($yourColor == 'black' and $from_x == 60)    ){
             $rows  = array('whiteCastlingKingsidePossible', 
@@ -704,9 +704,16 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
                 }
             }
 
-            # Is player currently in chess?
-            if(isPlayerCheck($currentBoard, $yourColor)){
-                exit("ERROR: You may only use castling if you are not check.");
+            # Is player currently in check or will he move through check?
+            if($from_x < $to_x) {
+                for($i=0; $i <= ($to_x-$from_x); $i++) {
+                    $newBoard =
+                        getNewBoard($currentBoard, $from_index, $to_index + $i);
+                    if(isPlayerCheck($newBoard, $yourColor)){
+                        exit("ERROR: You may only use castling if you are not "
+                             ."in check or moving through check.");
+                    }
+                }
             }
         } else {
             exit("ERROR: Castling is only possible, if you didn't move your".
