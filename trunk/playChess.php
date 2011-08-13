@@ -5,7 +5,7 @@
  * */
 
 require ('wrapper.inc.php');
-if(USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+if(USER_ID === false){exit('Please <a href="login.wrapper.php">login</a>');}
 
 /******************************************************************************
  * helper functions                                                           *
@@ -1264,12 +1264,13 @@ if(isset($_GET['pgn'])){
 if(isset($_GET['iccfalpha'])){
     $search = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
     $replace= array(1,2,3,4,5,6,7,8);
-    $move = str_replace($search, $replace, $_GET['move']);
+    $move = str_replace($search, $replace, $_GET['iccfalpha']);
 
     # like the rest of "if(isset($_GET['move'])){"
     # Is the move-query well formed?
     if(strlen($move) > 5 or strlen($move) < 4 ){
-        exit("ERROR: Your move-query should have 4 or 5 characters.");
+        exit("ERROR: Your move-query should have 4 or 5 characters. ".
+             "Yours was:'$move' (".strlen($move)." characters).");
     }
     $from = substr($move, 0, 2);
     $to   = substr($move, 2, 2);
@@ -1547,8 +1548,7 @@ else {$youCheck = 'No';}
 if(isPlayerCheck($currentBoard, $opponentColor)){$opponentCheck = 'Yes';}
 else {$opponentCheck = 'No';}
 
-echo "Current Game Information:<br/>";
-echo "<pre>";
+echo "Current Game Information:<pre><br/>";
 echo substr ($currentBoard ,56, 8)."<br/>";
 echo substr ($currentBoard ,48, 8)."<br/>";
 echo substr ($currentBoard ,40, 8)."<br/>";
@@ -1557,7 +1557,7 @@ echo substr ($currentBoard ,24, 8)."<br/>";
 echo substr ($currentBoard ,16, 8)."<br/>";
 echo substr ($currentBoard , 8, 8)."<br/>";
 echo substr ($currentBoard , 0, 8)."<br/>";
-echo "</pre>";
+echo "</pre><br/>";
 echo "Next turn: ".$whoseTurnIsItLanguage."<br/>";
 echo "You are: ".$yourColor."<br/>";
 echo "You are check: $youCheck.<br/>";
