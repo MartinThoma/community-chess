@@ -7,3 +7,7 @@ According the the pages, all files are licenced "GFDL & BSD & GPL". So I hope
 it's not a problem if I use them for community-chess.
 
 If you created a better set, just let me know. I'll add it to community chess.
+
+
+A "b" was added to the filenames of the black pieces as Windows can't 
+distinguish b.png from B.png (FAT is case-insensitive).
