@@ -120,7 +120,7 @@ foreach($result as $row){
 </head>
 <body>
 
-<?
+<?php
 if (isset($_GET['getDetails'])){
     $id = intval($_GET['getDetails']);
     echo '<h1>Details of tournament</h1>';
@@ -177,7 +177,7 @@ if (isset($_GET['getDetails'])){
 
 <label for="closingDate">closingDate</label>
 <input type="text" id="closingDate" name="closingDate" value="
-<?
+<?php
 $time = mktime () + 7*24*60*60;
 echo date("Y-m-d H:i:s", $time);
 
@@ -199,7 +199,7 @@ echo date("Y-m-d H:i:s", $time);
     <th>Status</th>
     <th>action</th>
 </tr>
-<?
+<?php
 $rows  = array('id','name','password','description','initiationDate');
 $rows[]= 'closingDate';
 $rows[]= 'status';

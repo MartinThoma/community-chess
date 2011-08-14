@@ -237,20 +237,19 @@ function hasValidMoves($board, $color)
                 $knight_moves = array(-17, -15, -10, -6, 6, 10, 15, 17);
                 foreach($knight_moves as $add){
                     $to_index = $from_index + $add;
-                    if (0<=$to_index and $to_index <= 63) {
-                        $from_coord = getCoordinates($from_index);
-                        $to_coord   = getCoordinates($to_index);
-                        if ( (abs($from_coord[0] - $to_coord[0]) + 
-                             abs($from_coord[1] - $to_coord[1])    ) == 3){
-                            $targetPiece = getPieceByIndex($board,$to_index);
-                            if ($targetPiece == '0' or 
-                               isOpponentsPiece($targetPiece, $color)  ) {
-                                $newBoard = getNewBoard($board, $from_index, 
-                                                                     $to_index);
-                                if (!isPlayerCheck($newBoard, $color)){
-                                    return true;
-                                }
-                            }
+                    if (!(0<=$to_index and $to_index <= 63)) {
+                        continue;
+                    }
+                    $from_coord = getCoordinates($from_index);
+                    $to_coord   = getCoordinates($to_index);
+                    if ( (abs($from_coord[0] - $to_coord[0]) + 
+                         abs($from_coord[1] - $to_coord[1])    ) == 3){
+                        $targetPiece = getPieceByIndex($board,$to_index);
+                        if ($targetPiece == '0' or 
+                           isOpponentsPiece($targetPiece, $color)  ) {
+                            $newBoard = getNewBoard($board, $from_index, 
+                                                                 $to_index);
+                            if (!isPlayerCheck($newBoard, $color)){return true;}
                         }
                     }
                 }
@@ -354,23 +353,20 @@ function hasValidMoves($board, $color)
                 $kings_moves = array(-9,-8-7,-1,1,7,8,9);
                 foreach($kings_moves as $add){
                     $to_index = $from_index + $add;
-                    if (0 <= $to_index and $to_index <= 63){
-                        $from_coord = getCoordinates($from_index);
-                        $to_coord = getCoordinates($to_index);
-                        $tmp_x = $to_coord[0];
-                        $tmp_y = $to_coord[1];
-                        if (abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2){
-                            $piece = getPieceByIndex($board,
-                                                      getIndex($tmp_x, $tmp_y));
-                            if ($piece == '0' or 
-                                             isOpponentsPiece($piece, $color)) {
-                                $newBoard = getNewBoard($board, $from_index, 
-                                                                     $to_index);
-                                if (!isPlayerCheck($newBoard, $color)){
-                                    return true;
-                                }
-                            }
-                        }
+                    if (!(0 <= $to_index and $to_index <= 63)) {
+                        continue;
+                    }
+                    $from_coord = getCoordinates($from_index);
+                    $to_coord = getCoordinates($to_index);
+                    $tmp_x = $to_coord[0];
+                    $tmp_y = $to_coord[1];
+                    if (!(abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2)) {
+                        continue;
+                    }
+                    $piece = getPieceByIndex($board, getIndex($tmp_x, $tmp_y));
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
             }
@@ -439,20 +435,19 @@ function isPlayerCheck($newBoard, $yourColor)
     $knight_moves = array(-17, -15, -10, -6, 6, 10, 15, 17);
     foreach($knight_moves as $add){
         $knight_index = $king_index + $add;
-        if (0<= $knight_index and $knight_index <= 63) {
-            $knight_coord = getCoordinates($knight_index);
-            $tmp_x = $knight_coord[0];
-            $tmp_y = $knight_coord[1];
-            if (abs($king_x - $tmp_x) + abs($king_y - $tmp_y) == 3){
-                if (isPositionValid($tmp_x, $tmp_y)){
-                  $piece = getPieceByIndex($newBoard,getIndex($tmp_x, $tmp_y));
-                  if ($piece == 'n' and $yourColor == 'white'){
-                      return true;
-                  } else if ($piece == 'N' and $yourColor == 'black'){
-                      return true;
-                  }
-                }
+        if (!(0<= $knight_index and $knight_index <= 63)) {
+            continue;
+        }
+        $knight_coord = getCoordinates($knight_index);
+        $tmp_x = $knight_coord[0];
+        $tmp_y = $knight_coord[1];
+        if (abs($king_x - $tmp_x) + abs($king_y - $tmp_y) == 3){
+            if (!isPositionValid($tmp_x, $tmp_y)){
+                continue;
             }
+            $piece = getPieceByIndex($newBoard,getIndex($tmp_x, $tmp_y));
+            if ($piece == 'n' and $yourColor == 'white') {return true;}
+            else if ($piece == 'N' and $yourColor == 'black'){return true;}
         }
     }
     return false;
