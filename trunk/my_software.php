@@ -143,7 +143,7 @@ foreach($languages as $lang){
 <label for="version">Version</label>
 <input type="text" name="version" id="version" placeholder="0.1.0"/>
 
-<?
+<?php
 $cond  = "WHERE `playerID`=".USER_ID;
 $row = array('softwareID');
 $softwareIds = selectFromTable($row, "chess_softwareDeveloper", $cond, 10);
@@ -152,7 +152,7 @@ if (count($softwareIds) > 0) {
 <label for="lastVersionID">lastVersionID</label>
 <select name="lastVersionID" id="lastVersionID">
     <option value="0">New software</option>
-<? foreach($softwareIds as $id) {
+<?php foreach($softwareIds as $id) {
     $cond  = "WHERE `id` = ".$id['softwareID'];
     $rows  = array('name', 'version');
     $result= selectFromTable($rows, "chess_software", $cond);
@@ -161,7 +161,7 @@ if (count($softwareIds) > 0) {
 }
 ?>
 </select>
-<? } ?>
+<?php } ?>
 <label for="changelog">Changelog</label>
 <textarea name="changelog" id="changelog"></textarea>
 
@@ -181,7 +181,7 @@ if (count($softwareIds) > 0) {
 <th>add language</th>
 </tr>
 
-<? 
+<?php
 if ($currentSoftwareID == 0){echo '<tr class="current">';}
 else {echo '<tr>';}
 ?>   
@@ -193,7 +193,7 @@ else {echo '<tr>';}
 <td>English</td>
 <td>-</td>
 </tr>
-<? foreach($softwareIds as $id) {
+<?php foreach($softwareIds as $id) {
     $id = $id['softwareID'];
     $cond  = "WHERE `id` = ".$id['softwareID'];
     $rows  = array('name', 'version');
@@ -228,11 +228,11 @@ else {echo '<tr>';}
     <form method="get" action="my_software.php">
         <input type="text" name="addTeammate"/>
         <input type="text" name="task" value="" placeholder="developer">
-        <input type="hidden" name="softwareID" value="<?echo $id;?>">
+        <input type="hidden" name="softwareID" value="<?php echo $id;?>">
         <input type="submit" value="add"/>
     </form>
     </td>
-    <?
+    <?php
     echo '<td>';
     $cond = "WHERE `softwareID`=$id";
     $results=selectFromTable(array("languageID"), "chess_softwareLangages", $cond, 10);
@@ -250,11 +250,11 @@ else {echo '<tr>';}
     <td>
     <form method="get" action="my_software.php">
         <input type="text" name="addLanguage"/>
-        <input type="hidden" name="softwareID" value="<?echo $id;?>">
+        <input type="hidden" name="softwareID" value="<?php echo $id;?>">
         <input type="submit" value="add"/>
     </form>
     </td>
-    <?
+    <?php
     echo '</tr>';
 }
 ?>
