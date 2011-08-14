@@ -232,7 +232,9 @@ function hasValidMoves($board, $color){
                         }
                     }
                 }
-            } else if(strtoupper($piece) == 'B' or strtoupper($piece) == 'Q'){
+            } 
+
+            if(strtoupper($piece) == 'B' or strtoupper($piece) == 'Q'){
                 # Which moves could a bishop possibly make?
                 # (Queen can do the same)
                 $dia = getAllDiagonalFields($board, $coord[0], $coord[1]);
@@ -279,7 +281,9 @@ function hasValidMoves($board, $color){
                         if(!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
-            } else if(strtoupper($piece) == 'R' or strtoupper($piece) == 'Q') {
+            }
+
+            if(strtoupper($piece) == 'R' or strtoupper($piece) == 'Q') {
                 # Which moves could a rook possibly make? 
                 # (Queen can do the same)
                 $straight = getAllStraightFields($board, $coord[0], $coord[1]);
@@ -325,84 +329,26 @@ function hasValidMoves($board, $color){
                 }
             } else if(strtoupper($piece) == 'K') {
                 # Which moves could a king possibly make?
-                $tmp_x = $coord[0]+0;
-                $tmp_y = $coord[1]+1;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]+1;
-                $tmp_y = $coord[1]+1;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]+1;
-                $tmp_y = $coord[1]+0;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]+1;
-                $tmp_y = $coord[1]-1;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]+0;
-                $tmp_y = $coord[1]-1;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]-1;
-                $tmp_y = $coord[1]-1;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]-1;
-                $tmp_y = $coord[1]-0;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
-                    }
-                }
-                $tmp_x = $coord[0]-1;
-                $tmp_y = $coord[1]+1;
-                if(isPositionValid($tmp_x, $tmp_y)){
-                    $to_index = getIndex($tmp_x, $tmp_y);
-                    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard = getNewBoard($board, $from_index, $to_index);
-                        if (!isPlayerCheck($newBoard, $color)){return true;}
+                $kings_moves = array(-9,-8-7,-1,1,7,8,9);
+                foreach($kings_moves as $add){
+                    $to_index = $from_index + $add;
+                    if(0 <= $to_index and $to_index <= 63){
+                        $from_coord = getCoordinates($from_index);
+                        $to_coord = getCoordinates($to_index);
+                        $tmp_x = $to_coord[0];
+                        $tmp_y = $to_coord[1];
+                        if(abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2){
+                            $piece = getPieceByIndex($board,
+                                                      getIndex($tmp_x, $tmp_y));
+                            if($piece == '0' or 
+                                             isOpponentsPiece($piece, $color)) {
+                                $newBoard = getNewBoard($board, $from_index, 
+                                                                     $to_index);
+                                if (!isPlayerCheck($newBoard, $color)){
+                                    return true;
+                                }
+                            }
+                        }
                     }
                 }
             }
