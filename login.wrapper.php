@@ -5,14 +5,15 @@
  * Other files in this project link to this file, so you should replace it with 
  * a redirection
  * */
-session_start();
+if(!isset($_SESSION)) session_start(); 
+
 require ('wrapper.inc.php');
 
 function login($uname, $upass)
 {
     $condition = 'WHERE uname="'.mysql_real_escape_string($uname).'" AND upass="'.md5($upass).'"';
     $row = selectFromTable(array('id'), 'chess_players', $condition);
-    if ($id !== false){
+    if ($row !== false){
         $_SESSION['UserId']   = $row['id'];
         $_SESSION['Password'] = md5($upass);
         header('Location: index.php');
