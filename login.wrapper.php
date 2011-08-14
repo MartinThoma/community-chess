@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * let the user login. The whole file can get replaced by your login routine.
@@ -8,7 +8,8 @@
 session_start();
 require ('wrapper.inc.php');
 
-function login($uname, $upass) {
+function login($uname, $upass)
+{
     $condition = 'WHERE uname="'.mysql_real_escape_string($uname).'" AND upass="'.md5($upass).'"';
     $row = selectFromTable(array('id'), 'chess_players', $condition);
     if ($id !== false){
@@ -18,7 +19,7 @@ function login($uname, $upass) {
     }
 }
 
-if(isset($_POST['username'])){
+if (isset($_POST['username'])){
     $uname = $_POST['username'];
     $upass = $_POST['password'];
     login($uname, $upass);

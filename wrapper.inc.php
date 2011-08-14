@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * The following functions could / should be replaced by yours.
@@ -22,7 +22,8 @@ define("USER_ID", getUserID() );
 /******************************************************************************/
 /* functions
 *******************************************************************************/
-function getUserID() {
+function getUserID()
+{
     /* Return the UserID if the User is logged in.
                          else return false */
 
@@ -37,7 +38,7 @@ function getUserID() {
     $condition = "WHERE id='$uid' AND upass='$upass'";
     $row = selectFromTable(array('id'), 'chess_players', $condition);
 
-    if($row['id'] === $_SESSION['UserId'] AND $row['id'] > 0){
+    if ($row['id'] === $_SESSION['UserId'] AND $row['id'] > 0){
         return $row['id'];
     } else {
         return false;
@@ -45,17 +46,20 @@ function getUserID() {
     /* End of code which can be replaced by your code */
 }
 
-function getUserSoftwareID($UserID){
+function getUserSoftwareID($UserID)
+{
     $c = "WHERE id='$UserID'";
     $row = selectFromTable(array('currentChessSoftware'), 'chess_players', $c);
     return $row['currentChessSoftware'];
 }
 
-function msg($text) {
+function msg($text)
+{
     return '<div class="infobox">'.$text.'</div>';
 }
 
-function selectFromTable($rows, $table, $condition, $limit = 1) {
+function selectFromTable($rows, $table, $condition, $limit = 1)
+{
     /* note that row is an array of all rows. I never use "*"
        This function should return the associative array 
        Its always only the first row 
@@ -64,7 +68,7 @@ function selectFromTable($rows, $table, $condition, $limit = 1) {
     $row    = implode(",", $rows);
     $query  = "SELECT $row FROM `$table` $condition LIMIT $limit"; 
     $result = mysql_query($query);
-    if($limit == 1){
+    if ($limit == 1){
         $row = mysql_fetch_assoc($result);
     } else {
         $row = array();
@@ -76,7 +80,8 @@ function selectFromTable($rows, $table, $condition, $limit = 1) {
     /* End of code which can be replaced by your code */
 }
 
-function insertIntoTable($keyValuePairs, $table) {
+function insertIntoTable($keyValuePairs, $table)
+{
     /* Returns ID of inserted item */
     /* Begin of code which can be replaced by your code */
     $query = "INSERT INTO  $table (";
@@ -90,7 +95,8 @@ function insertIntoTable($keyValuePairs, $table) {
     /* End of code which can be replaced by your code */
 }
 
-function updateDataInTable($table, $keyValue, $cond) {
+function updateDataInTable($table, $keyValue, $cond)
+{
     /* $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
                 VALUES ('value1', 'value2'); */
     /* Begin of code which can be replaced by your code */
@@ -98,7 +104,7 @@ function updateDataInTable($table, $keyValue, $cond) {
 
     $values= "";
     foreach($keyValue as $key=>$value){
-        if($value == 'CURRENT_TIMESTAMP' or 
+        if ($value == 'CURRENT_TIMESTAMP' or 
            substr($value, 0, 6) == 'CONCAT' or
            substr($value, 0, 1) == '(' or
            substr($value, 0, 1) == '`'){
@@ -107,7 +113,7 @@ function updateDataInTable($table, $keyValue, $cond) {
             $values.= ", `$key` = '$value'";
         }
     }
-    # remove first ","
+    // remove first ","
     $query.= substr($values, 2);
     $query.= " ".$cond;
     mysql_query($query);
@@ -116,7 +122,8 @@ function updateDataInTable($table, $keyValue, $cond) {
     /* End of code which can be replaced by your code */
 }
 
-function deleteFromTable($table, $id) {
+function deleteFromTable($table, $id)
+{
     /* Begin of code which can be replaced by your code */
     $table = mysql_real_escape_string($table);
     $id = intval($id);

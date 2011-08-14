@@ -1,21 +1,21 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * get a list of links to players you can challenge
  * */
 
 require ('wrapper.inc.php');
-if(USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
 
-if(isset($_GET['playerID'])){
+if (isset($_GET['playerID'])){
     $id    = intval($_GET['playerID']);
     $cond  = 'WHERE `id` = '.$id.' AND `id` != '.USER_ID;
     $row = selectFromTable(array('uname'), 'chess_players', $cond);
     $challengedUser = $row['uname'];
-    if($row !== false){
+    if ($row !== false){
         $cond  = "WHERE `whitePlayerID` = ".USER_ID." AND `blackPlayerID`=$id";
         $row = selectFromTable(array('id'), 'chess_currentGames', $cond);
-        if($row !== false){
+        if ($row !== false){
             echo "You've already challenged the player '".$challengedUser."'. ";
             echo "The current game has the id '".$row['id']."'.";
         } else {
@@ -23,7 +23,7 @@ if(isset($_GET['playerID'])){
             $rows  = array('id', 'currentChessSoftware');  
             $result = selectFromTable($rows, "chess_players", $condition, 2);
 
-            if($result[0]['id'] == USER_ID){
+            if ($result[0]['id'] == USER_ID){
                 $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
                 $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
             } else {

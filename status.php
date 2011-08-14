@@ -1,11 +1,11 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * running games, who is white/black
  * */
 
 require ('wrapper.inc.php');
-if(USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
 
 $condition = "WHERE `whitePlayerID`=".USER_ID." OR `blackPlayerID`=".USER_ID;
 

@@ -1,12 +1,12 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * specify the chess software
  * */
 require ('wrapper.inc.php');
-if(USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
 
-if(isset($_POST['tournamentName'])){
+if (isset($_POST['tournamentName'])){
     $tournamentName = mysql_real_escape_string($_POST['tournamentName']);
     $description    = mysql_real_escape_string($_POST['description']);
     $password       = md5($_POST['password']);
@@ -18,37 +18,37 @@ if(isset($_POST['tournamentName'])){
     insertIntoTable($keyValue, "chess_turnaments");
 }
 
-if(isset($_GET['challengePlayerID'])){
+if (isset($_GET['challengePlayerID'])){
     $id = intval($_GET['challengePlayerID']);
     $tournamentID = intval($_GET['tournamentID']);
 
     $cond  = 'WHERE `id` = '.$id.' AND `id` != '.USER_ID;
     $row = selectFromTable(array('uname'), 'chess_players', $cond);
     $challengedUser = $row['uname'];
-    if($row !== false){
+    if ($row !== false){
         $cond = "WHERE (`whitePlayerID` = ".USER_ID." AND `blackPlayerID`=$id)";
         $cond.= " OR (`whitePlayerID` = $id AND `blackPlayerID`=".USER_ID.") ";
         $cond.= "AND tournamentID=$tournamentID";
         $row = selectFromTable(array('id'), 'chess_currentGames', $cond);
-        if($row !== false){
+        if ($row !== false){
             echo "You've already challenged the player '".$challengedUser."'. ";
             echo "The current game has the id '".$row['id']."'.";
         } else {
-            #Do both players participate in tournament?
+            // Do both players participate in tournament?
             $rows = array('playerID', 'gamesWon', 'gamesPlayed');
             $cond = "WHERE turnamentID=$tournamentID AND (playerID=".USER_ID;
             $cond.= " OR playerID=".$id.")";
             $results=selectFromTable($rows, 'chess_turnamentPlayers', $cond, 2);
-            if(count($results)<2){
+            if (count($results)<2){
                 exit("Either you or your opponent is not part of the tournament.");
             }
-            #Have both players played the same number of games?
-            if($results[0]['gamesPlayed'] != $results[1]['gamesPlayed']){
+            // Have both players played the same number of games?
+            if ($results[0]['gamesPlayed'] != $results[1]['gamesPlayed']){
                 exit("You haven't won the same number of mathes as ".
                      "your opponent.");
             }
-            #Are you both still in the tournament (no lost games)?
-            if($results[0]['gamesWon'] != $results[0]['gamesPlayed']){
+            // Are you both still in the tournament (no lost games)?
+            if ($results[0]['gamesWon'] != $results[0]['gamesPlayed']){
                 exit("You have lost at least one game.");
             }
 
@@ -58,7 +58,7 @@ if(isset($_GET['challengePlayerID'])){
             $rows  = array('id', 'currentChessSoftware');  
             $result = selectFromTable($rows, "chess_players", $condition, 2);
 
-            if($result[0]['id'] == USER_ID){
+            if ($result[0]['id'] == USER_ID){
                 $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
                 $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
             } else {
@@ -83,23 +83,23 @@ if(isset($_GET['challengePlayerID'])){
 
 }
 
-if(isset($_GET['enterID'])){
+if (isset($_GET['enterID'])){
     $tournamentID = intval($_GET['enterID']);
     $pass = md5($_GET['password']);
     $cond = "WHERE id=$tournamentID AND password='".$pass."' AND closingDate > NOW()";
     $result = selectFromTable(array('id'), 'chess_turnaments', $cond);
-    if($result['id'] != $tournamentID){exit("Wrong password or tournament is already closed.");}
+    if ($result['id'] != $tournamentID){exit("Wrong password or tournament is already closed.");}
 
     $keyValue = array('turnamentID'=>$tournamentID, 'playerID'=>USER_ID);
     $id = insertIntoTable($keyValue, "chess_turnamentPlayers");
-    if($id > 0){
+    if ($id > 0){
         echo msg("You joined the tournament with the ID $tournamentID");
     } else{
         echo msg("I couldn't add you to the tournament. Do you already participate?");
     }
 }
 
-if(isset($_GET['deleteParticipation'])){
+if (isset($_GET['deleteParticipation'])){
     $tournamentID = intval($_GET['deleteParticipation']);
     $cond = "WHERE turnamentID=$tournamentID AND playerID=".USER_ID;
     $result = selectFromTable(array('id'), 'chess_turnamentPlayers', $cond);
@@ -146,7 +146,7 @@ if (isset($_GET['getDetails'])){
         echo '<th>'.$result['joinedDate'].'</th>';
         echo '<th>'.$result['gamesWon'].' / '.$result['gamesPlayed'].'</th>';
         echo '<th>';
-        if($result['playerID'] != USER_ID){
+        if ($result['playerID'] != USER_ID){
             echo '<a href="tournaments.php?challengePlayerID=';
             echo $result['playerID'].'&tournamentID='.$id.'">challenge</a>';
         } else {
@@ -206,14 +206,14 @@ $rows[]= 'status';
 $cond  = "ORDER BY `initiationDate` DESC";
 $results = selectFromTable($rows, 'chess_turnaments', $cond, 100);
 foreach($results as $result){
-    if(in_array($result['id'], $myParticipations)){
+    if (in_array($result['id'], $myParticipations)){
         echo '<tr class="current">';
     } else {
         echo '<tr>';
     }
     echo "<td>".$result['name']."</td>";
     echo "<td>";
-    if($result['password'] == "d41d8cd98f00b204e9800998ecf8427e"){
+    if ($result['password'] == "d41d8cd98f00b204e9800998ecf8427e"){
         echo "No";
     } else {
         echo "Yes";
@@ -224,11 +224,11 @@ foreach($results as $result){
     echo "<td>".$result['closingDate']."</td>";
     echo "<td>".$result['status']."</td>";
     echo '<td>';
-    if($result['status'] == 'openForInvitations'){
-        if(in_array($result['id'], $myParticipations)){
+    if ($result['status'] == 'openForInvitations'){
+        if (in_array($result['id'], $myParticipations)){
             echo '<a href="tournaments.php?deleteParticipation='.$result['id'].'">delete Participation</a>';
         } else {
-            if($result['password'] == "d41d8cd98f00b204e9800998ecf8427e"){
+            if ($result['password'] == "d41d8cd98f00b204e9800998ecf8427e"){
                 echo '<a href="tournaments.php?enterID='.$result['id'].'">participate</a>';
             } else {
                 echo '<form method="get" action="tournaments.php">';

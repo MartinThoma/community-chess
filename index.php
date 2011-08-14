@@ -1,11 +1,11 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * */
 
 require ('wrapper.inc.php');
 
-if(USER_ID === false){echo 'Please <a href="login.wrapper.php">login</a>.';}
+if (USER_ID === false){echo 'Please <a href="login.wrapper.php">login</a>.';}
 else {
     echo 'Logged in with USER_ID '.USER_ID.'.<br/>';
 ?>
@@ -22,7 +22,7 @@ Navigation:<br/>
     <li><a href="tournaments.php">tournaments.php</a>: create tournaments or
         participate in a tournament</li>
 </ul>
-<?
+<?php
 }
 
 ?>
