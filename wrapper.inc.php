@@ -28,7 +28,6 @@ function getUserID() {
 
     /* Begin of code which can be replaced by your code */
     if (!isset($_SESSION['UserId']) OR !isset($_SESSION['Password'])) {
-        echo $_SESSION['UserId'];
         return false;
     };
 
