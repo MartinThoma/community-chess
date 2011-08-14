@@ -1,12 +1,15 @@
 <?php
 /**
- * @category CategoryName
+ * play a standard chess game
+ *
+ * PHP Version 5
+ *
+ * @category Web_Services
  * @package  Community-chess
  * @author   Martin Thoma <info@martin-thoma.de>
  * @license  http://www.opensource.org/licenses/mit-license.php  MIT License
  * @version  SVN: <svn_id>
  * @link     http://code.google.com/p/community-chess/
- * play a standard chess game
  */
 
 require 'wrapper.inc.php';
@@ -335,40 +338,40 @@ function hasValidMoves($board, $color)
                     $y        = $coord[1] + $key + 1;
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
 
                 // diagonal right down
                 foreach ($dia[1] as $key=>$piece) {
-                    $x = $coord[0] + $key + 1;
-                    $y = $coord[1] - $key - 1;
+                    $x        = $coord[0] + $key + 1;
+                    $y        = $coord[1] - $key - 1;
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
 
                 // diagonal left up
                 foreach ($dia[2] as $key=>$piece) {
-                    $x = $coord[0] - $key - 1;
-                    $y = $coord[1] + $key + 1;
+                    $x        = $coord[0] - $key - 1;
+                    $y        = $coord[1] + $key + 1;
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
 
                 // diagonal left down
                 foreach ($dia[3] as $key=>$piece) {
-                    $x = $coord[0] - $key - 1;
-                    $y = $coord[1] - $key - 1;
+                    $x        = $coord[0] - $key - 1;
+                    $y        = $coord[1] - $key - 1;
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
@@ -380,41 +383,41 @@ function hasValidMoves($board, $color)
                 $straight = getAllStraightFields($board, $coord[0], $coord[1]);
                 // top
                 foreach ($straight[0] as $key=>$piece) {
-                    $x = $coord[0];
-                    $y = $coord[1] + $key + 1;
+                    $x        = $coord[0];
+                    $y        = $coord[1] + $key + 1;
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
                 // right
                 foreach ($straight[1] as $key=>$piece) {
-                    $x = $coord[0] + $key + 1;
-                    $y = $coord[1];
+                    $x        = $coord[0] + $key + 1;
+                    $y        = $coord[1];
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
                 // down
                 foreach ($straight[2] as $key=>$piece) {
-                    $x = $coord[0];
-                    $y = $coord[1] - $key - 1;
+                    $x        = $coord[0];
+                    $y        = $coord[1] - $key - 1;
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if(!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
                 // left
                 foreach ($straight[3] as $key=>$piece) {
-                    $x = $coord[0] - $key - 1;
-                    $y = $coord[1];
+                    $x        = $coord[0] - $key - 1;
+                    $y        = $coord[1];
                     $to_index = getIndex($x, $y);
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {
-                        $newBoard=getNewBoard($board, $from_index, $to_index);
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)) return true;
                     }
                 }
@@ -425,9 +428,9 @@ function hasValidMoves($board, $color)
                     $to_index = $from_index + $add;
                     if (!(0 <= $to_index and $to_index <= 63)) continue;
                     $from_coord = getCoordinates($from_index);
-                    $to_coord = getCoordinates($to_index);
-                    $tmp_x = $to_coord[0];
-                    $tmp_y = $to_coord[1];
+                    $to_coord   = getCoordinates($to_index);
+                    $tmp_x      = $to_coord[0];
+                    $tmp_y      = $to_coord[1];
                     if (!(abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2))
                         continue;
                     $piece = getPieceByIndex($board, getIndex($tmp_x, $tmp_y));
@@ -594,10 +597,12 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
                            'blackCastlingQueensidePossible');
             $cond   = 'WHERE `id` = '.CURRENT_GAME_ID;
             $result = selectFromTable($rows, 'chess_currentGames', $cond);
-            $c1=($to_x == 2) and ($result['whiteCastlingQueensidePossible']==0);
-            $c2=($to_x == 6) and ($result['whiteCastlingKingsidePossible'] ==0);
-            $c3=($to_x ==58) and ($result['blackCastlingQueensidePossible']==0);
-            $c4=($to_x ==62) and ($result['blackCastlingKingsidePossible'] ==0);
+
+            $c1 = ($to_x == 2) and ($result['whiteCastlingQueensidePossible']==0);
+            $c2 = ($to_x == 6) and ($result['whiteCastlingKingsidePossible'] ==0);
+            $c3 = ($to_x ==58) and ($result['blackCastlingQueensidePossible']==0);
+            $c4 = ($to_x ==62) and ($result['blackCastlingKingsidePossible'] ==0);
+
             if ( ($yourColor == 'white' and ($c1 or $c2)) or
                 ($yourColor == 'black' and ($c3 or $c4))     ) {
                 exit('ERROR: You\'ve already moved your King or your rook');
@@ -813,16 +818,16 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
         }
     } else if (abs($from_x-$to_x) == 1 and abs($from_y-$to_y) == 1) {
         // pawns capturing move
-        $index = getIndex($to_x, $to_y);
+        $index        = getIndex($to_x, $to_y);
         $piece_target = getPieceByIndex($currentBoard, $index);
 
         // For en passant:
         $moveArray = explode("\n", trim($moveList));
-        $lastMove = end($moveArray);
-        $lastFromX= substr($lastMove, 0, 1);
-        $lastFromY= substr($lastMove, 1, 1);
-        $lastToX  = substr($lastMove, 2, 1);
-        $lastToY  = substr($lastMove, 3, 1);
+        $lastMove  = end($moveArray);
+        $lastFromX = substr($lastMove, 0, 1);
+        $lastFromY = substr($lastMove, 1, 1);
+        $lastToX   = substr($lastMove, 2, 1);
+        $lastToY   = substr($lastMove, 3, 1);
 
 
         if ($yourColor == 'white') {
@@ -981,11 +986,11 @@ function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
  */
 function makeMove($from_index, $to_index, $currentBoard, $move, $color) 
 {
-    $piece        = getPieceByIndex($currentBoard, $from_index);
-    $capturedPiece= getPieceByIndex($currentBoard, $to_index);
-    $to_coord     = getCoordinates($to_index);
-    $from_coord   = getCoordinates($from_index);
-    $cond         = 'WHERE  `chess_currentGames`.`id` ='.CURRENT_GAME_ID;
+    $piece         = getPieceByIndex($currentBoard, $from_index);
+    $capturedPiece = getPieceByIndex($currentBoard, $to_index);
+    $to_coord      = getCoordinates($to_index);
+    $from_coord    = getCoordinates($from_index);
+    $cond          = 'WHERE  `chess_currentGames`.`id` ='.CURRENT_GAME_ID;
 
     if ($piece == 'p' or $piece == 'P') {
         $pawnMoved = true;
@@ -1032,37 +1037,33 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
                                           .substr($currentBoard, $to_index+1);
             }
         }
-        $keyValue = array();
-        $keyValue['currentBoard'] = $currentBoard;
-        $keyValue['moveList']     = "CONCAT(`moveList`,'$move\n')";
-        $keyValue['whoseTurnIsIt']= '((`whoseTurnIsIt` + 1)%2)';
-        $keyValue['lastMove']     = 'CURRENT_TIMESTAMP';
+        $keyValue                  = array();
+        $keyValue['currentBoard']  = $currentBoard;
+        $keyValue['moveList']      = "CONCAT(`moveList`,'$move\n')";
+        $keyValue['whoseTurnIsIt'] = '((`whoseTurnIsIt` + 1)%2)';
+        $keyValue['lastMove']      = 'CURRENT_TIMESTAMP';
         updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
 
     // Is this piece relevant for castling?
     // White - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 7)) {
-        $keyValue = array();
-        $keyValue['whiteCastlingKingsidePossible'] = 0;
+        $keyValue = array('whiteCastlingKingsidePossible' => 0);
         updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
     // White - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 0)) {
-        $keyValue = array();
-        $keyValue['whiteCastlingQueensidePossible'] = 0;
+        $keyValue = array('whiteCastlingQueensidePossible' => 0);
         updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
     // Black - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 63)) {
-        $keyValue = array();
-        $keyValue['blackCastlingKingsidePossible'] = 0;
+        $keyValue = array('blackCastlingKingsidePossible' => 0);
         updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
     // Black - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 56)) {
-        $keyValue = array();
-        $keyValue['blackCastlingQueensidePossible'] = 0;
+        $keyValue = array('blackCastlingQueensidePossible' => 0);
         updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
 
@@ -1080,7 +1081,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
             exit('ERROR: You may only promote when your pawn reaches the '.
                         'first line of the opponent.');
         }
-        $move = substr($move, 0, 4).$promotion;
+        $move  = substr($move, 0, 4).$promotion;
         $piece = $promotion;
     }
     if ( ($piece == 'p' and $to_coord[1] == 1 and $promotion == '') or
@@ -1090,14 +1091,14 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
     }
 
     /* Now update the database with move */
-    $currentBoard = substr($currentBoard, 0, $from_index).'0'
+    $currentBoard              = substr($currentBoard, 0, $from_index).'0'
                                           .substr($currentBoard, $from_index+1);
-    $currentBoard = substr($currentBoard, 0, $to_index).$piece
+    $currentBoard              = substr($currentBoard, 0, $to_index).$piece
                                           .substr($currentBoard, $to_index+1);
-    $keyValue['currentBoard'] = $currentBoard;
-    $keyValue['moveList']     = "CONCAT(`moveList`,'$move\n')";
-    $keyValue['whoseTurnIsIt']= '((`whoseTurnIsIt` + 1)%2)';
-    $keyValue['lastMove']     = 'CURRENT_TIMESTAMP';
+    $keyValue['currentBoard']  = $currentBoard;
+    $keyValue['moveList']      = "CONCAT(`moveList`,'$move\n')";
+    $keyValue['whoseTurnIsIt'] = '((`whoseTurnIsIt` + 1)%2)';
+    $keyValue['lastMove']      = 'CURRENT_TIMESTAMP';
 
     if ($pawnMoved == false and $captureMade == false) {    
         $keyValue['noCaptureAndPawnMoves'] = '`noCaptureAndPawnMoves` + 1 ';
@@ -1109,11 +1110,11 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
 
     /* Get all data for the threefold repetition table*/
     /* Castling? */
-    $rows  = array('whiteCastlingKingsidePossible',
-                   'whiteCastlingQueensidePossible',
-                   'blackCastlingKingsidePossible',
-                   'blackCastlingQueensidePossible');
-    $result= selectFromTable($rows, 'chess_currentGames', $cond);
+    $rows   = array('whiteCastlingKingsidePossible',
+                    'whiteCastlingQueensidePossible',
+                    'blackCastlingKingsidePossible',
+                    'blackCastlingQueensidePossible');
+    $result = selectFromTable($rows, 'chess_currentGames', $cond);
     /* Is en passant possible? */
     /* was last move a pawn-2move? */
     if ($pawnMoved and abs($from_coord[1]-$to_coord[1]) == 2) {
@@ -1126,24 +1127,25 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
     if ($to_coord[0] - 1 >= 1) {
         $indexLeft = getIndex($to_coord[0]-1, $to_coord[1]);
         $pieceLeft = getPieceByIndex($currentBoard, $indexLeft);
+
         if ($pieceLeft == 'p' and $color == 'white') $isOpponentNext = true;
         if ($pieceLeft == 'P' and $color == 'black') $isOpponentNext = true;
     }
     if ($to_coord[0] + 1 <= 8) {
-        $indexRight= getIndex($to_coord[0]+1, $to_coord[1]);
-        $pieceRight= getPieceByIndex($currentBoard, $indexLeft);
+        $indexRight = getIndex($to_coord[0]+1, $to_coord[1]);
+        $pieceRight = getPieceByIndex($currentBoard, $indexLeft);
+
         if ($pieceRight== 'p' and $color == 'white') $isOpponentNext = true;
         if ($pieceRight== 'P' and $color == 'black') $isOpponentNext = true;
     }
-    if ($isOpponentNext and $wasPawn2move) {
-        $enPassant = '1';
-    } else {
-        $enPassant = '0';
-    }
+
+    if ($isOpponentNext and $wasPawn2move) $enPassant = '1';
+    else                                   $enPassant = '0';
+
     /* Insert the new situation into chess_currentGamesThreefoldRepetition */
-    $keyValuePairs = array();
-    $keyValuePairs['gameID'] = CURRENT_GAME_ID;
-    $keyValuePairs['board']  = $currentBoard;
+    $keyValuePairs                                   = array();
+    $keyValuePairs['gameID']                         = CURRENT_GAME_ID;
+    $keyValuePairs['board']                          = $currentBoard;
     $keyValuePairs['whiteCastlingKingsidePossible']  = 
                                        $result['whiteCastlingKingsidePossible'];
     $keyValuePairs['whiteCastlingQueensidePossible'] = 
@@ -1152,7 +1154,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
                                        $result['blackCastlingKingsidePossible'];
     $keyValuePairs['blackCastlingQueensidePossible'] = 
                                       $result['blackCastlingQueensidePossible'];
-    $keyValuePairs['enPassantPossible'] = $enPassant;
+    $keyValuePairs['enPassantPossible']              = $enPassant;
     insertIntoTable($keyValuePairs, 'chess_currentGamesThreefoldRepetition');
 
     return $currentBoard;
@@ -1162,29 +1164,29 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color)
  * Get CURRENT_GAME_ID and some game-relevant variables                       *  
  ******************************************************************************/
 if (isset($_GET['gameID'])) {
-    $gameID= intval($_GET['gameID']);
-    $row   = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
+    $gameID = intval($_GET['gameID']);
+    $row    = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
                    'blackPlayerID', 'moveList', 'noCaptureAndPawnMoves', 'id');
-    $cond  = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
-    $cond .= USER_ID.') AND `id` = '.$gameID;
+    $cond   = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
+    $cond  .= USER_ID.') AND `id` = '.$gameID;
     $result = selectFromTable($row, 'chess_currentGames', $cond);
 
     if ($result !== false) {
-        $currentBoard  = $result['currentBoard'];
-        $whoseTurnIsIt = $result['whoseTurnIsIt'];
-        $moveList      = $result['moveList'];
+        $currentBoard          = $result['currentBoard'];
+        $whoseTurnIsIt         = $result['whoseTurnIsIt'];
+        $moveList              = $result['moveList'];
         $noCaptureAndPawnMoves = $result['noCaptureAndPawnMoves'];
-        $gameID        = $result['id'];
+        $gameID                = $result['id'];
         if ($whoseTurnIsIt == 0) {
             $whoseTurnIsItLanguage = 'white';
         } else {
             $whoseTurnIsItLanguage = 'black';
         }
         if ($result['whitePlayerID'] == USER_ID) {
-            $yourColor = 'white';
+            $yourColor     = 'white';
             $opponentColor = 'black';
         } else {
-            $yourColor = 'black';
+            $yourColor     = 'black';
             $opponentColor = 'white';
         }
         define('CURRENT_GAME_ID', $gameID);
@@ -1206,17 +1208,17 @@ if (isset($_GET['move'])) {
     if (strlen($move) > 5 or strlen($move) < 4 ) {
         exit(ERR_MOVE_QUERY_LENGTH);
     }
+
     $from = intval(substr($move, 0, 2));
     $to   = intval(substr($move, 2, 2));
-    if (strlen($move) == 5) {
-        $promotion = substr($move, 4, 1);
-    } else {
-        $promotion = '';
-    }
+
+    if (strlen($move) == 5) $promotion = substr($move, 4, 1);
+    else                    $promotion = '';
+
     $from_y = $from % 10;
     $from_x = ($from-$from_y)/10;
-    $to_y = $to % 10;
-    $to_x = ($to-$to_y)/10;
+    $to_y   = $to % 10;
+    $to_x   = ($to-$to_y)/10;
     if (!(1 <= $from_x and $from_x <= 8 and 1 <= $from_y and $from_y <= 8)) {
         exit('ERROR: Your from-coordinates were wrong.');
     } else {
@@ -1240,9 +1242,9 @@ if (isset($_GET['pgn'])) {
 }
 
 if (isset($_GET['iccfalpha'])) {
-    $search = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
-    $replace= array(1,2,3,4,5,6,7,8);
-    $move = str_replace($search, $replace, $_GET['iccfalpha']);
+    $search  = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
+    $replace = array(1,2,3,4,5,6,7,8);
+    $move    = str_replace($search, $replace, $_GET['iccfalpha']);
 
     // like the rest of "if (isset($_GET['move'])) {"
     // Is the move-query well formed?
@@ -1260,8 +1262,8 @@ if (isset($_GET['iccfalpha'])) {
 
     $from_y = $from % 10;
     $from_x = ($from-$from_y)/10;
-    $to_y = $to % 10;
-    $to_x = ($to-$to_y)/10;
+    $to_y   = $to % 10;
+    $to_x   = ($to-$to_y)/10;
 
     if (!(1 <= $from_x and $from_x <= 8 and 1 <= $from_y and $from_y <= 8)) {
         exit('ERROR: Your from-coordinates were wrong.');
@@ -1345,30 +1347,32 @@ if (defined('MOVE')) {
             echo "$opponentColor has no valid moves but is not check. ".
                  'Draw.';
         }
-        $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
-                     'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
-                     'whoseTurnIsIt', 'startTime', 'lastMove');
+        $row       = array('moveList', 'whitePlayerID', 'blackPlayerID', 
+                           'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
+                           'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
-        $result= selectFromTable($row, 'chess_currentGames', $condition);
-        $moveList = $result['moveList'];
-        $whitePlayerID = $result['whitePlayerID'];
-        $blackPlayerID = $result['blackPlayerID'];
+
+        $result = selectFromTable($row, 'chess_currentGames', $condition);
+
+        $moveList              = $result['moveList'];
+        $whitePlayerID         = $result['whitePlayerID'];
+        $blackPlayerID         = $result['blackPlayerID'];
         $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
         $blackPlayerSoftwareID = $result['blackPlayerSoftwareID'];
-        $startTime = $result['startTime'];
-        $endTime   = $result['endTime'];
+        $startTime             = $result['startTime'];
+        $endTime               = $result['endTime'];
 
         deleteFromTable('chess_currentGames', CURRENT_GAME_ID);
 
-        $keyValue   = array();
-        $keyValue['moveList'] = $moveList;
-        $keyValue['whitePlayerID'] = $whitePlayerID;
-        $keyValue['blackPlayerID'] = $blackPlayerID;
+        $keyValue                          = array();
+        $keyValue['moveList']              = $moveList;
+        $keyValue['whitePlayerID']         = $whitePlayerID;
+        $keyValue['blackPlayerID']         = $blackPlayerID;
         $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
         $keyValue['blackPlayerSoftwareID'] = $blackPlayerSoftwareID;
-        $keyValue['outcome']   = $outcome;
-        $keyValue['startTime'] = $startTime;
-        $keyValue['endTime']   = $endTime;
+        $keyValue['outcome']               = $outcome;
+        $keyValue['startTime']             = $startTime;
+        $keyValue['endTime']               = $endTime;
         insertIntoTable($keyValue, 'chess_pastGames');
         exit('Game finished.');
     }
@@ -1376,30 +1380,32 @@ if (defined('MOVE')) {
 
 if (isset($_GET['claim50MoveRule'])) {
     if ($noCaptureAndPawnMoves >= 100) {
-        $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
-                     'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
-                     'whoseTurnIsIt', 'startTime', 'lastMove');
+        $row       = array('moveList', 'whitePlayerID', 'blackPlayerID', 
+                           'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
+                           'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
+
         $result = selectFromTable($row, 'chess_currentGames', $condition);
-        $moveList  = $result['moveList'];
-        $whitePlayerID = $result['whitePlayerID'];
-        $blackPlayerID = $result['blackPlayerID'];
+
+        $moveList              = $result['moveList'];
+        $whitePlayerID         = $result['whitePlayerID'];
+        $blackPlayerID         = $result['blackPlayerID'];
         $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
         $blackPlayerSoftwareID = $result['blackPlayerSoftwareID'];
-        $startTime = $result['startTime'];
-        $endTime   = $result['endTime'];
+        $startTime             = $result['startTime'];
+        $endTime               = $result['endTime'];
 
         deleteFromTable('chess_currentGames', CURRENT_GAME_ID);
 
-        $keyValue   = array();
-        $keyValue['moveList'] = $moveList;
-        $keyValue['whitePlayerID'] = $whitePlayerID;
-        $keyValue['blackPlayerID'] = $blackPlayerID;
+        $keyValue                          = array();
+        $keyValue['moveList']              = $moveList;
+        $keyValue['whitePlayerID']         = $whitePlayerID;
+        $keyValue['blackPlayerID']         = $blackPlayerID;
         $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
         $keyValue['blackPlayerSoftwareID'] = $blackPlayerSoftwareID;
-        $keyValue['outcome']   = $outcome;
-        $keyValue['startTime'] = $startTime;
-        $keyValue['endTime']   = $endTime;
+        $keyValue['outcome']               = $outcome;
+        $keyValue['startTime']             = $startTime;
+        $keyValue['endTime']               = $endTime;
         insertIntoTable($keyValue, 'chess_pastGames');
 
         exit('Game finished. Draw. You claimed draw by the fifty-move rule.');
@@ -1411,25 +1417,25 @@ if (isset($_GET['claim50MoveRule'])) {
 }
 
 if (isset($_GET['claimThreefoldRepetition'])) {
-    $cond  = 'WHERE `id` = '.CURRENT_GAME_ID;
-    $rows  = array('currentBoard',
+    $cond   = 'WHERE `id` = '.CURRENT_GAME_ID;
+    $rows   = array('currentBoard',
                    'moveList',
                    'whiteCastlingKingsidePossible',
                    'whiteCastlingQueensidePossible',
                    'blackCastlingKingsidePossible',
                    'blackCastlingQueensidePossible');
-    $result= selectFromTable($rows, 'chess_currentGames', $cond);
+    $result = selectFromTable($rows, 'chess_currentGames', $cond);
 
     /* is en passant possible now? */
     $moveList = explode("\n", trim($result['moveList']));
     $lastMove = end($moveList);
 
-    $lastFromX= substr($lastMove, 0, 1);
-    $lastFromY= substr($lastMove, 1, 1);
-    $lastToX  = substr($lastMove, 2, 1);
-    $lastToY  = substr($lastMove, 3, 1);
+    $lastFromX = substr($lastMove, 0, 1);
+    $lastFromY = substr($lastMove, 1, 1);
+    $lastToX   = substr($lastMove, 2, 1);
+    $lastToY   = substr($lastMove, 3, 1);
 
-    $index    = getIndex($lastToX, $lastToY);
+    $index        = getIndex($lastToX, $lastToY);
     $shouldBePawn = substr($currentBoard, $index, 1);
 
     if ($lastFromX == $lastToX and abs($lastFromY-$lastToY) == 2) {
@@ -1445,8 +1451,8 @@ if (isset($_GET['claimThreefoldRepetition'])) {
             }
         }
         if ($to_coord[0] + 1 <= 8) {
-            $indexRight= getIndex($lastToX+1, $lastToY);
-            $pieceRight= getPieceByIndex($currentBoard, $indexLeft);
+            $indexRight = getIndex($lastToX+1, $lastToY);
+            $pieceRight = getPieceByIndex($currentBoard, $indexLeft);
             if ($pieceRight== 'p' and $yourColor == 'white') {
                 $isOpponentNext = true;
             }
@@ -1462,45 +1468,47 @@ if (isset($_GET['claimThreefoldRepetition'])) {
     }
     /* end en passant */
 
-    $cond  = 'WHERE `gameID` = '.CURRENT_GAME_ID.' ';
-    $cond .= 'AND `board` = '.$result['currentBoard'];
-    $cond .= 'AND `whiteCastlingKingsidePossible` = ';
-    $cond .= $result['whiteCastlingKingsidePossible'];
-    $cond .= 'AND `whiteCastlingQueensidePossible`= ';
-    $cond .= $result['whiteCastlingQueensidePossible'];
-    $cond .= 'AND `blackCastlingKingsidePossible` = ';
-    $cond .= $result['blackCastlingKingsidePossible'];
-    $cond .= 'AND `blackCastlingQueensidePossible`= ';
-    $cond .= $result['blackCastlingQueensidePossible'];
-    $cond .= 'AND `enPassantPossible` = '.$enPassant;
-    $result= selectFromTable(array('id'), 
+    $cond   = 'WHERE `gameID` = '.CURRENT_GAME_ID.' ';
+    $cond  .= 'AND `board` = '.$result['currentBoard'];
+    $cond  .= 'AND `whiteCastlingKingsidePossible` = ';
+    $cond  .= $result['whiteCastlingKingsidePossible'];
+    $cond  .= 'AND `whiteCastlingQueensidePossible`= ';
+    $cond  .= $result['whiteCastlingQueensidePossible'];
+    $cond  .= 'AND `blackCastlingKingsidePossible` = ';
+    $cond  .= $result['blackCastlingKingsidePossible'];
+    $cond  .= 'AND `blackCastlingQueensidePossible`= ';
+    $cond  .= $result['blackCastlingQueensidePossible'];
+    $cond  .= 'AND `enPassantPossible` = '.$enPassant;
+    $result = selectFromTable(array('id'), 
                                 'chess_currentGamesThreefoldRepetition', 
                                 $cond, 4);
     if (count($result) >= 3) {
-        $rows = array('moveList', 'whitePlayerID', 'blackPlayerID', 
-                     'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
-                     'whoseTurnIsIt', 'startTime', 'lastMove');
+        $rows      = array('moveList', 'whitePlayerID', 'blackPlayerID', 
+                               'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
+                               'whoseTurnIsIt', 'startTime', 'lastMove');
         $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
+
         $result = selectFromTable($rows, 'chess_currentGames', $condition);
-        $moveList  = $result['moveList'];
-        $whitePlayerID = $result['whitePlayerID'];
-        $blackPlayerID = $result['blackPlayerID'];
+
+        $moveList              = $result['moveList'];
+        $whitePlayerID         = $result['whitePlayerID'];
+        $blackPlayerID         = $result['blackPlayerID'];
         $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
         $blackPlayerSoftwareID = $result['blackPlayerSoftwareID'];
-        $startTime = $result['startTime'];
-        $endTime   = $result['endTime'];
+        $startTime             = $result['startTime'];
+        $endTime               = $result['endTime'];
 
         deleteFromTable('chess_currentGames', CURRENT_GAME_ID);
 
-        $keyValue = array();
-        $keyValue['moveList'] = $moveList;
-        $keyValue['whitePlayerID'] = $whitePlayerID;
-        $keyValue['blackPlayerID'] = $blackPlayerID;
+        $keyValue                          = array();
+        $keyValue['moveList']              = $moveList;
+        $keyValue['whitePlayerID']         = $whitePlayerID;
+        $keyValue['blackPlayerID']         = $blackPlayerID;
         $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
         $keyValue['blackPlayerSoftwareID'] = $blackPlayerSoftwareID;
-        $keyValue['outcome']   = $outcome;
-        $keyValue['startTime'] = $startTime;
-        $keyValue['endTime']   = $endTime;
+        $keyValue['outcome']               = $outcome;
+        $keyValue['startTime']             = $startTime;
+        $keyValue['endTime']               = $endTime;
         insertIntoTable($keyValue, 'chess_pastGames');
         exit('Game finished. Draw. You claimed draw by threefold repetition.');
     } else {
@@ -1511,11 +1519,11 @@ if (isset($_GET['claimThreefoldRepetition'])) {
     }
 }
 
-$row   = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
+$row    = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
                'blackPlayerID');
-$cond  = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
-$cond .= USER_ID.') AND `id` = '.CURRENT_GAME_ID;
-$result= selectFromTable($row, 'chess_currentGames', $cond);
+$cond   = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
+$cond  .= USER_ID.') AND `id` = '.CURRENT_GAME_ID;
+$result = selectFromTable($row, 'chess_currentGames', $cond);
 
 if ($result !== false) {
     $currentBoard  = $result['currentBoard'];
@@ -1534,10 +1542,10 @@ if ($result !== false) {
     }
 }
 
-if (isPlayerCheck($currentBoard, $yourColor)) $youCheck = 'Yes';
-else $youCheck = 'No';
+if (isPlayerCheck($currentBoard, $yourColor))          $youCheck = 'Yes';
+else                                                   $youCheck = 'No';
 if (isPlayerCheck($currentBoard, $opponentColor)) $opponentCheck = 'Yes';
-else $opponentCheck = 'No';
+else                                              $opponentCheck = 'No';
 
 echo 'Current Game Information:<pre><br/>';
 echo substr($currentBoard, 56, 8).'<br/>';
