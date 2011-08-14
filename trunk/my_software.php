@@ -1,17 +1,17 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * specify the chess software
  * */
 require ('wrapper.inc.php');
-if(USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
 
 if (isset($_GET['addLanguage'])) {
     $langName = mysql_real_escape_string($_GET['addLanguage']);
     $softwareID = intval($_GET['softwareID']);
     $cond = "WHERE `name`='".$langName."'";
     $result = selectFromTable(array('id', 'used'), "chess_languages", $cond);
-    if($result === false){
+    if ($result === false){
         $keyValue = array();
         $keyValue["name"] = $langName;
         $keyValue["used"] = 1;
@@ -30,10 +30,10 @@ if (isset($_GET['deleteLang'])) {
     $langID = intval($_GET['deleteLang']);
     $softwareID = intval($_GET['softwareID']);
 
-    #Is player admin of this software?
+    // Is player admin of this software?
     $cond = "WHERE `adminPlayerID` = ".USER_ID." AND `id` = ".$softwareID;
     $result = selectFromTable(array('id'), "chess_software",  $cond);
-    if($result['id'] != $softwareID){
+    if ($result['id'] != $softwareID){
         exit("You are not admin of this software!");
     }
 
@@ -46,17 +46,17 @@ if (isset($_GET['deleteLang'])) {
 
 if (isset($_GET['addTeammate'])){
     $softwareID = intval($_GET['softwareID']);
-    #Is player admin of this software?
+    // Is player admin of this software?
     $cond = "WHERE `adminPlayerID` = ".USER_ID." AND `id` = ".$softwareID;
     $result = selectFromTable(array('id'), "chess_software",  $cond);
-    if($result['id'] != $softwareID){
+    if ($result['id'] != $softwareID){
         exit("You are not admin of this software!");
     }
 
     $username = mysql_real_escape_string($_GET['addTeammate']);
     $cond = "WHERE `uname`='$username'";
     $result = selectFromTable(array('id'), "chess_players", $cond);
-    if($result !== false){
+    if ($result !== false){
         $task = mysql_real_escape_string($_GET['task']);
         $keyValuePairs = array();
         $keyValuePairs['playerID']   = $result['id'];
@@ -72,10 +72,10 @@ if (isset($_GET['deleteTeammate'])) {
     $teammateID = intval($_GET['deleteTeammate']);
     $softwareID = intval($_GET['softwareID']);
 
-    #Is player admin of this software?
+    // Is player admin of this software?
     $cond = "WHERE `adminPlayerID` = ".USER_ID." AND `id` = ".$softwareID;
     $result = selectFromTable(array('id'), "chess_software",  $cond);
-    if($result['id'] != $softwareID){
+    if ($result['id'] != $softwareID){
         exit("You are not admin of this software!");
     }
 
@@ -94,7 +94,7 @@ if (isset($_POST['newSoftwareName'])){
     $name   = mysql_real_escape_string($_POST['newSoftwareName']);
     $version= mysql_real_escape_string($_POST['version']);
     $changelog= mysql_real_escape_string($_POST['changelog']);
-    if(isset($_POST['lastVersionID'])){
+    if (isset($_POST['lastVersionID'])){
         $lastVersionID = intval($_POST['lastVersionID']);
     } else {
         $lastVersionID = 0;
@@ -147,7 +147,7 @@ foreach($languages as $lang){
 $cond  = "WHERE `playerID`=".USER_ID;
 $row = array('softwareID');
 $softwareIds = selectFromTable($row, "chess_softwareDeveloper", $cond, 10);
-if(count($softwareIds) > 0) {
+if (count($softwareIds) > 0) {
 ?>
 <label for="lastVersionID">lastVersionID</label>
 <select name="lastVersionID" id="lastVersionID">
@@ -182,7 +182,7 @@ if(count($softwareIds) > 0) {
 </tr>
 
 <? 
-if($currentSoftwareID == 0){echo '<tr class="current">';}
+if ($currentSoftwareID == 0){echo '<tr class="current">';}
 else {echo '<tr>';}
 ?>   
 <td>Human player</td>
@@ -198,7 +198,7 @@ else {echo '<tr>';}
     $cond  = "WHERE `id` = ".$id['softwareID'];
     $rows  = array('name', 'version');
     $result= selectFromTable($rows, "chess_software", $cond);
-    if($id == $currentSoftwareID){
+    if ($id == $currentSoftwareID){
         echo '<tr class="current">';
     } else {
         echo '<tr>';
@@ -206,7 +206,7 @@ else {echo '<tr>';}
     echo '<td>'.$result['name'].'</td><td>'.$result['version'].'</td>';
     echo '<td><a href="my_software?setCurrent='.$id.'">set to current</a></td>';
 
-    #List of teammates
+    // List of teammates
     $cond = "WHERE `softwareID`=$id";
     $row  = array('playerID', 'task');
     $playerIDs = selectFromTable($row, "chess_softwareDeveloper", $cond, 100);
@@ -215,7 +215,7 @@ else {echo '<tr>';}
         $cond = "WHERE `id`=".$uID['playerID'];
         $result = selectFromTable(array('uname'), "chess_players", $cond);
         echo "<li>".$result['uname']." (".$uID['task'].")";
-        if($uID['playerID'] != USER_ID){
+        if ($uID['playerID'] != USER_ID){
             echo '<a href="my_software.php?deleteTeammate='.$uID['playerID'].'&softwareID='.$id.'">';
             echo '<img src="styling/delete.png" />';
             echo '</a>';
@@ -243,7 +243,7 @@ else {echo '<tr>';}
         echo '<a href="my_software.php?deleteLang='.$langID['languageID'].'&softwareID='.$id.'">';
         echo '<img src="styling/delete.png" />';
         echo '</a>';
-        if($i < count($results)){echo ", ";}
+        if ($i < count($results)){echo ", ";}
     }
     echo '</td>';
     ?>

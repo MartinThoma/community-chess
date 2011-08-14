@@ -1,4 +1,4 @@
-<?
+<?php
 
 $subjects = "e4 c5
 Nf3 d6
@@ -65,20 +65,20 @@ g7 1-0";
 $subjects = explode("\n", $subjects);
 $pattern = "/^";
 $pattern.= "(";
-    $pattern.= "(";                  # Match whole line
-    $pattern.= "([KQRBN]?)";         # which figur is moved
-                                     # - if it'ss empty, it's a pawn
-    $pattern.= "([a-h])?";           # if a pawn makes a capture move: where
-                                     # did he come from?
-    $pattern.= "(x?)";               # x means capture
-    $pattern.= "([a-h]{1}[1-8]{1})"; # to-field
-    $pattern.= "([+]{0,2})";         # + means this move sets the opponent check
-                                     # ++means this move sets the opponent 
-                                     # checkmate
+    $pattern.= "(";                  // Match whole line
+    $pattern.= "([KQRBN]?)";         // which figur is moved
+                                     // - if it'ss empty, it's a pawn
+    $pattern.= "([a-h])?";           // if a pawn makes a capture move: where
+                                     // did he come from?
+    $pattern.= "(x?)";               // x means capture
+    $pattern.= "([a-h]{1}[1-8]{1})"; // to-field
+    $pattern.= "([+]{0,2})";         // + means this move sets the opponent check
+                                     // ++means this move sets the opponent 
+                                     // checkmate
     $pattern.= ")";
 $pattern.= "|";
-    $pattern.= "0?(-0){0,2}";        # Castling: 0-0 is kingside and 
-                                     #           0-0-0 is queenside
+    $pattern.= "0?(-0){0,2}";        // Castling: 0-0 is kingside and 
+                                     //           0-0-0 is queenside
 $pattern.= ")";
 $pattern.= "$/";
 foreach($subjects as $subject){

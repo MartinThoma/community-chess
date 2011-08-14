@@ -1,20 +1,35 @@
-<?
+<?php
 /**
  * @author: Martin Thoma
  * play a standard chess game
- * */
+ */
 
 require ('wrapper.inc.php');
-if(USER_ID === false){exit('Please <a href="login.wrapper.php">login</a>');}
+if (USER_ID === false){exit('Please <a href="login.wrapper.php">login</a>');}
 
+/******************************************************************************
+ * constants                                                                  *
+ ******************************************************************************/
+define('ERR_CAPTURE_OWN', 'ERROR: You may not capture your own chess pieces.');
+define('ERR_PAWN_CAPTURE_MOVE', 'ERROR: You may only make the pawn capture '.
+       'move if a chess piece of the opponent is on the target field.');
+define('ERR_MOVE_QUERY_LENGTH', 'ERROR: Your move-query should have 4 or 5 '.
+       'characters.');
+define('ERR_NO_VALID_MOVE', 'ERROR: From (%i | %i) to (%i | %i) is no valid '.
+       'move for a %s.');
+define('ERR_NOT_YOUR_PIECE', 'ERROR: The chess piece on field (%i | %i) is %s.'.
+       ' It belongs to your opponent. You are %s. Your chess pieces have %s '.
+       'letters.');
 /******************************************************************************
  * helper functions                                                           *
  ******************************************************************************/
-function getIndex($x, $y){
+function getIndex($x, $y)
+{
     return ($y-1) * 8 + ($x-1);
 }
 
-function getCoordinates($index){
+function getCoordinates($index)
+{
     $x = $index % 8;
     $y = ($index - $x)/8;
     $x++;
@@ -22,26 +37,30 @@ function getCoordinates($index){
     return array($x, $y);
 }
 
-function isPositionValid($x, $y) {
+function isPositionValid($x, $y)
+{
     if (1 <= $x and $x <= 8 and 1 <= $y and $y <= 8){return true;}
     else {return false;}
 }
 
-function getPieceByIndex($board, $index) {
+function getPieceByIndex($board, $index)
+{
     return substr($board,$index,1);
 }
 
-function getNewBoard($currentBoard, $from_index, $to_index){
+function getNewBoard($currentBoard, $from_index, $to_index)
+{
     $piece    = getPieceByIndex($currentBoard, $from_index);
-    $newBoard = substr($currentBoard, 0, $from_index)."0".
+    $newBoard = substr($currentBoard, 0, $from_index).'0'.
                 substr($currentBoard, $from_index+1);
     $newBoard = substr($newBoard, 0, $to_index).$piece.
                 substr($newBoard, $to_index+1);
     return $newBoard;
 }
 
-function isMyPiece($piece, $myColor) {
-    if( ( (ord($piece) < 96 and $myColor == 'white') or
+function isMyPiece($piece, $myColor)
+{
+    if ( ( (ord($piece) < 96 and $myColor == 'white') or
           (ord($piece) > 96 and $myColor == 'black')    )  and $piece != '0'){
         return true;
     } else {
@@ -49,8 +68,9 @@ function isMyPiece($piece, $myColor) {
     }
 }
 
-function isOpponentsPiece($piece, $myColor) {
-    if( ( (ord($piece) < 96 and $myColor == 'black') or
+function isOpponentsPiece($piece, $myColor)
+{
+    if ( ( (ord($piece) < 96 and $myColor == 'black') or
           (ord($piece) > 96 and $myColor == 'white')    )  and $piece != '0'){
         return true;
     } else {
@@ -58,150 +78,152 @@ function isOpponentsPiece($piece, $myColor) {
     }
 }
 
-function getAllStraightFields($board, $x, $y) {
+function getAllStraightFields($board, $x, $y)
+{
     /**This function returns a 2-dimensional array:
-     * array[0] = array('0','0','P') # to the top
-     * array[1] = array('p')         # to the right
-     * array[2] = array('0','0','0','0','0', 'Q') # to the bottom
-     * array[3] = array('N')                      # to the left
+     * array[0] = array('0','0','P')              to the top
+     * array[1] = array('p')                      to the right
+     * array[2] = array('0','0','0','0','0', 'Q') to the bottom
+     * array[3] = array('N')                      to the left
      * */
 
     $straights = array(0=>array(), 1=>array(), 2=>array(), 3=>array());
 
-    # Which moves could a rook possibly make?
-    # top
+    // Which moves could a rook possibly make?
+    // top
     $tmp_x = $x; $tmp_y = $y;
     for($tmp_y=$y+1; $tmp_y <= 8; $tmp_y++){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[0][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
-    # right
+    // right
     $tmp_x = $x; $tmp_y = $y;
     for($tmp_x=$x+1; $tmp_x <= 8; $tmp_x++){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[1][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
-    # down
+    // down
     $tmp_x = $x; $tmp_y = $y;
     for($tmp_y=$y-1; $tmp_y >= 1; $tmp_y--){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[2][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
-    # left
+    // left
     $tmp_x = $x; $tmp_y = $y;
     for($tmp_x=$x-1; $tmp_x >= 1; $tmp_x--){
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $straights[3][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
     return $straights;
 }
 
-function getAllDiagonalFields($board, $x, $y) {
+function getAllDiagonalFields($board, $x, $y)
+{
     /**This function returns a 2-dimensional array:
-     * array[0] = array('0','0','P') # to the top-right
-     * array[1] = array('p')         # to the bottom-right
-     * array[2] = array('0','0','0','0','0', 'Q') # to the top-left
-     * array[3] = array('N')                      # to the bottom-left
+     * array[0] = array('0','0','P')              to the top-right
+     * array[1] = array('p')                      to the bottom-right
+     * array[2] = array('0','0','0','0','0', 'Q') to the top-left
+     * array[3] = array('N')                      to the bottom-left
      * */
 
     $diagonals = array(0=>array(), 1=>array(), 2=>array(), 3=>array());
 
-    # Which moves could a bishop possibly make?
-    # diagonal right up
+    // Which moves could a bishop possibly make?
+    // diagonal right up
     for($i=1; $i <= 8 - max($x, $y); $i++){
         $tmp_x = $x + $i;
         $tmp_y = $y + $i;
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $diagonals[0][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
-    # diagonal right down
+    // diagonal right down
     for($i=1; $i <= 8 - max($x, 9 - $y); $i++){
         $tmp_x = $x + $i;
         $tmp_y = $y - $i;
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $diagonals[1][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
-    # diagonal left up
+    // diagonal left up
     for($i=1; $i <= 8 - max(9-$x, $y); $i++){
         $tmp_x = $x - $i;
         $tmp_y = $y + $i;
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $diagonals[2][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
-    # diagonal left down
+    // diagonal left down
     for($i=1; $i <= min($x, $y)-1; $i++){
         $tmp_x = $x - $i;
         $tmp_y = $y - $i;
         $index = getIndex($tmp_x, $tmp_y);
         $piece = getPieceByIndex($board,$index);
         $diagonals[3][] = $piece;
-        if($piece != '0') {break;}
+        if ($piece != '0') {break;}
     }
     return $diagonals;
 }
 /******************************************************************************
  * chess game relevant functions                                              *
  ******************************************************************************/
-function hasValidMoves($board, $color){
+function hasValidMoves($board, $color)
+{
     for($from_index = 0; $from_index < 63; $from_index++){
         $piece = getPieceByIndex($board,$from_index);
         $coord = getCoordinates($from_index);
 
-        if(isMyPiece($piece, $color)) {
-            if(strtoupper($piece) == 'P'){
-                # Which moves could a pawn possibly make?
+        if (isMyPiece($piece, $color)) {
+            if (strtoupper($piece) == 'P'){
+                // Which moves could a pawn possibly make?
                 if ($color == 'white'){$mul = 1;}
                 else {$mul = -1;}
-                # Which moves could a pawn possibly make?
-                if( ($coord[1] < 8 and $color == 'white') or
+                // Which moves could a pawn possibly make?
+                if ( ($coord[1] < 8 and $color == 'white') or
                     ($coord[1] > 1 and $color == 'black')){
-                    #one straight up / down
+                    // one straight up / down
                     $to_index = getIndex($coord[0],$coord[1]+1*$mul);
                     $targetpiece = getPieceByIndex($board,$to_index);
-                    if($targetpiece == '0'){
-                        $newBoard = getNewBoard($board, $from_index, 
-                                                        $to_index);
+                    if ($targetpiece == '0'){
+                        $newBoard = getNewBoard($board, $from_index, $to_index);
                         if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
 
-                    if($coord[0] > 1){
-                        # diagonal left capturing
+                    if ($coord[0] > 1){
+                        // diagonal left capturing
                         $to_index    = getIndex($coord[0]-1, $coord[1]+1*$mul);
                         $targetpiece = getPieceByIndex($board,$to_index);
-                        if(isOpponentsPiece($targetpiece, $color)){
-                        $newBoard = getNewBoard($board, $from_index, 
-                                                        $to_index);
+                        if (isOpponentsPiece($targetpiece, $color)){
+                            $newBoard = getNewBoard($board, $from_index, 
+                                                                     $to_index);
                             if (!isPlayerCheck($newBoard, $color)){return true;}
                         }
                     }
-                    if($coord[0] < 8){
-                        # diagonal right capturing
+                    if ($coord[0] < 8){
+                        // diagonal right capturing
                         $to_index = getIndex($coord[0]+1, $coord[1]+1*$mul);
                         $targetpiece = getPieceByIndex($board,$to_index);
-                        if(isOpponentsPiece($targetpiece, $color)){
-                        $newBoard = getNewBoard($board, $from_index, 
-                                                        $to_index);
+                        if (isOpponentsPiece($targetpiece, $color)){
+                            $newBoard = getNewBoard($board, $from_index, 
+                                                                     $to_index);
                             if (!isPlayerCheck($newBoard, $color)){return true;}
                         }
                     }
                 }
-                if(($coord[1] == 2 and $color == 'white') or
+                if (($coord[1] == 2 and $color == 'white') or
                    ($coord[1] == 7 and $color == 'black')    ){
-                    #two straight up in home row
+                    // two straight up in home row
                     $to_index = getIndex($coord[0],$coord[1]+2*$mul);
                     $field1   = getPieceByIndex($board,$to_index+8);
                     $targetpiece = getPieceByIndex($board,$to_index);
@@ -210,18 +232,18 @@ function hasValidMoves($board, $color){
                         if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
-            } else if(strtoupper($piece) == 'N') {
-                # Which moves could a knight possibly make?
+            } else if (strtoupper($piece) == 'N') {
+                // Which moves could a knight possibly make?
                 $knight_moves = array(-17, -15, -10, -6, 6, 10, 15, 17);
                 foreach($knight_moves as $add){
                     $to_index = $from_index + $add;
-                    if(0<=$to_index and $to_index <= 63) {
+                    if (0<=$to_index and $to_index <= 63) {
                         $from_coord = getCoordinates($from_index);
                         $to_coord   = getCoordinates($to_index);
-                        if( (abs($from_coord[0] - $to_coord[0]) + 
+                        if ( (abs($from_coord[0] - $to_coord[0]) + 
                              abs($from_coord[1] - $to_coord[1])    ) == 3){
                             $targetPiece = getPieceByIndex($board,$to_index);
-                            if($targetPiece == '0' or 
+                            if ($targetPiece == '0' or 
                                isOpponentsPiece($targetPiece, $color)  ) {
                                 $newBoard = getNewBoard($board, $from_index, 
                                                                      $to_index);
@@ -234,113 +256,113 @@ function hasValidMoves($board, $color){
                 }
             } 
 
-            if(strtoupper($piece) == 'B' or strtoupper($piece) == 'Q'){
-                # Which moves could a bishop possibly make?
-                # (Queen can do the same)
+            if (strtoupper($piece) == 'B' or strtoupper($piece) == 'Q'){
+                // Which moves could a bishop possibly make?
+                // (Queen can do the same)
                 $dia = getAllDiagonalFields($board, $coord[0], $coord[1]);
-                # diagonal right up
+                // diagonal right up
                 foreach($dia[0] as $key=>$piece){
                     $x = $coord[0] + $key + 1;
                     $y = $coord[1] + $key + 1;
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
 
-                # diagonal right down
+                // diagonal right down
                 foreach($dia[1] as $key=>$piece){
                     $x = $coord[0] + $key + 1;
                     $y = $coord[1] - $key - 1;
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
 
-                # diagonal left up
+                // diagonal left up
                 foreach($dia[2] as $key=>$piece){
                     $x = $coord[0] - $key - 1;
                     $y = $coord[1] + $key + 1;
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
 
-                # diagonal left down
+                // diagonal left down
                 foreach($dia[3] as $key=>$piece){
                     $x = $coord[0] - $key - 1;
                     $y = $coord[1] - $key - 1;
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
             }
 
-            if(strtoupper($piece) == 'R' or strtoupper($piece) == 'Q') {
-                # Which moves could a rook possibly make? 
-                # (Queen can do the same)
+            if (strtoupper($piece) == 'R' or strtoupper($piece) == 'Q') {
+                // Which moves could a rook possibly make? 
+                // (Queen can do the same)
                 $straight = getAllStraightFields($board, $coord[0], $coord[1]);
-                # top
+                // top
                 foreach($straight[0] as $key=>$piece) {
                     $x = $coord[0];
                     $y = $coord[1] + $key + 1;
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
-                # right
+                // right
                 foreach($straight[1] as $key=>$piece) {
                     $x = $coord[0] + $key + 1;
                     $y = $coord[1];
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
-                # down
+                // down
                 foreach($straight[2] as $key=>$piece) {
                     $x = $coord[0];
                     $y = $coord[1] - $key - 1;
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
                         if(!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
-                # left
+                // left
                 foreach($straight[3] as $key=>$piece) {
                     $x = $coord[0] - $key - 1;
                     $y = $coord[1];
                     $to_index = getIndex($x, $y);
-                    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                    if ($piece == '0' or isOpponentsPiece($piece, $color)) {
                         $newBoard=getNewBoard($board,$from_index,$to_index);
-                        if(!isPlayerCheck($newBoard, $color)){return true;}
+                        if (!isPlayerCheck($newBoard, $color)){return true;}
                     }
                 }
-            } else if(strtoupper($piece) == 'K') {
-                # Which moves could a king possibly make?
+            } else if (strtoupper($piece) == 'K') {
+                // Which moves could a king possibly make?
                 $kings_moves = array(-9,-8-7,-1,1,7,8,9);
                 foreach($kings_moves as $add){
                     $to_index = $from_index + $add;
-                    if(0 <= $to_index and $to_index <= 63){
+                    if (0 <= $to_index and $to_index <= 63){
                         $from_coord = getCoordinates($from_index);
                         $to_coord = getCoordinates($to_index);
                         $tmp_x = $to_coord[0];
                         $tmp_y = $to_coord[1];
-                        if(abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2){
+                        if (abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2){
                             $piece = getPieceByIndex($board,
                                                       getIndex($tmp_x, $tmp_y));
-                            if($piece == '0' or 
+                            if ($piece == '0' or 
                                              isOpponentsPiece($piece, $color)) {
                                 $newBoard = getNewBoard($board, $from_index, 
                                                                      $to_index);
@@ -357,34 +379,33 @@ function hasValidMoves($board, $color){
     return false;
 }
 
-function isStraightDanger($piece, $yourColor) {
+function isStraightDanger($piece, $yourColor)
+{
     if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?a");}
-        else if ($piece == 'q'){return true;}
+        if      ($piece == 'q'){return true;}
         else if ($piece == 'r'){return true;}
     } else if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?b");}
-        else if ($piece == 'Q'){return true;}
+        if      ($piece == 'Q'){return true;}
         else if ($piece == 'R'){return true;}
     }
     return false;
 }
 
-function isDiagonalDanger($piece, $yourColor){
+function isDiagonalDanger($piece, $yourColor)
+{
     if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'white'){
-        if($piece == 'k'){exit("SOFTWARE-ERROR: How can a king face a king?i");}
-        else if ($piece == 'q'){return true;}
+        if      ($piece == 'q'){return true;}
         else if ($piece == 'b'){return true;}
         else if ($piece == 'p' and abs($tmp_x-$king_x)==1){return true;}
     } else if ( isOpponentsPiece($piece, $yourColor) and $yourColor == 'black'){
-        if($piece == 'K'){exit("SOFTWARE-ERROR: How can a king face a king?j");}
-        else if ($piece == 'Q'){return true;}
+        if      ($piece == 'Q'){return true;}
         else if ($piece == 'B'){return true;}
     }
     return false;
 }
 
-function isPlayerCheck($newBoard, $yourColor){
+function isPlayerCheck($newBoard, $yourColor)
+{
     if ($yourColor == 'white'){
         $king_index = strpos($newBoard, 'K');
     } else {
@@ -395,37 +416,37 @@ function isPlayerCheck($newBoard, $yourColor){
     $king_y = $coord[1];
 
     $fields = getAllStraightFields($newBoard, $king_x, $king_y);
-    # danger from top?
-    if(isStraightDanger(end($fields[0]), $yourColor)){return true;}
-    # danger from right
-    if(isStraightDanger(end($fields[1]), $yourColor)){return true;}
-    # danger from bottom
-    if(isStraightDanger(end($fields[2]), $yourColor)){return true;}
-    # danger from left
-    if(isStraightDanger(end($fields[3]), $yourColor)){return true;}
+    // danger from top?
+    if (isStraightDanger(end($fields[0]), $yourColor)){return true;}
+    // danger from right
+    if (isStraightDanger(end($fields[1]), $yourColor)){return true;}
+    // danger from bottom
+    if (isStraightDanger(end($fields[2]), $yourColor)){return true;}
+    // danger from left
+    if (isStraightDanger(end($fields[3]), $yourColor)){return true;}
 
     $fields = getAllDiagonalFields($newBoard, $king_x, $king_y);
-    # danger from diagonal right top?
-    if(isStraightDanger(end($fields[0]), $yourColor)){return true;}
-    # danger from diagonal right bottom?
-    if(isStraightDanger(end($fields[1]), $yourColor)){return true;}
-    # danger from diagonal left top?
-    if(isStraightDanger(end($fields[2]), $yourColor)){return true;}
-    # danger from diagonal left bottom?
-    if(isStraightDanger(end($fields[3]), $yourColor)){return true;}
+    // danger from diagonal right top?
+    if (isStraightDanger(end($fields[0]), $yourColor)){return true;}
+    // danger from diagonal right bottom?
+    if (isStraightDanger(end($fields[1]), $yourColor)){return true;}
+    // danger from diagonal left top?
+    if (isStraightDanger(end($fields[2]), $yourColor)){return true;}
+    // danger from diagonal left bottom?
+    if (isStraightDanger(end($fields[3]), $yourColor)){return true;}
 
-    # danger from knights?
+    // danger from knights?
     $knight_moves = array(-17, -15, -10, -6, 6, 10, 15, 17);
     foreach($knight_moves as $add){
         $knight_index = $king_index + $add;
-        if(0<= $knight_index and $knight_index <= 63) {
+        if (0<= $knight_index and $knight_index <= 63) {
             $knight_coord = getCoordinates($knight_index);
             $tmp_x = $knight_coord[0];
             $tmp_y = $knight_coord[1];
-            if(abs($king_x - $tmp_x) + abs($king_y - $tmp_y) == 3){
-                if(isPositionValid($tmp_x, $tmp_y)){
+            if (abs($king_x - $tmp_x) + abs($king_y - $tmp_y) == 3){
+                if (isPositionValid($tmp_x, $tmp_y)){
                   $piece = getPieceByIndex($newBoard,getIndex($tmp_x, $tmp_y));
-                  if($piece == 'n' and $yourColor == 'white'){
+                  if ($piece == 'n' and $yourColor == 'white'){
                       return true;
                   } else if ($piece == 'N' and $yourColor == 'black'){
                       return true;
@@ -438,244 +459,228 @@ function isPlayerCheck($newBoard, $yourColor){
 }
 
 function isKnightMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                                    $yourColor){
+                                                                    $yourColor)
+{
     if (abs($to_y - $from_y) + abs($to_x - $from_x) == 3) {
-        # Everything is ok.
+        // Everything is ok.
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid ".
-                    "move for a knight.");
+        exit(sprintf(ERR_NO_VALID_MOVE,$from_x,$from_y,$to_x,$to_y,'knight'));
     }
 
     $index = getIndex($to_x, $to_y);
     $piece = getPieceByIndex($currentBoard, $index);
     if ($piece != '0') {
-        if( isMyPiece($piece, $yourColor) ) {
-            exit("ERROR: You may not capture your own chess pieces.");
+        if ( isMyPiece($piece, $yourColor) ) {
+            exit(ERR_CAPTURE_OWN);
         }
     }
 }
 
 
 function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                                    $yourColor){
+                                                                    $yourColor)
+{
     if (abs($from_x - $to_x) <= 1 and abs($from_y - $to_y) <= 1){
-        # Everything is ok, standard king move
+        // Everything is ok, standard king move
     } else if (abs($from_x - $to_x) == 2 and ($from_y - $to_y) == 0) {
-        # The Player wants to do castling. Is this valid?
-        if( ($yourColor == 'white' and $from_x ==  4) or
+        // The Player wants to do castling. Is this valid?
+        if ( ($yourColor == 'white' and $from_x ==  4) or
             ($yourColor == 'black' and $from_x == 60)    ){
             $rows  = array('whiteCastlingKingsidePossible', 
                            'whiteCastlingQueensidePossible',
                            'blackCastlingKingsidePossible',
                            'blackCastlingQueensidePossible');
-            $cond  = "WHERE `id` = ".CURRENT_GAME_ID;
-            $result= selectFromTable($rows, "chess_currentGames", $cond);
-            if($yourColor == 'white'){
-                if($to_x == 2){
-                    if($result['whiteCastlingQueensidePossible'] == 0){
-                        exit("ERROR: You've already moved your King or your ".
-                                    "rook");
-                    }
-                }
-                if($to_x == 6){
-                    if($result['whiteCastlingKingsidePossible'] == 0){
-                        exit("ERROR: You've allready moved your King or your ".
-                                    "rook");
-                    }
-                }
-            } else {
-                if($to_x == 58){
-                    if($result['blackCastlingQueensidePossible'] == 0){
-                        exit("ERROR: You've already moved your King or your ".
-                                    "rook");
-                    }
-                }
-                if($to_x == 62){
-                    if($result['blackCastlingKingsidePossible'] == 0){
-                        exit("ERROR: You've already moved your King or your ".
-                                    "rook");
-                    }
-                }
+            $cond  = 'WHERE `id` = '.CURRENT_GAME_ID;
+            $result= selectFromTable($rows, 'chess_currentGames', $cond);
+            $c1=($to_x == 2) and ($result['whiteCastlingQueensidePossible']==0);
+            $c2=($to_x == 6) and ($result['whiteCastlingKingsidePossible'] ==0);
+            $c3=($to_x ==58) and ($result['blackCastlingQueensidePossible']==0);
+            $c4=($to_x ==62) and ($result['blackCastlingKingsidePossible'] ==0);
+            if ( ($yourColor == 'white' and ($c1 or $c2)) or
+                ($yourColor == 'black' and ($c3 or $c4))     ) {
+                exit('ERROR: You\'ve already moved your King or your rook');
             }
-            # Is anything in between King and Rook?
-            if($from_x < $to_x){
+            // Is anything in between King and Rook?
+            if ($from_x < $to_x){
                 for($x_tmp = $from_x+1; $x_tmp < $to_x; $x_tmp++){
                     $index = getIndex($x_tmp, $from_y);
                     $piece = getPieceByIndex($currentBoard, $index);
-                    if($piece != '0'){
+                    if ($piece != '0'){
                         exit("ERROR: $piece is between your King and your ".
-                                    "rook. Castling is not possible.");
+                                    'rook. Castling is not possible.');
                     }
                 }
             } else {
                 for($x_tmp = $from_x-1; $x_tmp > $to_x; $x_tmp--){
                     $index = getIndex($x_tmp, $from_y);
                     $piece = getPieceByIndex($currentBoard, $index);
-                    if($piece != '0'){
+                    if ($piece != '0'){
                         exit("ERROR: $piece is between your King and your ".
-                                    "rook. Castling is not possible.");
+                                    'rook. Castling is not possible.');
                     }
                 }
             }
 
-            # Is player currently in check or will he move through check?
-            if($from_x < $to_x) {
+            // Is player currently in check or will he move through check?
+            if ($from_x < $to_x) {
                 for($i=0; $i <= ($to_x-$from_x); $i++) {
                     $newBoard =
                         getNewBoard($currentBoard, $from_index, $to_index + $i);
-                    if(isPlayerCheck($newBoard, $yourColor)){
-                        exit("ERROR: You may only use castling if you are not "
-                             ."in check or moving through check.");
+                    if (isPlayerCheck($newBoard, $yourColor)){
+                        exit('ERROR: You may only use castling if you are not '.
+                             'in check or moving through check.');
                     }
                 }
             }
         } else {
-            exit("ERROR: Castling is only possible, if you didn't move your".
-                        "King before.");
+            exit('ERROR: Castling is only possible, if you didn\'t move your'.
+                        'King before.');
         }
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid".
-                    "move for a king.");
+        exit(sprintf(ERR_NO_VALID_MOVE,$from_x,$from_y,$to_x,$to_y,'king'));
     }
 
     $index = getIndex($to_x, $to_y);
     $piece = getPieceByIndex($currentBoard, $index);
     if ($piece != '0') {
-        if( isMyPiece($piece, $color) ) {
-            exit("ERROR: You may not capture your own chess pieces.");
+        if ( isMyPiece($piece, $color) ) {
+            exit(ERR_CAPTURE_OWN);
         }
     }
 }
 
 function isBishopMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                                    $yourColor){
+                                                                    $yourColor)
+{
     if (abs($from_x - $to_x) == abs($from_y - $to_y)) {
-        #moving diagonal
+        // moving diagonal
         if ($from_x < $to_x) {
-            #moving up
+            // moving up
             for($i=1; $i < ($to_x-$from_x);$i++){
                 $x_tmp = $from_x + $i;
                 $y_tmp = $from_y + $i;
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
                 }
             }
         } else {
-            #moving down
+            // moving down
             for($i=1; $i < ($from_x - $to_x);$i++){
                 $x_tmp = $from_x - $i;
                 $y_tmp = $from_y - $i;
                 $index = getIndex($x_tmp, $y_tmp);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
                 }
             }
         }
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid
-              move for a bishop.");
+        exit(sprintf(ERR_NO_VALID_MOVE,$from_x,$from_y,$to_x,$to_y,'bishop'));
     }
 
     $index = getIndex($to_x, $to_y);
     $piece = getPieceByIndex($currentBoard, $index);
     if ($piece != '0') {
-        if( isMyPiece($piece, $yourColor) ) {
-            exit("ERROR: You may not capture your own chess pieces.");
+        if ( isMyPiece($piece, $yourColor) ) {
+            exit(ERR_CAPTURE_OWN);
         }
     }
 }
 
 function isRookMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                                    $yourColor){
+                                                                    $yourColor)
+{
     if ($from_x == $to_x) {
-        #moving straight up / down
-        if($from_y < $to_y){
-            #is moving up
+        // moving straight up / down
+        if ($from_y < $to_y){
+            // is moving up
             for($y_tmp=$from_y+1; $y_tmp < $to_y; $y_tmp++){
                 $index = getIndex($from_x, $y_tmp);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($from_x | $y_tmp) is $piece.");
                 }
             }
         } else {
-            #is moving down
+            // is moving down
             for($y_tmp=$from_y-1; $y_tmp > $to_y; $y_tmp--){
                 $index = getIndex($from_x, $y_tmp);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($from_x | $y_tmp) is $piece.");
                 }
             }
         }
     } else if ($from_y == $to_y) {
-        #moving straight left / right
-        if($from_x < $to_x){
-            #is moving right
+        // moving straight left / right
+        if ($from_x < $to_x){
+            // is moving right
             for($x_tmp=$from_x+1; $x_tmp < $to_x; $x_tmp++){
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $from_y) is $piece.");
                 }
             }
         } else {
-            #is moving left
+            // is moving left
             for($x_tmp=$from_x-1; $x_tmp > $to_x; $x_tmp--){
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $from_y) is $piece.");
                 }
             }
         }
 
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid ".
-                    "move for a rook.");
+        exit(sprintf(ERR_NO_VALID_MOVE,$from_x,$from_y,$to_x,$to_y,'rook'));
     }
 
 
     $index = getIndex($to_x, $to_y);
     $piece = getPieceByIndex($currentBoard, $index);
     if ($piece != '0') {
-        if( isMyPiece($piece, $yourColor) ) {
-            exit("ERROR: You may not capture your own chess pieces.");
+        if ( isMyPiece($piece, $yourColor) ) {
+            exit(ERR_CAPTURE_OWN);
         }
     }
 }
 
 function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                         $yourColor, $moveList){
-    if($from_x == $to_x and abs($from_y - $to_y) <= 2){
-        #moving up / down
+                                                         $yourColor, $moveList)
+{
+    if ($from_x == $to_x and abs($from_y - $to_y) <= 2){
+        // moving up / down
         $index = getIndex($to_x, $to_y);
         $piece = getPieceByIndex($currentBoard, $index);
-        if($piece != '0'){exit("A pawn can only capture by moving diagonal!");}
-        if($yourColor == 'white'){
-            if($from_y > $to_y) {
-                exit("ERROR: White may only move up with pawns.");
+        if ($piece != '0'){
+            exit('ERROR: A pawn can only capture by moving diagonal.');
+        }
+        if ($yourColor == 'white'){
+            if ($from_y > $to_y) {
+                exit('ERROR: White may only move up with pawns.');
             }
-            if($from_y == 2) {$isOnHomeRow = true;} else {$isOnHomeRow = false;}
+            if ($from_y == 2) {$isOnHomeRow = true;} else {$isOnHomeRow = false;}
         } else {
-            if($from_y < $to_y) {
-                exit("ERROR: Black may only move down with pawns.");
+            if ($from_y < $to_y) {
+                exit('ERROR: Black may only move down with pawns.');
             }
-            if($from_y == 7) {$isOnHomeRow = true;} else {$isOnHomeRow = false;}
+            if ($from_y == 7) {$isOnHomeRow = true;} else {$isOnHomeRow = false;}
         }
-        if(abs($from_y - $to_y) == 2 and $isOnHomeRow == false){
-                exit("ERROR: Pawns may only move two if they are on their home".
-                            " row.");
+        if (abs($from_y - $to_y) == 2 and $isOnHomeRow == false){
+                exit('ERROR: Pawns may only move two if they are on their home'.
+                            ' row.');
         }
-    } else if(abs($from_x-$to_x) == 1 and abs($from_y-$to_y) == 1){
-        # pawns capturing move
+    } else if (abs($from_x-$to_x) == 1 and abs($from_y-$to_y) == 1){
+        // pawns capturing move
         $index = getIndex($to_x, $to_y);
         $piece_target = getPieceByIndex($currentBoard, $index);
 
-        # For en passant:
+        // For en passant:
         $moveArray = explode("\n", trim($moveList));
         $lastMove = end($moveArray);
         $lastFromX= substr($lastMove, 0, 1);
@@ -684,142 +689,138 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
         $lastToY  = substr($lastMove, 3, 1);
 
 
-        if($yourColor == 'white'){
-            if($from_y > $to_y) {
-                exit("ERROR: White may only move up with pawns.");
+        if ($yourColor == 'white'){
+            if ($from_y > $to_y) {
+                exit('ERROR: White may only move up with pawns.');
             }
-            if($piece_target == '0' or isMyPiece($piece_target, $yourColor)) {
+            if ($piece_target == '0' or isMyPiece($piece_target, $yourColor)) {
                 $shouldBePawn = substr($currentBoard, 
                                        getIndex($to_x, $to_y-1), 1);
                 if ($lastFromX == $lastToX and $lastToX == $to_x and 
                     $lastFromY - $lastToY == 2 and
                     $shouldBePawn == 'p'){
-                    # en passant
+                    // en passant
                 } else {
-                    exit("ERROR: You may only make the pawn capture move if a ".
-                            "chess piece of the opponent is on the target ".
-                            "field.");
+                    exit(ERR_PAWN_CAPTURE_MOVE);
                 }
             }
         } else {
-            if($from_y < $to_y) {
-                exit("ERROR: Black may only move down with pawns.");
+            if ($from_y < $to_y) {
+                exit('ERROR: Black may only move down with pawns.');
             }
-            if($piece_target == '0' or isMyPiece($piece_target, $yourColor)) {
+            if ($piece_target == '0' or isMyPiece($piece_target, $yourColor)) {
                 $shouldBePawn = getPieceByIndex($currentBoard, 
                                        getIndex($to_x, $to_y+1));
                 if ($lastFromX == $lastToX and $lastToX == $to_x and 
                     $lastToY - $lastFromY == 2 and
                     $shouldBePawn == 'P'){
-                    # en passant
+                    // en passant
                 } else {
-                    exit("ERROR: You may only make the pawn capture move if a ".
-                            "chess piece of the opponent is on the target ".
-                            "field.");
+                    exit(ERR_PAWN_CAPTURE_MOVE);
                 }
             }
         }
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid
-              move for a pawn.");
+        exit(sprintf(ERR_NO_VALID_MOVE,$from_x,$from_y,$to_x,$to_y,'pawn'));
     }
 
     $index = getIndex($to_x, $to_y);
     $piece = getPieceByIndex($currentBoard, $index);
     if ($piece != '0') {
-        if( isMyPiece($piece, $yourColor) ) {
-            exit("ERROR: You may not capture your own chess pieces.");
+        if ( isMyPiece($piece, $yourColor) ) {
+            exit(ERR_CAPTURE_OWN);
         }
     }
 
 }
 
 function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
-                                                          $yourColor){
+                                                          $yourColor)
+{
     if ($from_x == $to_x) {
-        #moving straight up / down
-        if($from_y < $to_y){
-            #is moving up
+        // moving straight up / down
+        if ($from_y < $to_y){
+            // is moving up
             for($y_tmp=$from_y+1; $y_tmp < $to_y; $y_tmp++){
                 $index = getIndex($from_x, $y_tmp);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($from_x | $y_tmp) is $piece.");
                 }
             }
         } else {
-            #is moving down
+            // is moving down
             for($y_tmp=$from_y-1; $y_tmp > $to_y; $y_tmp--){
                 $index = getIndex($from_x, $y_tmp);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($from_x | $y_tmp) is $piece.");
                 }
             }
         }
     } else if ($from_y == $to_y) {
-        #moving straight left / right
-        if($from_x < $to_x){
-            #is moving right
+        // moving straight left / right
+        if ($from_x < $to_x){
+            // is moving right
             for($x_tmp=$from_x+1; $x_tmp < $to_x; $x_tmp++){
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $from_y) is $piece.");
                 }
             }
         } else {
-            #is moving left
+            // is moving left
             for($x_tmp=$from_x-1; $x_tmp > $to_x; $x_tmp--){
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $from_y) is $piece.");
                 }
             }
         }
     } else if (abs($from_x - $to_x) == abs($from_y - $to_y)) {
-        #moving diagonal
+        // moving diagonal
         if ($from_x < $to_x) {
-            #moving up
+            // moving up
             for($i=1; $i < ($to_x-$from_x);$i++){
                 $x_tmp = $from_x + $i;
                 $y_tmp = $from_y + $i;
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
                 }
             }
         } else {
-            #moving down
+            // moving down
             for($i=1; $i < ($from_x - $to_x);$i++){
                 $x_tmp = $from_x - $i;
                 $y_tmp = $from_y - $i;
                 $index = getIndex($x_tmp, $from_y);
                 $piece = getPieceByIndex($currentBoard, $index);
-                if($piece != '0'){
+                if ($piece != '0'){
                     exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
                 }
             }
         }
     } else {
-        exit("ERROR: From ($from_x | $from_y) to ($to_x | $to_y) is no valid
-              move for a queen.");
+        exit(sprintf(ERR_NO_VALID_MOVE,$from_x,$from_y,$to_x,$to_y,'queen'));
     }
 
 
     $index = getIndex($to_x, $to_y);
     $piece = getPieceByIndex($currentBoard, $index);
     if ($piece != '0') {
-        if( isMyPiece($piece, $yourColor) ) {
-            exit("ERROR: You may not capture your own chess pieces.");
+        if ( isMyPiece($piece, $yourColor) ) {
+            exit(ERR_CAPTURE_OWN);
         }
     }
 
 }
 
-function makeMove($from_index, $to_index, $currentBoard, $move, $color){
+function makeMove($from_index, $to_index, $currentBoard, $move, $color)
+{
     /* This function submits the move to the database. All checks if this move
        is possible have been done before. 
        All database-changes of the current game are done in this function.
@@ -829,7 +830,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     $capturedPiece= getPieceByIndex($currentBoard, $to_index);
     $to_coord     = getCoordinates($to_index);
     $from_coord   = getCoordinates($from_index);
-    $cond         = "WHERE  `chess_currentGames`.`id` =".CURRENT_GAME_ID;
+    $cond         = 'WHERE  `chess_currentGames`.`id` ='.CURRENT_GAME_ID;
 
     if ($piece == 'p' or $piece == 'P'){
         $pawnMoved = true;
@@ -843,12 +844,12 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     }
 
     // Is this move castling?
-    if(    ($piece == 'K' or $piece == 'k') and 
+    if (    ($piece == 'K' or $piece == 'k') and 
         abs($from_coord[0] - $to_coord[0]) == 2  ){
         // Move tower (only tower! The king will be moved in the rest of this 
         // function.
-        if($color == 'white'){
-            if($to_index == 6){
+        if ($color == 'white'){
+            if ($to_index == 6){
                 // Kingside Castling for white
                 $currentBoard = substr($currentBoard, 0, 7).'0'
                                           .substr($currentBoard, $from_index+1);
@@ -862,7 +863,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
                                           .substr($currentBoard, $to_index+1);
             }
         } else {
-            if($to_index == 62){
+            if ($to_index == 62){
                 // Kingside Castling for black
                 $currentBoard = substr($currentBoard, 0, 63).'0'
                                           .substr($currentBoard, $from_index+1);
@@ -879,9 +880,9 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
         $keyValue = array();
         $keyValue['currentBoard'] = $currentBoard;
         $keyValue['moveList']     = "CONCAT(`moveList`,'$move\n')";
-        $keyValue['whoseTurnIsIt']= "((`whoseTurnIsIt` + 1)%2)";
-        $keyValue['lastMove']     = "CURRENT_TIMESTAMP";
-        updateDataInTable("chess_currentGames", $keyValue, $cond);
+        $keyValue['whoseTurnIsIt']= '((`whoseTurnIsIt` + 1)%2)';
+        $keyValue['lastMove']     = 'CURRENT_TIMESTAMP';
+        updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
 
     // Is this piece relevant for castling?
@@ -889,67 +890,67 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     if ($piece == 'K' or ($piece == 'R' and $from_index == 7)){
         $keyValue = array();
         $keyValue['whiteCastlingKingsidePossible'] = 0;
-        updateDataInTable("chess_currentGames", $keyValue, $cond);
+        updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
     // White - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 0)){
         $keyValue = array();
         $keyValue['whiteCastlingQueensidePossible'] = 0;
-        updateDataInTable("chess_currentGames", $keyValue, $cond);
+        updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
     // Black - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 63)){
         $keyValue = array();
         $keyValue['blackCastlingKingsidePossible'] = 0;
-        updateDataInTable("chess_currentGames", $keyValue, $cond);
+        updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
     // Black - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 56)){
         $keyValue = array();
         $keyValue['blackCastlingQueensidePossible'] = 0;
-        updateDataInTable("chess_currentGames", $keyValue, $cond);
+        updateDataInTable('chess_currentGames', $keyValue, $cond);
     }
 
     /* Promotion */
-    if(strlen($move) == 5){
+    if (strlen($move) == 5){
         $promotion    = strtolower(substr($move, 4,1));
-        if(!($promotion == 'q' or $promotion == 'r' or $promotion == 'b' 
+        if (!($promotion == 'q' or $promotion == 'r' or $promotion == 'b' 
                                or $promotion == 'n')){
-            exit("ERROR: You can only promote to queen (q), rook (r),
-                  bishop (b) or knight (n)");
+            exit('ERROR: You can only promote to queen (q), rook (r), '.
+                        'bishop (b) or knight (n)');
         }
-        if($color == 'white'){$promotion = strtoupper($promotion);}
-        if(! ( ($piece == 'p' and $to_coord[1] == 1) or
+        if ($color == 'white'){$promotion = strtoupper($promotion);}
+        if (! ( ($piece == 'p' and $to_coord[1] == 1) or
                ($piece == 'P' and $to_coord[1] == 8)    )){
-            exit("ERROR: You may only promote when your pawn reaches the 
-                         first line of the opponent.");
+            exit('ERROR: You may only promote when your pawn reaches the '.
+                        'first line of the opponent.');
         }
         $move = substr($move,0,4).$promotion;
         $piece = $promotion;
     }
-    if( ($piece == 'p' and $to_coord[1] == 1 and $promotion == '') or
+    if ( ($piece == 'p' and $to_coord[1] == 1 and $promotion == '') or
         ($piece == 'P' and $to_coord[1] == 8 and $promotion == '')    ){
-        exit("ERROR: You have to promote. 
-                     Add a single letter at the move-request");
+        exit('ERROR: You have to promote. '.
+                    'Add a single letter at the move-request.');
     }
 
     /* Now update the database with move */
-    $currentBoard = substr($currentBoard, 0, $from_index)."0"
+    $currentBoard = substr($currentBoard, 0, $from_index).'0'
                                           .substr($currentBoard, $from_index+1);
     $currentBoard = substr($currentBoard, 0, $to_index).$piece
                                           .substr($currentBoard, $to_index+1);
     $keyValue['currentBoard'] = $currentBoard;
     $keyValue['moveList']     = "CONCAT(`moveList`,'$move\n')";
-    $keyValue['whoseTurnIsIt']= "((`whoseTurnIsIt` + 1)%2)";
-    $keyValue['lastMove']     = "CURRENT_TIMESTAMP";
+    $keyValue['whoseTurnIsIt']= '((`whoseTurnIsIt` + 1)%2)';
+    $keyValue['lastMove']     = 'CURRENT_TIMESTAMP';
 
-    if($pawnMoved == false and $captureMade == false) {    
-        $keyValue['noCaptureAndPawnMoves'] = "`noCaptureAndPawnMoves` + 1 ";
+    if ($pawnMoved == false and $captureMade == false) {    
+        $keyValue['noCaptureAndPawnMoves'] = '`noCaptureAndPawnMoves` + 1 ';
     } else {
-        $keyValue['noCaptureAndPawnMoves'] = "0";
+        $keyValue['noCaptureAndPawnMoves'] = '0';
     }
 
-    updateDataInTable("chess_currentGames", $keyValue, $cond);
+    updateDataInTable('chess_currentGames', $keyValue, $cond);
 
     /* Get all data for the threefold repetition table*/
     /* Castling? */
@@ -957,29 +958,29 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
                    'whiteCastlingQueensidePossible',
                    'blackCastlingKingsidePossible',
                    'blackCastlingQueensidePossible');
-    $result= selectFromTable($rows, "chess_currentGames", $cond);
+    $result= selectFromTable($rows, 'chess_currentGames', $cond);
     /* Is en passant possible? */
         /* was last move a pawn-2move? */
-        if($pawnMoved and abs($from_coord[1]-$to_coord[1]) == 2){
+        if ($pawnMoved and abs($from_coord[1]-$to_coord[1]) == 2){
             $wasPawn2move = true;
         } else {
             $wasPawn2move = false;
         }
         /* is left/right a pawn of the opponent?*/    
         $isOpponentNext = false;
-        if($to_coord[0] - 1 >= 1){
+        if ($to_coord[0] - 1 >= 1){
             $indexLeft = getIndex($to_coord[0]-1, $to_coord[1]);
             $pieceLeft = getPieceByIndex($currentBoard,$indexLeft);
-            if($pieceLeft == 'p' and $color == 'white'){$isOpponentNext = true;}
-            if($pieceLeft == 'P' and $color == 'black'){$isOpponentNext = true;}
+            if ($pieceLeft == 'p' and $color == 'white'){$isOpponentNext = true;}
+            if ($pieceLeft == 'P' and $color == 'black'){$isOpponentNext = true;}
         }
-        if($to_coord[0] + 1 <= 8){
+        if ($to_coord[0] + 1 <= 8){
             $indexRight= getIndex($to_coord[0]+1, $to_coord[1]);
             $pieceRight= getPieceByIndex($currentBoard,$indexLeft);
-            if($pieceRight== 'p' and $color == 'white'){$isOpponentNext = true;}
-            if($pieceRight== 'P' and $color == 'black'){$isOpponentNext = true;}
+            if ($pieceRight== 'p' and $color == 'white'){$isOpponentNext = true;}
+            if ($pieceRight== 'P' and $color == 'black'){$isOpponentNext = true;}
         }
-        if($isOpponentNext and $wasPawn2move){
+        if ($isOpponentNext and $wasPawn2move){
             $enPassant = '1';
         } else {
             $enPassant = '0';
@@ -997,7 +998,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
     $keyValuePairs['blackCastlingQueensidePossible'] = 
                                       $result['blackCastlingQueensidePossible'];
     $keyValuePairs['enPassantPossible'] = $enPassant;
-    insertIntoTable($keyValuePairs, "chess_currentGamesThreefoldRepetition");
+    insertIntoTable($keyValuePairs, 'chess_currentGamesThreefoldRepetition');
 
     return $currentBoard;
 }
@@ -1005,26 +1006,26 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $color){
  * End of function definitions.                                               *
  * Get CURRENT_GAME_ID and some game-relevant variables                       *  
  ******************************************************************************/
-if(isset($_GET['gameID'])) {
+if (isset($_GET['gameID'])) {
     $gameID= intval($_GET['gameID']);
-    $row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
-                   "blackPlayerID", "moveList", "noCaptureAndPawnMoves", "id");
-    $cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
-    $cond .= USER_ID.") AND `id` = ".$gameID;
-    $result = selectFromTable($row, "chess_currentGames", $cond);
+    $row   = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
+                   'blackPlayerID', 'moveList', 'noCaptureAndPawnMoves', 'id');
+    $cond  = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
+    $cond .= USER_ID.') AND `id` = '.$gameID;
+    $result = selectFromTable($row, 'chess_currentGames', $cond);
 
-    if($result !== false){
+    if ($result !== false){
         $currentBoard  = $result['currentBoard'];
         $whoseTurnIsIt = $result['whoseTurnIsIt'];
         $moveList      = $result['moveList'];
         $noCaptureAndPawnMoves = $result['noCaptureAndPawnMoves'];
         $gameID        = $result['id'];
-        if($whoseTurnIsIt == 0){
+        if ($whoseTurnIsIt == 0){
             $whoseTurnIsItLanguage = 'white';
         } else {
             $whoseTurnIsItLanguage = 'black';
         }
-        if($result['whitePlayerID'] == USER_ID){
+        if ($result['whitePlayerID'] == USER_ID){
             $yourColor = 'white';
             $opponentColor = 'black';
         } else {
@@ -1035,22 +1036,22 @@ if(isset($_GET['gameID'])) {
     }
 }
 
-if(!defined('CURRENT_GAME_ID')){exit('ERROR: Wrong gameID.');}
+if (!defined('CURRENT_GAME_ID')){exit('ERROR: Wrong gameID.');}
 
 /******************************************************************************
  * Get MOVE as Number-Notation:                                               *
  * http://code.google.com/p/community-chess/wiki/NotationOfMoves              *  
  ******************************************************************************/
 
-if(isset($_GET['move'])){
+if (isset($_GET['move'])){
     $move = mysql_real_escape_string($_GET['move']);
-    # Is the move-query well formed?
-    if(strlen($move) > 5 or strlen($move) < 4 ){
-        exit("ERROR: Your move-query should have 4 or 5 characters.");
+    // Is the move-query well formed?
+    if (strlen($move) > 5 or strlen($move) < 4 ){
+        exit(ERR_MOVE_QUERY_LENGTH);
     }
     $from = intval(substr($move, 0, 2));
     $to   = intval(substr($move, 2, 2));
-    if(strlen($move) == 5){
+    if (strlen($move) == 5){
         $promotion = substr($move, 4, 1);
     } else {
         $promotion = '';
@@ -1060,35 +1061,35 @@ if(isset($_GET['move'])){
     $to_y = $to % 10;
     $to_x = ($to-$to_y)/10;
     if (!(1 <= $from_x and $from_x <= 8 and 1 <= $from_y and $from_y <= 8)){
-        exit("ERROR: Your from-coordinates were wrong.");
+        exit('ERROR: Your from-coordinates were wrong.');
     } else {$from_index = getIndex($from_x, $from_y);}
     if (!(1 <= $to_x and $to_x <= 8 and 1 <= $to_y and $to_y <= 8)){
-        exit("ERROR: Your to-coordinates were wrong.");
+        exit('ERROR: Your to-coordinates were wrong.');
     } else {$to_index = getIndex($to_x, $to_y);}
-    if ($from_index == $to_index){exit("ERROR: You have to move.");}
+    if ($from_index == $to_index){exit('ERROR: You have to move.');}
 
     define('MOVE', $move);
 }
 
-if(isset($_GET['pgn'])){
-    # insert Code as soon as possible
-    # define MOVE in my notation
+if (isset($_GET['pgn'])){
+    // insert Code as soon as possible
+    // define MOVE in my notation
 }
 
-if(isset($_GET['iccfalpha'])){
+if (isset($_GET['iccfalpha'])){
     $search = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
     $replace= array(1,2,3,4,5,6,7,8);
     $move = str_replace($search, $replace, $_GET['iccfalpha']);
 
-    # like the rest of "if(isset($_GET['move'])){"
-    # Is the move-query well formed?
-    if(strlen($move) > 5 or strlen($move) < 4 ){
-        exit("ERROR: Your move-query should have 4 or 5 characters. ".
-             "Yours was:'$move' (".strlen($move)." characters).");
+    // like the rest of "if (isset($_GET['move'])){"
+    // Is the move-query well formed?
+    if (strlen($move) > 5 or strlen($move) < 4 ){
+        exit(ERR_MOVE_QUERY_LENGTH.
+             " Yours was:'$move' (".strlen($move).' characters).');
     }
     $from = substr($move, 0, 2);
     $to   = substr($move, 2, 2);
-    if(strlen($move) == 5){
+    if (strlen($move) == 5){
         $promotion = substr($move, 4, 1);
     } else {
         $promotion = '';
@@ -1098,35 +1099,33 @@ if(isset($_GET['iccfalpha'])){
     $to_y = $to % 10;
     $to_x = ($to-$to_y)/10;
     if (!(1 <= $from_x and $from_x <= 8 and 1 <= $from_y and $from_y <= 8)){
-        exit("ERROR: Your from-coordinates were wrong.");
+        exit('ERROR: Your from-coordinates were wrong.');
     } else {$from_index = getIndex($from_x, $from_y);}
     if (!(1 <= $to_x and $to_x <= 8 and 1 <= $to_y and $to_y <= 8)){
-        exit("ERROR: Your to-coordinates were wrong.");
+        exit('ERROR: Your to-coordinates were wrong.');
     } else {$to_index = getIndex($to_x, $to_y);}
-    if ($from_index == $to_index){exit("ERROR: You have to move.");}
+    if ($from_index == $to_index){exit('ERROR: You have to move.');}
 
     define('MOVE', $move);
 }
 
 if (defined('MOVE')) {
-    # Is it your turn?
-    if($whoseTurnIsItLanguage != $yourColor){exit("ERROR: It's not your turn");}
-    # Is one of your chess pieces on the from-field?
+    // Is it your turn?
+    if ($whoseTurnIsItLanguage != $yourColor){exit("ERROR: It's not your turn");}
+    // Is one of your chess pieces on the from-field?
     $piece = getPieceByIndex($currentBoard,$from_index);
-    if($piece == '0'){
+    if ($piece == '0'){
         exit("ERROR: No chess piece on field ($from_x | $from_y).");
     }
-    if($yourColor == 'white' and !(isMyPiece($piece, $yourColor)) ){
-        exit("ERROR: The chess piece on field ($from_x | $from_y) is $piece.
-              It belongs to your opponent. You are $yourColor. Your chess pieces
-              have capital letters.");
+    if ($yourColor == 'white' and !(isMyPiece($piece, $yourColor)) ){
+        exit(sprintf(ERR_NOT_YOUR_PIECE,$from_x,$from_y,$piece,
+                                        $yourColor,'capital'));
     }
-    if($yourColor == 'black' and !(isMyPiece($piece, $yourColor)) ){
-        exit("ERROR: The chess piece on field ($from_x | $from_y) is $piece.
-              It belongs to your opponent. You are $yourColor. Your chess pieces
-              have lower-case letters.");
+    if ($yourColor == 'black' and !(isMyPiece($piece, $yourColor)) ){
+        exit(sprintf(ERR_NOT_YOUR_PIECE,$from_x,$from_y,$piece,
+                                        $yourColor,'lower-case'));
     }
-    # Can the chess piece make this move?
+    // Can the chess piece make this move?
     $piece_lower = strtolower($piece);
     if ($piece_lower == 'q'){
         isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
@@ -1147,32 +1146,32 @@ if (defined('MOVE')) {
         isKnightMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
                                                           $yourColor);
     } else {
-        exit("SOFTWARE-ERROR: This piece should not be there: ".$piece_lower);
+        exit('ERROR: You wanted to move this piece: '.$piece_lower);
     }
 
-    # Do you set yourself check with this move?
+    // Do you set yourself check with this move?
     $newBoard = getNewBoard($currentBoard, $from_index, $to_index);
     if (isPlayerCheck($newBoard, $yourColor)){
-        exit("ERROR: You may not be check at end of your turn!");
+        exit('ERROR: You may not be check at end of your turn!');
     }
-    # Everything is ok => move!
+    // Everything is ok => move!
     $currentBoard = makeMove($from_index, $to_index, $currentBoard, MOVE);
-    # Check for:
+    // Check for:
         if ( !hasValidMoves($currentBoard, $opponentColor) ){
             if ( isPlayerCheck($currentBoard, $opponentColor) ){
-                if($yourColor == 'white'){$outcome = 0;}
+                if ($yourColor == 'white'){$outcome = 0;}
                 else {$outcome = 1;}
-                echo "Checkmate.";
+                echo 'Checkmate.';
             } else {
                 $outcome = 2;
                 echo "$opponentColor has no valid moves but is not check. ".
-                     "Draw.";
+                     'Draw.';
             }
             $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
                          'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                          'whoseTurnIsIt', 'startTime', 'lastMove');
-            $condition = "WHERE `id` = ".CURRENT_GAME_ID;
-            $result= selectFromTable($row, "chess_currentGames", $condition);
+            $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
+            $result= selectFromTable($row, 'chess_currentGames', $condition);
             $moveList = $result['moveList'];
             $whitePlayerID = $result['whitePlayerID'];
             $blackPlayerID = $result['blackPlayerID'];
@@ -1181,7 +1180,7 @@ if (defined('MOVE')) {
             $startTime = $result['startTime'];
             $endTime   = $result['endTime'];
 
-            deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
+            deleteFromTable('chess_currentGames', CURRENT_GAME_ID);
 
             $keyValue   = array();
             $keyValue['moveList'] = $moveList;
@@ -1192,18 +1191,18 @@ if (defined('MOVE')) {
             $keyValue['outcome']   = $outcome;
             $keyValue['startTime'] = $startTime;
             $keyValue['endTime']   = $endTime;
-            insertIntoTable($keyValue, "chess_pastGames");
-            exit("Game finished.");
+            insertIntoTable($keyValue, 'chess_pastGames');
+            exit('Game finished.');
         }
 }
 
-if(isset($_GET['claim50MoveRule'])){
-    if($noCaptureAndPawnMoves >= 100){
+if (isset($_GET['claim50MoveRule'])){
+    if ($noCaptureAndPawnMoves >= 100){
         $row = array('moveList', 'whitePlayerID', 'blackPlayerID', 
                      'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                      'whoseTurnIsIt', 'startTime', 'lastMove');
-        $condition = "WHERE `id` = ".CURRENT_GAME_ID;
-        $result = selectFromTable($row, "chess_currentGames", $condition);
+        $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
+        $result = selectFromTable($row, 'chess_currentGames', $condition);
         $moveList  = $result['moveList'];
         $whitePlayerID = $result['whitePlayerID'];
         $blackPlayerID = $result['blackPlayerID'];
@@ -1212,7 +1211,7 @@ if(isset($_GET['claim50MoveRule'])){
         $startTime = $result['startTime'];
         $endTime   = $result['endTime'];
 
-        deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
+        deleteFromTable('chess_currentGames', CURRENT_GAME_ID);
 
         $keyValue   = array();
         $keyValue['moveList'] = $moveList;
@@ -1223,25 +1222,25 @@ if(isset($_GET['claim50MoveRule'])){
         $keyValue['outcome']   = $outcome;
         $keyValue['startTime'] = $startTime;
         $keyValue['endTime']   = $endTime;
-        insertIntoTable($keyValue, "chess_pastGames");
+        insertIntoTable($keyValue, 'chess_pastGames');
 
-        exit("Game finished. Draw. You claimed draw by the fifty-move rule.");
+        exit('Game finished. Draw. You claimed draw by the fifty-move rule.');
     } else {
         exit("ERROR: The last $noCaptureAndPawnMoves were no capture or pawn ".
-                    "moves. At least 100 have to be made before you can claim ".
-                    "draw by fifty-move rule.");
+                    'moves. At least 100 have to be made before you can claim '.
+                    'draw by fifty-move rule.');
     }
 }
 
-if(isset($_GET['claimThreefoldRepetition'])){
-    $cond  = "WHERE `id` = ".CURRENT_GAME_ID;
+if (isset($_GET['claimThreefoldRepetition'])){
+    $cond  = 'WHERE `id` = '.CURRENT_GAME_ID;
     $rows  = array('currentBoard',
                    'moveList',
                    'whiteCastlingKingsidePossible',
                    'whiteCastlingQueensidePossible',
                    'blackCastlingKingsidePossible',
                    'blackCastlingQueensidePossible');
-    $result= selectFromTable($rows, "chess_currentGames", $cond);
+    $result= selectFromTable($rows, 'chess_currentGames', $cond);
 
     /* is en passant possible now? */
     $moveList = explode("\n", trim($result['moveList']));
@@ -1255,29 +1254,29 @@ if(isset($_GET['claimThreefoldRepetition'])){
     $index    = getIndex($lastToX, $lastToY);
     $shouldBePawn = substr($currentBoard, $index, 1);
 
-    if($lastFromX == $lastToX and abs($lastFromY-$lastToY) == 2){
+    if ($lastFromX == $lastToX and abs($lastFromY-$lastToY) == 2){
         $isOpponentNext = false;
-        if($to_coord[0] - 1 >= 1){
+        if ($to_coord[0] - 1 >= 1){
             $indexLeft = getIndex($lastToX-1, $lastToY);
             $pieceLeft = getPieceByIndex($currentBoard,$indexLeft);
-            if($pieceLeft == 'p' and $yourColor == 'white'){
+            if ($pieceLeft == 'p' and $yourColor == 'white'){
                 $isOpponentNext = true;
             }
-            if($pieceLeft == 'P' and $yourColor == 'black'){
+            if ($pieceLeft == 'P' and $yourColor == 'black'){
                 $isOpponentNext = true;
             }
         }
-        if($to_coord[0] + 1 <= 8){
+        if ($to_coord[0] + 1 <= 8){
             $indexRight= getIndex($lastToX+1, $lastToY);
             $pieceRight= getPieceByIndex($currentBoard,$indexLeft);
-            if($pieceRight== 'p' and $yourColor == 'white'){
+            if ($pieceRight== 'p' and $yourColor == 'white'){
                 $isOpponentNext = true;
             }
-            if($pieceRight== 'P' and $yourColor == 'black'){
+            if ($pieceRight== 'P' and $yourColor == 'black'){
                 $isOpponentNext = true;
             }
         }
-        if($isOpponentNext and $wasPawn2move){
+        if ($isOpponentNext and $wasPawn2move){
             $enPassant = '1';
         } else {
             $enPassant = '0';
@@ -1285,26 +1284,26 @@ if(isset($_GET['claimThreefoldRepetition'])){
     }
     /* end en passant */
 
-    $cond  = "WHERE `gameID` = ".CURRENT_GAME_ID." ";
-    $cond .= "AND `board` = ".$result['currentBoard'];
-    $cond .= "AND `whiteCastlingKingsidePossible` = ";
+    $cond  = 'WHERE `gameID` = '.CURRENT_GAME_ID.' ';
+    $cond .= 'AND `board` = '.$result['currentBoard'];
+    $cond .= 'AND `whiteCastlingKingsidePossible` = ';
     $cond .= $result['whiteCastlingKingsidePossible'];
-    $cond .= "AND `whiteCastlingQueensidePossible`= ";
+    $cond .= 'AND `whiteCastlingQueensidePossible`= ';
     $cond .= $result['whiteCastlingQueensidePossible'];
-    $cond .= "AND `blackCastlingKingsidePossible` = ";
+    $cond .= 'AND `blackCastlingKingsidePossible` = ';
     $cond .= $result['blackCastlingKingsidePossible'];
-    $cond .= "AND `blackCastlingQueensidePossible`= ";
+    $cond .= 'AND `blackCastlingQueensidePossible`= ';
     $cond .= $result['blackCastlingQueensidePossible'];
-    $cond .= "AND `enPassantPossible` = ".$enPassant;
+    $cond .= 'AND `enPassantPossible` = '.$enPassant;
     $result= selectFromTable(array('id'), 
-                                "chess_currentGamesThreefoldRepetition", 
+                                'chess_currentGamesThreefoldRepetition', 
                                 $cond, 4);
-    if(count($result) >= 3){
+    if (count($result) >= 3){
         $rows = array('moveList', 'whitePlayerID', 'blackPlayerID', 
                      'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                      'whoseTurnIsIt', 'startTime', 'lastMove');
-        $condition = "WHERE `id` = ".CURRENT_GAME_ID;
-        $result = selectFromTable($rows, "chess_currentGames", $condition);
+        $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
+        $result = selectFromTable($rows, 'chess_currentGames', $condition);
         $moveList  = $result['moveList'];
         $whitePlayerID = $result['whitePlayerID'];
         $blackPlayerID = $result['blackPlayerID'];
@@ -1313,7 +1312,7 @@ if(isset($_GET['claimThreefoldRepetition'])){
         $startTime = $result['startTime'];
         $endTime   = $result['endTime'];
 
-        deleteFromTable("chess_currentGames", CURRENT_GAME_ID);
+        deleteFromTable('chess_currentGames', CURRENT_GAME_ID);
 
         $keyValue = array();
         $keyValue['moveList'] = $moveList;
@@ -1324,31 +1323,31 @@ if(isset($_GET['claimThreefoldRepetition'])){
         $keyValue['outcome']   = $outcome;
         $keyValue['startTime'] = $startTime;
         $keyValue['endTime']   = $endTime;
-        insertIntoTable($keyValue, "chess_pastGames");
-        exit("Game finished. Draw. You claimed draw by threefold repetition.");
+        insertIntoTable($keyValue, 'chess_pastGames');
+        exit('Game finished. Draw. You claimed draw by threefold repetition.');
     } else {
-        exit("ERROR: Threefold repetition may only be claimed if exactly the ".
-                    "same situation appeared at least three times. ".
-                    "The current situation appered only ".count($result)." ".
-                    "times");
+        exit('ERROR: Threefold repetition may only be claimed if exactly the '.
+                    'same situation appeared at least three times. '.
+                    'The current situation appered only '.count($result).' '.
+                    'times');
     }
 }
 
-$row   = array("currentBoard","whoseTurnIsIt", "whitePlayerID", 
-               "blackPlayerID");
-$cond  = "WHERE (`whitePlayerID` = ".USER_ID." OR `blackPlayerID` = ";
-$cond .= USER_ID.") AND `id` = ".CURRENT_GAME_ID;
-$result= selectFromTable($row, "chess_currentGames", $cond);
+$row   = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
+               'blackPlayerID');
+$cond  = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
+$cond .= USER_ID.') AND `id` = '.CURRENT_GAME_ID;
+$result= selectFromTable($row, 'chess_currentGames', $cond);
 
-if($result !== false){
+if ($result !== false){
     $currentBoard  = $result['currentBoard'];
     $whoseTurnIsIt = $result['whoseTurnIsIt'];
-    if($whoseTurnIsIt == 0){
+    if ($whoseTurnIsIt == 0){
         $whoseTurnIsItLanguage = 'white';
     } else {
         $whoseTurnIsItLanguage = 'black';
     }
-    if($result['whitePlayerID'] == USER_ID){
+    if ($result['whitePlayerID'] == USER_ID){
         $yourColor = 'white';
         $opponentColor = 'black';
     } else {
@@ -1357,25 +1356,24 @@ if($result !== false){
     }
 }
 
-if(isPlayerCheck($currentBoard, $yourColor)){$youCheck = 'Yes';}
+if (isPlayerCheck($currentBoard, $yourColor)){$youCheck = 'Yes';}
 else {$youCheck = 'No';}
-if(isPlayerCheck($currentBoard, $opponentColor)){$opponentCheck = 'Yes';}
+if (isPlayerCheck($currentBoard, $opponentColor)){$opponentCheck = 'Yes';}
 else {$opponentCheck = 'No';}
 
-echo "Current Game Information:<pre><br/>";
-echo substr ($currentBoard ,56, 8)."<br/>";
-echo substr ($currentBoard ,48, 8)."<br/>";
-echo substr ($currentBoard ,40, 8)."<br/>";
-echo substr ($currentBoard ,32, 8)."<br/>";
-echo substr ($currentBoard ,24, 8)."<br/>";
-echo substr ($currentBoard ,16, 8)."<br/>";
-echo substr ($currentBoard , 8, 8)."<br/>";
-echo substr ($currentBoard , 0, 8)."<br/>";
-echo "</pre><br/>";
-echo "Next turn: ".$whoseTurnIsItLanguage."<br/>";
-echo "You are: ".$yourColor."<br/>";
-echo "You are check: $youCheck.<br/>";
+echo 'Current Game Information:<pre><br/>';
+echo substr ($currentBoard ,56, 8).'<br/>';
+echo substr ($currentBoard ,48, 8).'<br/>';
+echo substr ($currentBoard ,40, 8).'<br/>';
+echo substr ($currentBoard ,32, 8).'<br/>';
+echo substr ($currentBoard ,24, 8).'<br/>';
+echo substr ($currentBoard ,16, 8).'<br/>';
+echo substr ($currentBoard , 8, 8).'<br/>';
+echo substr ($currentBoard , 0, 8).'<br/>';
+echo '</pre><br/>';
+echo "Next turn: $whoseTurnIsItLanguage<br/>";
+echo "You are: $yourColor<br/>";
+echo "You are check: $youCheck<br/>";
 echo "Opponent is check: $opponentCheck.<br/>";
-echo "Game-ID: ".CURRENT_GAME_ID.".<br/>";
-
+echo 'Game-ID: '.CURRENT_GAME_ID.'.<br/>';
 ?>
