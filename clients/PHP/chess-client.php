@@ -8,8 +8,8 @@
              * Adjust                                                         * 
              ******************************************************************/
             $server="http://127.0.0.1/chess";
-            $PHPSESSID="j9kv7rtdqmoib66mifv6kte5g5";
-            $gameID=1;
+            $PHPSESSID="ighv1l2am2j0glgeajbhvnb8l5";
+            $gameID=2;
             /******************************************************************
              * Functions                                                      *
              ******************************************************************/
@@ -27,7 +27,7 @@
                     $chessfieldColor = 'white';
                 }
                 echo '<td class="'.$chessfieldColor.'Field">';
-                echo '<img src="../../figures/'.$figure.'.png" />';
+                echo '<img src="../../figures/'.$figure.'.png" alt="'.$figure.'"/>';
                 echo '</td>';
             }
             /******************************************************************
