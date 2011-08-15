@@ -8,10 +8,8 @@
              * Adjust                                                         * 
              ******************************************************************/
             $server="http://127.0.0.1/chess";
-            $PHPSESSID="en3r2c2lggmca27g9q0rvcojo1";
+            $PHPSESSID="j9kv7rtdqmoib66mifv6kte5g5";
             $gameID=1;
-            
-            
             /******************************************************************
              * Functions                                                      *
              ******************************************************************/
@@ -32,8 +30,6 @@
                 echo '<img src="../../figures/'.$figure.'.png" />';
                 echo '</td>';
             }
-            
-            
             /******************************************************************
              * Submit move                                                    *
              ******************************************************************/
@@ -57,8 +53,6 @@
                     echo $data;
                 }
             }
-
-            
             /******************************************************************
              * Get Information                                                *
              ******************************************************************/
@@ -83,7 +77,8 @@
             /******************************************************************
              * Display Information                                            *
              ******************************************************************/
-            $letters = implode("</th><th>",array('&nbsp;','a','b','c','d','e','f','g','h','&nbsp;'));
+            $debugmode = isset($_GET['debug']);
+            $letters   = implode("</th><th>",array('&nbsp;','a','b','c','d','e','f','g','h','&nbsp;'));
             echo '<table><tr><td>';
             echo '<h2>Current Board</h2>';
             echo "<table><tr><th>$letters</th></tr>\r\n";
@@ -101,6 +96,7 @@
             echo '</td><td>';
             echo '<h2>Move</h2>';
             echo '<form method="get" action="chess-client.php">';
+            if ($debugmode) {echo('<input type="hidden" name="debug" value="1" />');}
             echo '<label for="from">From</label>';
             echo '<input type="text" name="from" id="from" placeholder="a2" size="2" />';
             echo '<label for="to">To</label>';
@@ -113,9 +109,11 @@
 
             echo implode("<br />",array_slice($data_array,10,13)).'<br/>';
             echo '<a href="./chess-client.php">Refresh</a>';
-            echo '<h1>All Information:</h1>';
-            foreach($data_array as $x){
-                echo($x."<br />");
+            if($debugmode){
+                echo '<h1>Debug Information:</h1>';
+                foreach($data_array as $x){
+                    echo($x."<br />");
+                }
             }
         ?>
     </body>
