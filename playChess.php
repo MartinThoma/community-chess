@@ -860,33 +860,33 @@ function isPawnMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard,
         $lastToX   = substr($lastMove, 2, 1);
         $lastToY   = substr($lastMove, 3, 1);
 
+        if ($piece_target == '0') {
+            if ($yourColor == 'white') {
+                if ($from_y > $to_y) {
+                    exit('ERROR: White may only move up with pawns.');
+                }
 
-        if ($yourColor == 'white') {
-            if ($from_y > $to_y) {
-                exit('ERROR: White may only move up with pawns.');
-            }
-            if ($piece_target == '0' or isMyPiece($piece_target, $yourColor)) {
-                $shouldBePawn = substr($currentBoard, 
-                                       getIndex($to_x, $to_y-1), 1);
+                $index        = getIndex($to_x, $to_y-1);
+                $shouldBePawn = getPieceByIndex($currentBoard, $index);
+                // was the last move done by the opponet a two-fields pawn of
+                // and is the current player trying to capture this pawn?
                 if ($lastFromX == $lastToX and $lastToX == $to_x and 
                     $lastFromY - $lastToY == 2 and
                     $shouldBePawn == 'p') {
-                    // en passant###############################################TODO
+                    return true;
                 } else {
                     exit(ERR_PAWN_CAPTURE_MOVE);
                 }
-            }
-        } else {
-            if ($from_y < $to_y) {
-                exit('ERROR: Black may only move down with pawns.');
-            }
-            if ($piece_target == '0' or isMyPiece($piece_target, $yourColor)) {
-                $shouldBePawn = getPieceByIndex($currentBoard, 
-                                       getIndex($to_x, $to_y+1));
+            } else {
+                if ($from_y < $to_y) {
+                    exit('ERROR: Black may only move down with pawns.');
+                }
+                $index        = getIndex($to_x, $to_y+1);
+                $shouldBePawn = getPieceByIndex($currentBoard, $index);
                 if ($lastFromX == $lastToX and $lastToX == $to_x and 
                     $lastToY - $lastFromY == 2 and
                     $shouldBePawn == 'P') {
-                    // en passant###############################################TODO
+                    return true;
                 } else {
                     exit(ERR_PAWN_CAPTURE_MOVE);
                 }
@@ -1410,8 +1410,7 @@ if (isset($_GET['claimThreefoldRepetition'])) {
     $lastToX   = substr($lastMove, 2, 1);
     $lastToY   = substr($lastMove, 3, 1);
 
-    $index        = getIndex($lastToX, $lastToY);
-    $shouldBePawn = substr($currentBoard, $index, 1);
+    $shouldBePawn = getPieceByIndex($currentBoard, getIndex($lastToX, $lastToY));
 
     if ($lastFromX == $lastToX and abs($lastFromY-$lastToY) == 2) {
         $isOpponentNext = false;

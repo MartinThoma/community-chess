@@ -4,7 +4,7 @@
  * The following functions could / should be replaced by yours.
  * */
 error_reporting(E_ALL);
-session_start();
+if(!isset($_SESSION)){session_start();}
 define('MYSQL_HOST',     'localhost');
 define('MYSQL_USER',     'chessuser');
 define('MYSQL_PASS',     'localpass');
