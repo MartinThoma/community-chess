@@ -6,19 +6,15 @@
 
 require ('wrapper.inc.php');
 if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+$t = new vemplator();
 
 $condition = "WHERE `whitePlayerID`=".USER_ID." OR `blackPlayerID`=".USER_ID;
 
-$row = selectFromTable(array('id'), 'chess_currentGames', $condition);
-echo 'Current game-IDs:<br/>';
-foreach($row as $gameId){
-    echo $gameId."<br/>";
-}
+$rows = selectFromTable(array('id'), 'chess_currentGames', $condition);
+$t->assign('currentGames', $rows);
 
 $row = selectFromTable(array('id'), 'chess_pastGames', $condition);
-echo 'Past game-IDs:<br/>';
-foreach($row as $gameId){
-    echo $gameId."<br/>";
-}
+$t->assign('pastGames', $row);
 
+echo $t->output('status.html');
 ?>

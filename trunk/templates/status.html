@@ -1,0 +1,17 @@
+{if:currentGames}
+    Current game-IDs:<br/>
+    {foreach:currentGames,i,gameId}
+	    {gameId}<br/>
+    {end}
+{else}
+    No current games.<br/>
+{end}
+
+{if:pastGames}
+    Past game-IDs:<br/>
+    {foreach:pastGames,i,gameId}
+	    {gameId}<br/>
+    {end}
+{else}
+    No past games.<br/>
+{end}
