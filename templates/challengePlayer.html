@@ -1,0 +1,22 @@
+{if:isset(alreadyChallengedPlayer)}
+    You've already challenged the player {alreadyChallengedPlayer}
+    The current game has the id {alreadyChallengedGameID}
+{end}
+
+{if:isset(startedGamePlayerID)}
+    You have started a game against the player with the ID {startedGamePlayerID}.
+    The Username of this Player is {startedGamePlayerUsername}
+{end}
+
+{if:isset(incorrectID)}
+    You have selected an incorrect ID.
+{end}
+
+{if:isset(possibleOpponents)}
+    <ul>
+    {foreach:possibleOpponents,i,playerArray}
+        <li><a href="challengePlayer.php?playerID={playerArray['id']}">
+            {playerArray['uname']}</a></li>
+    {end}
+    </ul>
+{end}

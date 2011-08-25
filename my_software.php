@@ -4,7 +4,10 @@
  * specify the chess software
  * */
 require ('wrapper.inc.php');
+$t = new vemplator();
 if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+else{$t->assign('USER_ID', USER_ID);}
+$msg = array();
 
 if (isset($_GET['addLanguage'])) {
     $langName = mysql_real_escape_string($_GET['addLanguage']);
@@ -63,9 +66,9 @@ if (isset($_GET['addTeammate'])){
         $keyValuePairs['softwareID'] = $softwareID;
         $keyValuePairs['task'] = $task;
         insertIntoTable($keyValuePairs, "chess_softwareDeveloper");
-        echo msg("Added '$username' as a '$task'.");
+        $msg[] = "Added '$username' as a '$task'.";
     } else {
-        echo msg("The username '$username' was not in the database.");
+        $msg[] = "The username '$username' was not in the database.";
     }
 }
 if (isset($_GET['deleteTeammate'])) {
@@ -118,6 +121,7 @@ if (isset($_POST['newSoftwareName'])){
 }
 
 $currentSoftwareID = getUserSoftwareID(USER_ID);
+$t->assign('currentSoftwareID', $currentSoftwareID);
 
 $cond = "ORDER BY  `chess_languages`.`name` ASC";
 $languages= selectFromTable(array('id', 'name'), "chess_languages", $cond, 100);
@@ -125,138 +129,43 @@ $langIndex = array();
 foreach($languages as $lang){
     $langIndex[$lang['id']] = $lang['name'];
 }
-?>
-<html>
-<head>
-<link rel="stylesheet" type="text/css" href="styling/default.css" />
-</head>
-<body>
-<h1>Add a new one</h1>
-<form method="post" action="my_software.php">
-<fieldset>
-<legend>Add a new software / version</legend>
 
-<label for="newSoftwareName">Name of your Software</label>
-<input type="text" name="newSoftwareName" id="newSoftwareName" 
-       placeholder="Chessmaster "/>
-
-<label for="version">Version</label>
-<input type="text" name="version" id="version" placeholder="0.1.0"/>
-
-<?php
 $cond  = "WHERE `playerID`=".USER_ID;
 $row = array('softwareID');
 $softwareIds = selectFromTable($row, "chess_softwareDeveloper", $cond, 10);
+
 if (count($softwareIds) > 0) {
-?>
-<label for="lastVersionID">lastVersionID</label>
-<select name="lastVersionID" id="lastVersionID">
-    <option value="0">New software</option>
-<?php foreach($softwareIds as $id) {
-    $cond  = "WHERE `id` = ".$id['softwareID'];
-    $rows  = array('name', 'version');
-    $result= selectFromTable($rows, "chess_software", $cond);
-    echo '<option value="'.$id.'">'.$result['name'].' '.$result['version'];
-    echo '</option>';
-}
-?>
-</select>
-<?php } ?>
-<label for="changelog">Changelog</label>
-<textarea name="changelog" id="changelog"></textarea>
-
-<input type="submit" />
-</fieldset>
-</form>
-
-<h1>List</h1>
-<table>
-<tr>
-<th>Name of your Software</th>
-<th>Version</th>
-<th>action</th>
-<th>team</th>
-<th>add user by username</th>
-<th>languages</th>
-<th>add language</th>
-</tr>
-
-<?php
-if ($currentSoftwareID == 0){echo '<tr class="current">';}
-else {echo '<tr>';}
-?>   
-<td>Human player</td>
-<td><a href="http://en.wikipedia.org/wiki/Human">Homo sapiens</a></td>
-<td><a href="my_software?setCurrent=0">set to current</a></td>
-<td>You</td>
-<td>-</td>
-<td>English</td>
-<td>-</td>
-</tr>
-<?php foreach($softwareIds as $id) {
-    $id = $id['softwareID'];
-    $cond  = "WHERE `id` = ".$id['softwareID'];
-    $rows  = array('name', 'version');
-    $result= selectFromTable($rows, "chess_software", $cond);
-    if ($id == $currentSoftwareID){
-        echo '<tr class="current">';
-    } else {
-        echo '<tr>';
-    }
-    echo '<td>'.$result['name'].'</td><td>'.$result['version'].'</td>';
-    echo '<td><a href="my_software?setCurrent='.$id.'">set to current</a></td>';
-
-    // List of teammates
-    $cond = "WHERE `softwareID`=$id";
-    $row  = array('playerID', 'task');
-    $playerIDs = selectFromTable($row, "chess_softwareDeveloper", $cond, 100);
-    echo '<td><ul>';
-    foreach($playerIDs as $uID){
-        $cond = "WHERE `id`=".$uID['playerID'];
-        $result = selectFromTable(array('uname'), "chess_players", $cond);
-        echo "<li>".$result['uname']." (".$uID['task'].")";
-        if ($uID['playerID'] != USER_ID){
-            echo '<a href="my_software.php?deleteTeammate='.$uID['playerID'].'&softwareID='.$id.'">';
-            echo '<img src="styling/delete.png" />';
-            echo '</a>';
+    $softwareArray = array();
+    $rows          = array('id', 'name', 'version');
+    foreach($softwareIds as $id) {
+        $id               = $id['softwareID'];
+        $cond             = "WHERE `id` = $id";
+        $basicInformation = selectFromTable($rows, "chess_software", $cond);
+        // List of teammates
+        $cond      = "WHERE `softwareID`=$id";
+        $row       = array('playerID', 'task');
+        $playerIDs = selectFromTable($row, "chess_softwareDeveloper", $cond, 100);
+        $players   = array();
+        foreach($playerIDs as $uID){
+            $cond      = "WHERE `id`=".$uID['playerID'];
+            $player    = selectFromTable(array('id', 'uname'), "chess_players", $cond);
+            $players[] = array_merge($player, array('task'=>$uID['task']));
         }
-        echo "</li>";
+        // Languages
+        $cond = "WHERE `softwareID`=$id";
+        $results=selectFromTable(array("languageID"), "chess_softwareLangages", $cond, 10);
+        $languages = array();
+        foreach($results as $langID){
+            $languages[] = array('id'=>$langID['languageID'], 'name'=>$langIndex[$langID['languageID']]);
+        }
+        // Bring all together
+        $softwareArray[]  = array_merge($basicInformation, 
+                                        array('players'=>$players),
+                                        array('languages'=>$languages)
+                                       );
     }
-    echo '</ul></td>';
-    ?>
-    <td>
-    <form method="get" action="my_software.php">
-        <input type="text" name="addTeammate"/>
-        <input type="text" name="task" value="" placeholder="developer">
-        <input type="hidden" name="softwareID" value="<?php echo $id;?>">
-        <input type="submit" value="add"/>
-    </form>
-    </td>
-    <?php
-    echo '<td>';
-    $cond = "WHERE `softwareID`=$id";
-    $results=selectFromTable(array("languageID"), "chess_softwareLangages", $cond, 10);
-    $i = 0;
-    foreach($results as $langID){
-        $i++;
-        echo $langIndex[$langID['languageID']];
-        echo '<a href="my_software.php?deleteLang='.$langID['languageID'].'&softwareID='.$id.'">';
-        echo '<img src="styling/delete.png" />';
-        echo '</a>';
-        if ($i < count($results)){echo ", ";}
-    }
-    echo '</td>';
-    ?>
-    <td>
-    <form method="get" action="my_software.php">
-        <input type="text" name="addLanguage"/>
-        <input type="hidden" name="softwareID" value="<?php echo $id;?>">
-        <input type="submit" value="add"/>
-    </form>
-    </td>
-    <?php
-    echo '</tr>';
+    $t->assign('softwareArray', $softwareArray);
 }
+
+echo $t->output('my_software.html');
 ?>
-</body>
-</html>

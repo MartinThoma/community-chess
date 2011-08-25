@@ -6,6 +6,7 @@
 
 require ('wrapper.inc.php');
 if (USER_ID === false){exit("Please <a href='login.wrapper.php'>login</a>");}
+$t = new vemplator();
 
 if (isset($_GET['playerID'])){
     $id    = intval($_GET['playerID']);
@@ -16,8 +17,8 @@ if (isset($_GET['playerID'])){
         $cond  = "WHERE `whitePlayerID` = ".USER_ID." AND `blackPlayerID`=$id";
         $row = selectFromTable(array('id'), 'chess_currentGames', $cond);
         if ($row !== false){
-            echo "You've already challenged the player '".$challengedUser."'. ";
-            echo "The current game has the id '".$row['id']."'.";
+            $t->assign('alreadyChallengedPlayer', $challengedUser);
+            $t->assign('alreadyChallengedGameID', $row['id']);
         } else {
             $cond  = "WHERE `id` = ".USER_ID." OR `id`=$id";      
             $rows  = array('id', 'currentChessSoftware');  
@@ -36,23 +37,18 @@ if (isset($_GET['playerID'])){
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
             insertIntoTable($keyValuePairs, 'chess_currentGames');
 
-            echo "You have started a game against the player with the ID ".$id;
-            echo ". The Username of this Player is '$challengedUser'.";
+            $t->assign('startedGamePlayerID', $id);
+            $t->assign('startedGamePlayerUsername', $challengedUser);
         }
     } else {
-        echo "You have selected an incorrect ID.";
+        $t->assign('incorrectID', true);
     }
 } else {
     $rows  = array('id', 'uname');
     $cond  = "WHERE `id` != ".USER_ID;
-    $row = selectFromTable($rows, 'chess_players', $cond, 10);
+    $rows  = selectFromTable($rows, 'chess_players', $cond, 10);
 
-    echo '<ul>';
-    foreach($row as $playerArray){
-      echo '<li><a href="challengePlayer.php?playerID='.$playerArray['id'].'">'.
-      $playerArray['uname'].'</a></li>';
-    }
-    echo '</ul>';
+    $t->assign('possibleOpponents', $rows);
 }
-
+echo $t->output('challengePlayer.html');
 ?>

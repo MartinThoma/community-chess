@@ -4,6 +4,9 @@
  * The following functions could / should be replaced by yours.
  * */
 error_reporting(E_ALL);
+include ('external/vemplator.php');
+set_include_path( 'templates' );
+
 if(!isset($_SESSION)){session_start();}
 define('MYSQL_HOST',     'localhost');
 define('MYSQL_USER',     'chessuser');
