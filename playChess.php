@@ -1,7 +1,23 @@
 <?php
-require_once 'wrapper.inc.php';
+/**
+ * play a standard chess game
+ *
+ * PHP Version 5
+ *
+ * @category Web_Services
+ * @package  Community-chess
+ * @author   Martin Thoma <info@martin-thoma.de>
+ * @license  http://www.opensource.org/licenses/mit-license.php  MIT License
+ * @version  SVN: <svn_id>
+ * @link     http://code.google.com/p/community-chess/
+ */
+
 require_once 'chess.inc.php';
-if (USER_ID === false) exit('Please <a href="login.wrapper.php">login</a>');
+require_once 'wrapper.inc.php';
+if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
+$t = new vemplator();
+$t->assign('USER_ID', USER_ID);
+$msg = array();
 
 /******************************************************************************
  * Get CURRENT_GAME_ID and some game-relevant variables                       *  
@@ -46,14 +62,14 @@ if (!defined('CURRENT_GAME_ID')) {
  ******************************************************************************/
 
 if (isset($_GET['move'])) {
-    $array       = getValidMoveQuery($_GET['move']);
-    $move        = $array[0];
-    $from_index  = $array[1];
-    $to_index    = $array[2];
-    $from_x      = $array[3];
-    $from_y      = $array[4];
-    $to_x        = $array[5];
-    $to_y        = $array[6];
+    $array      = getValidMoveQuery($_GET['move']);
+    $move       = $array[0];
+    $from_index = $array[1];
+    $to_index   = $array[2];
+    $from_x     = $array[3];
+    $from_y     = $array[4];
+    $to_x       = $array[5];
+    $to_y       = $array[6];
     define('MOVE', $move);
 }
 
@@ -63,14 +79,14 @@ if (isset($_GET['pgn'])) {
 }
 
 if (isset($_GET['iccfalpha'])) {
-    $array       = getValidMoveQueryFromICCFalpha($_GET['iccfalpha']);
-    $move        = $array[0];
-    $from_index  = $array[1];
-    $to_index    = $array[2];
-    $from_x      = $array[3];
-    $from_y      = $array[4];
-    $to_x        = $array[5];
-    $to_y        = $array[6];
+    $array      = getValidMoveQueryFromICCFalpha($_GET['iccfalpha']);
+    $move       = $array[0];
+    $from_index = $array[1];
+    $to_index   = $array[2];
+    $from_x     = $array[3];
+    $from_y     = $array[4];
+    $to_x       = $array[5];
+    $to_y       = $array[6];
     define('MOVE', $move);
 }
 
@@ -196,20 +212,21 @@ else                                                   $youCheck = 'No';
 if (isPlayerCheck($currentBoard, $opponentColor)) $opponentCheck = 'Yes';
 else                                              $opponentCheck = 'No';
 
-echo 'Current Game Information:<pre><br/>';
-echo substr($currentBoard, 56, 8).'<br/>';
-echo substr($currentBoard, 48, 8).'<br/>';
-echo substr($currentBoard, 40, 8).'<br/>';
-echo substr($currentBoard, 32, 8).'<br/>';
-echo substr($currentBoard, 24, 8).'<br/>';
-echo substr($currentBoard, 16, 8).'<br/>';
-echo substr($currentBoard, 8, 8).'<br/>';
-echo substr($currentBoard, 0, 8).'<br/>';
-echo '</pre><br/>';
-echo "Next turn: $whoseTurnIsItLanguage<br/>";
-echo "You are: $yourColor<br/>";
-echo "You are check: $youCheck<br/>";
-echo "Opponent is check: $opponentCheck.<br/>";
-echo 'Game-ID: '.CURRENT_GAME_ID.'.<br/>';
+$t->assign('line1', substr($currentBoard, 56, 8));
+$t->assign('line2', substr($currentBoard, 48, 8));
+$t->assign('line3', substr($currentBoard, 40, 8));
+$t->assign('line4', substr($currentBoard, 32, 8));
+$t->assign('line5', substr($currentBoard, 24, 8));
+$t->assign('line6', substr($currentBoard, 16, 8));
+$t->assign('line7', substr($currentBoard, 8, 8));
+$t->assign('line8', substr($currentBoard, 0, 8));
 
+$t->assign('whoseTurnIsItLanguage', $whoseTurnIsItLanguage);
+$t->assign('yourColor', $yourColor);
+$t->assign('youCheck', $youCheck);
+$t->assign('youCheck', $youCheck);
+$t->assign('opponentCheck', $opponentCheck);
+$t->assign('CURRENT_GAME_ID', CURRENT_GAME_ID);
+
+echo $t->output('playChess.html');
 ?>
