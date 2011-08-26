@@ -19,29 +19,8 @@ if(!isset($_SESSION)) session_start();
 require_once 'wrapper.inc.php';
 $t = new vemplator();
 
-/** This function logs the user in. The session variables get stored.
- * 
- * @param string $uname the username
- * @param string $upass the plaintext password
- *
- * @return None
- */
-function login($uname, $upass)
-{
-    $condition  = 'WHERE uname="'.mysql_real_escape_string($uname);
-    $condition .= '" AND upass="'.md5($upass).'"';
-    $row        = selectFromTable(array('id'), 'chess_players', $condition);
-    if ($row !== false) {
-        $_SESSION['UserId']   = $row['id'];
-        $_SESSION['Password'] = md5($upass);
-        header('Location: index.php');
-    }
-}
-
 if (isset($_POST['username'])) {
-    $uname = $_POST['username'];
-    $upass = $_POST['password'];
-    login($uname, $upass);
+    login($_POST['username'], $_POST['password']);
 }
 
 echo $t->output('login.html');

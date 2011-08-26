@@ -19,11 +19,11 @@ $t->assign('USER_ID', USER_ID);
 
 $condition = "WHERE `whitePlayerID`=".USER_ID." OR `blackPlayerID`=".USER_ID;
 
-$rows = selectFromTable(array('id'), 'chess_currentGames', $condition);
+$rows = selectFromTable(array('id'), 'chess_currentGames', $condition, 100);
 $t->assign('currentGames', $rows);
 
-$row = selectFromTable(array('id'), 'chess_pastGames', $condition);
-$t->assign('pastGames', $row);
+$rows = selectFromTable(array('id'), 'chess_pastGames', $condition, 100);
+$t->assign('pastGames', $rows);
 
 echo $t->output('status.html');
 ?>

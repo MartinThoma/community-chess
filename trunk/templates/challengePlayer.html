@@ -1,11 +1,14 @@
+<html>
+<body>
 {if:isset(alreadyChallengedPlayer)}
-    You've already challenged the player {alreadyChallengedPlayer}
-    The current game has the id {alreadyChallengedGameID}
+    You've already challenged the player {alreadyChallengedPlayer}.<br/>
+    The current game has the id {alreadyChallengedGameID}.
 {end}
 
 {if:isset(startedGamePlayerID)}
-    You have started a game against the player with the ID {startedGamePlayerID}.
-    The Username of this Player is {startedGamePlayerUsername}
+    You have started a game against the player with the ID {startedGamePlayerID}.<br/>
+    The Username of this Player is {startedGamePlayerUsername}.<br/>
+    The new gameID is {startedGameID}.
 {end}
 
 {if:isset(incorrectID)}
@@ -20,3 +23,5 @@
     {end}
     </ul>
 {end}
+</body>
+</html>
