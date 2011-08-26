@@ -18,40 +18,7 @@ $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
 if (isset($_GET['playerID'])) {
-    $id             = intval($_GET['playerID']);
-    $cond           = 'WHERE `id` = '.$id.' AND `id` != '.USER_ID;
-    $row            = selectFromTable(array('uname'), 'chess_players', $cond);
-    $challengedUser = $row['uname'];
-    if ($row !== false) {
-        $cond = "WHERE `whitePlayerID` = ".USER_ID." AND `blackPlayerID`=$id";
-        $row  = selectFromTable(array('id'), 'chess_currentGames', $cond);
-        if ($row !== false) {
-            $t->assign('alreadyChallengedPlayer', $challengedUser);
-            $t->assign('alreadyChallengedGameID', $row['id']);
-        } else {
-            $cond   = "WHERE `id` = ".USER_ID." OR `id`=$id";      
-            $rows   = array('id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, "chess_players", $cond, 2);
-
-            if ($result[0]['id'] == USER_ID) {
-                $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
-                $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
-            } else {
-                $blackPlayerSoftwareID = $result[0]['currentChessSoftware'];
-                $whitePlayerSoftwareID = $result[1]['currentChessSoftware'];
-            }
-            $keyValuePairs = array('whitePlayerID'=>USER_ID, 
-                               'blackPlayerID'=>$id,
-                               'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
-                               'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
-            insertIntoTable($keyValuePairs, 'chess_currentGames');
-
-            $t->assign('startedGamePlayerID', $id);
-            $t->assign('startedGamePlayerUsername', $challengedUser);
-        }
-    } else {
-        $t->assign('incorrectID', true);
-    }
+    challengeUser($_GET['playerID'], $t);
 } else {
     $rows = array('id', 'uname');
     $cond = "WHERE `id` != ".USER_ID;

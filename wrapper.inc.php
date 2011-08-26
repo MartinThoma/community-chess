@@ -99,7 +99,7 @@ function selectFromTable($rows, $table, $condition, $limit = 1)
 {
     /* Begin of code which can be replaced by your code */
     $row    = implode(",", $rows);
-    $query  = "SELECT $row FROM `$table` $condition LIMIT $limit"; 
+    $query  = "SELECT $row FROM `$table` $condition LIMIT $limit";
     $result = mysql_query($query);
     if ($limit == 1) {
         $row = mysql_fetch_assoc($result);
@@ -187,4 +187,74 @@ function deleteFromTable($table, $id)
     /* End of code which can be replaced by your code */
 }
 
+/** This function logs the user in. The session variables get stored.
+ * 
+ * @param string $uname the username
+ * @param string $upass the plaintext password
+ *
+ * @return string session_id()
+ */
+function login($uname, $upass, $redirect = true)
+{
+    $condition  = 'WHERE uname="'.mysql_real_escape_string($uname);
+    $condition .= '" AND upass="'.md5($upass).'"';
+    $row        = selectFromTable(array('id'), 'chess_players', $condition);
+    if ($row !== false) {
+        $_SESSION['UserId']   = $row['id'];
+        $_SESSION['Password'] = md5($upass);
+        if ($redirect) {
+            header('Location: index.php');
+        }
+    }
+    return session_id();
+}
+
+/** This function makes user-challenges
+ * 
+ * @param int    $playerID the challenged playerID
+ * @param object $t        template-object
+ *
+ * @return string message with the result
+ */
+function challengeUser($playerID, $t)
+{
+    $id             = intval($playerID);
+    $cond           = 'WHERE `id` = '.$id.' AND `id` != '.USER_ID;
+    $row            = selectFromTable(array('uname'), 'chess_players', $cond);
+    $challengedUser = $row['uname'];
+    if ($row !== false) {
+        $cond = "WHERE `whitePlayerID` = ".USER_ID." AND `blackPlayerID`=$id";
+        $row  = selectFromTable(array('id'), 'chess_currentGames', $cond);
+        if ($row !== false) {
+            $t->assign('alreadyChallengedPlayer', $challengedUser);
+            $t->assign('alreadyChallengedGameID', $row['id']);
+            return "ERROR:You have already challenged this player. ".
+                   "This Game has the gameID ".$row['id'].".";
+        } else {
+            $cond   = "WHERE `id` = ".USER_ID." OR `id`=$id";      
+            $rows   = array('id', 'currentChessSoftware');  
+            $result = selectFromTable($rows, "chess_players", $cond, 2);
+
+            if ($result[0]['id'] == USER_ID) {
+                $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
+                $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
+            } else {
+                $blackPlayerSoftwareID = $result[0]['currentChessSoftware'];
+                $whitePlayerSoftwareID = $result[1]['currentChessSoftware'];
+            }
+            $keyValuePairs = array('whitePlayerID'=>USER_ID, 
+                               'blackPlayerID'=>$id,
+                               'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
+                               'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
+            $gameID = insertIntoTable($keyValuePairs, 'chess_currentGames');
+
+            $t->assign('startedGamePlayerID', $id);
+            $t->assign('startedGamePlayerUsername', $challengedUser);
+            $t->assign('startedGameID', $gameID);
+            return "New game started with gameID $gameID.";
+        }
+    } else {
+        $t->assign('incorrectID', true);
+    }
+}
 ?>
