@@ -1,6 +1,6 @@
 <?php
 /**
- * play a standard chess game
+ * all functions needed for playing a chess game are here
  *
  * PHP Version 5
  *
@@ -32,7 +32,17 @@ define('ERR_NOT_YOUR_PIECE', 'ERROR: The chess piece on field (%u | %u) is %s.'.
  ******************************************************************************/
 /** This function makes all checks before the actuall move
  *
- * @param string $move The move-query. Should look like 1213 or 4567.
+ * @param string $whoseTurnIsItLanguage either 'white' or 'black'
+ * @param string $currentBoard          the board as a single string
+ * @param string $moveList              a list of all moves
+ * @param string $yourColor             either 'white' or 'black'
+ * @param string $opponentColor         either 'white' or 'black'
+ * @param int    $from_index            has to be in [0;63]
+ * @param int    $to_index              has to be in [0;63]
+ * @param int    $from_x                has to be in [0;7]
+ * @param int    $from_y                has to be in [0;7]
+ * @param int    $to_x                  has to be in [0;7]
+ * @param int    $to_y                  has to be in [0;7]
  *
  * @return array
  */
@@ -60,7 +70,7 @@ function processMove($whoseTurnIsItLanguage, $currentBoard, $moveList,
     }
     // Can the chess piece make this move?
     $piece_lower = strtolower($piece);
-    $en_passant = false;
+    $en_passant  = false;
     if ($piece_lower == 'q') {
         isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, 
                                                          $yourColor);
@@ -96,14 +106,14 @@ function processMove($whoseTurnIsItLanguage, $currentBoard, $moveList,
             if ($yourColor == 'white') $outcome = 0;
             else                       $outcome = 1;
 
-            echo 'Checkmate.';
+            $msg = 'Checkmate.';
         } else {
             $outcome = 2;
-            echo "$opponentColor has no valid moves but is not check. ".
+            $msg     = "$opponentColor has no valid moves but is not check. ".
                  'Draw.';
         }
         finishGame($outcome);
-        exit('Game finished.');
+        exit($msg.' Game finished.');
     }
 }
 /** This function checks if the move query is valid. If it is or if it could be
@@ -673,7 +683,8 @@ function isStraightDanger($piece, $yourColor)
  * @param char   $piece        the current board as a single string
  * @param string $yourColor    either 'white' or 'black'
  * @param bool   $comesFromTop it the piece comming from top or bottom?
- * @param int    $abs_king     number of diagonal fields from king to piece (in [1;7])
+ * @param int    $abs_king     number of diagonal fields from king to piece 
+ *                             (in [1;7])
  *
  * @return bool
  */
@@ -1186,7 +1197,8 @@ function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCo
  *
  * @return bool
  */
-function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor, $en_passant) 
+function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor, 
+                  $en_passant) 
 {
     $piece         = getPieceByIndex($currentBoard, $from_index);
     $capturedPiece = getPieceByIndex($currentBoard, $to_index);
@@ -1347,7 +1359,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor, $en_
     }
     if ($to_coord[0] + 1 <= 8) {
         $indexRight = getIndex($to_coord[0]+1, $to_coord[1]);
-        $pieceRight = getPieceByIndex($currentBoard, $indexLeft);
+        $pieceRight = getPieceByIndex($currentBoard, $indexRight);
 
         if ($pieceRight== 'p' and $yourColor == 'white') $isOpponentNext = true;
         if ($pieceRight== 'P' and $yourColor == 'black') $isOpponentNext = true;
