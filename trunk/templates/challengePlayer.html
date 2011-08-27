@@ -1,4 +1,7 @@
 <html>
+<head>
+    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+</head>
 <body>
 {if:isset(alreadyChallengedPlayer)}
     You've already challenged the player {alreadyChallengedPlayer}.<br/>
@@ -18,8 +21,7 @@
 {if:isset(possibleOpponents)}
     <ul>
     {foreach:possibleOpponents,i,playerArray}
-        <li><a href="challengePlayer.php?playerID={playerArray['id']}">
-            {playerArray['uname']}</a></li>
+        <li><a href="challengePlayer.php?playerID={playerArray['id']}">{playerArray['uname']}</a></li>
     {end}
     </ul>
 {end}
