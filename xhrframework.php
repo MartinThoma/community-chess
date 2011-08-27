@@ -6,7 +6,7 @@
  * Every error-message will begin with "ERROR:"
  * If a seperator is needed (lists), a :: is used.
  * action = {'login', 'getLastMoveTime', 'challengeUser', 'whoseTurnIsIt', 
- *           'listCurrentGames', 'listPastGames'}
+ *           'listCurrentGames', 'listPastGames', 'getBoard'}
  * gameID: Is an Integer and needed for some actions
  * userID: Is an Integer and needed for some actions
  *
@@ -21,7 +21,6 @@
  * @version  SVN: <svn_id>
  * @link     http://code.google.com/p/community-chess/
  */
-
 if(!isset($_SESSION)) session_start(); 
 require_once 'wrapper.inc.php';
 require_once 'chess.inc.php';
@@ -85,5 +84,17 @@ if (isset($_GET['action'])) {
             $IDs[] = $row['id'];
         }
         exit(implode('::', $IDs));
+    } else if ($_GET['action'] == 'getBoard') {
+        if (isset($_GET['gameID'])) {
+            $gameID = intval($_GET['gameID']);
+            $cond   = "WHERE `id`=$gameID AND (`whitePlayerID` = ".USER_ID;
+            $cond  .= " OR `blackPlayerID` = ".USER_ID.")";
+            $result = selectFromTable(array('currentBoard'), 
+                            'chess_currentGames', 
+                            $cond, 1);
+            exit($result['currentBoard']);
+        } else {
+            exit("ERROR:You have to provide a valid gameID");
+        }
     }
 }
