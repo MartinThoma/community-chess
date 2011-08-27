@@ -9,8 +9,8 @@
  *           'listCurrentGames', 'listPastGames', 'getBoard'}
  * gameID: Is an Integer and needed for some actions
  * userID: Is an Integer and needed for some actions
- *
- * TODO: move (e.g. move=a2a4 or move=a7a8q)
+ * move  : Submit a move    (e.g.      move=1214 or      move=1718q)
+ * iccfalpha: Submit a move (e.g. iccfalpha=a2a4 or iccfalpha=a7a8q)
  *
  * PHP Version 5
  *
@@ -96,5 +96,13 @@ if (isset($_GET['action'])) {
         } else {
             exit("ERROR:You have to provide a valid gameID");
         }
+    }
+}
+
+if (isset($_GET['move']) or isset($_GET['iccfalpha'])) {
+    if (isset($_GET['gameID'])) {
+        exit(chessMain($t););
+    } else {
+        exit("ERROR:You have to provide a valid gameID");
     }
 }
