@@ -101,7 +101,7 @@ if (isset($_GET['action'])) {
 
 if (isset($_GET['move']) or isset($_GET['iccfalpha'])) {
     if (isset($_GET['gameID'])) {
-        exit(chessMain($t););
+        exit(chessMain($t));
     } else {
         exit("ERROR:You have to provide a valid gameID");
     }
