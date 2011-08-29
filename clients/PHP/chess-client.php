@@ -13,7 +13,7 @@
             /******************************************************************
              * Functions                                                      *
              ******************************************************************/
-            function displayField($figure, $x, $y, $server){
+            function displayField($figure, $x, $y){
                 if(strtoupper($figure)!=$figure){
                     // Discern black from white pieces for windows servers, as
                     // FAT is case-insensitive.
@@ -86,7 +86,7 @@
                 echo "<tr><th>$y</th>";
                 for($x=1;$x<=8;$x++){
                     $figure = substr($data_array[9-$y], $x-1, 1);
-                    displayField($figure, $x, $y, $server);
+                    displayField($figure, $x, $y);
                 }
                 echo "<th>$y</th></tr>\r\n";
             }
