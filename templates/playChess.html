@@ -1,23 +1,55 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <meta charset="utf-8" />
+  <meta name="description" content="Play a chess match." />
+  <title>Play Chess - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
 </head>
 <body>
-Current Game Information:<pre><br/>
-{line1}<br/>
-{line2}<br/>
-{line3}<br/>
-{line4}<br/>
-{line5}<br/>
-{line6}<br/>
-{line7}<br/>
-{line8}<br/>
-</pre><br/>
-Next turn: {whoseTurnIsItLanguage}<br/>
-Next turn: {whoseTurnIsItLanguage}<br/>
-You are: {yourColor}<br/>
-You are check: {youCheck}<br/>
-Opponent is check: {opponentCheck}<br/>
-Game-ID: {CURRENT_GAME_ID}<br/>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
+
+    <table>
+    <tr>
+    <td>
+
+    <table style="text-align:center;">
+        <tr><td colspan="10">{if:$this->data->yourColor=='white'}You{else}Your opponent{end} (White)</td></tr>
+        <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
+    {foreach:board,y,line}
+        <tr><th>{y}</th>
+        {foreach:line,x,piece}
+             {displayField($this->data->piece, $this->data->x+1, $this->data->y+1)}
+        {end}
+        <th>{y}</th></tr>
+    {end}
+        <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
+        <tr><td colspan="10">{if:$this->data->yourColor=='black'}You{else}Your opponent{end} (Black)</td></tr>
+    </table>
+
+    </td>
+    <td>
+        {if:$this->data->whoseTurnIsItLanguage==$this->data->yourColor}
+            It's your turn.
+        {else}
+            It's your opponents turn.
+        {end}
+        <br/>
+        {if:youCheck}You are check.<br/>{end}
+        {if:opponentCheck}Opponent is check.<br/>{end}
+        Game-ID: {CURRENT_GAME_ID} (<a href="playChess.php?gameID={CURRENT_GAME_ID}">refresh</a>)<br/>
+    </td>
+    </tr>
+    </table>
 </body>
 </html>

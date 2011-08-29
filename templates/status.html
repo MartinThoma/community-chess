@@ -1,24 +1,39 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <meta charset="utf-8" />
+  <meta name="description" content="See all current and all past matches." />
+  <title>Current and past matches - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
 </head>
 <body>
-{if:currentGames}
-    Current game-IDs:<br/>
-    {foreach:currentGames,i,gameId}
-	    {gameId}<br/>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches" id="activetab"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
+    {if:currentGames}
+        Current game-IDs:<br/>
+        {foreach:currentGames,i,gameId}
+	        <a href="playChess.php?gameID={gameId['id']}">{gameId['id']}</a><br/>
+        {end}
+    {else}
+        No current games.<br/>
     {end}
-{else}
-    No current games.<br/>
-{end}
 
-{if:pastGames}
-    Past game-IDs:<br/>
-    {foreach:pastGames,i,gameId}
-	    {gameId}<br/>
+    {if:pastGames}
+        Past game-IDs:<br/>
+        {foreach:pastGames,i,gameId}
+	        {gameId}<br/>
+        {end}
+    {else}
+        No past games.<br/>
     {end}
-{else}
-    No past games.<br/>
-{end}
 </body>
 </html>

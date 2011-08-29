@@ -1,107 +1,119 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <meta charset="utf-8" />
+  <meta name="description" content="Set up your current software." />
+  <title>Software - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
 </head>
 <body>
-<h1>Add a new one</h1>
-<form method="post" action="my_software.php">
-<fieldset>
-<legend>Add a new software / version</legend>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software" id="activetab"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
+    <h1>Add a new one</h1>
+    <form method="post" action="my_software.php">
+    <fieldset>
+    <legend>Add a new software / version</legend>
 
-<label for="newSoftwareName">Name of your Software</label>
-<input type="text" name="newSoftwareName" id="newSoftwareName" 
-       placeholder="Chessmaster "/>
+    <label for="newSoftwareName">Name of your Software</label>
+    <input type="text" name="newSoftwareName" id="newSoftwareName" 
+           placeholder="Chessmaster "/>
 
-<label for="version">Version</label>
-<input type="text" name="version" id="version" placeholder="0.1.0"/>
+    <label for="version">Version</label>
+    <input type="text" name="version" id="version" placeholder="0.1.0"/>
 
-{if:isset(softwareArray)}
-    <label for="lastVersionID">lastVersionID</label>
-    <select name="lastVersionID" id="lastVersionID">
-        <option value="0">New software</option>
-        {foreach:softwareArray,i,software}
-            <option value="{software.id}">{software.name} {software.version}
-            </option>
-        {end}
-    </select>
-{end}
-<label for="changelog">Changelog</label>
-<textarea name="changelog" id="changelog"></textarea>
-
-<input type="submit" />
-</fieldset>
-</form>
-
-<h1>List</h1>
-<table>
-<tr>
-<th>Name of your Software</th>
-<th>Version</th>
-<th>action</th>
-<th>team</th>
-<th>add user by username</th>
-<th>languages</th>
-<th>add language</th>
-</tr>
-{if:(currentSoftwareID == 0)}
-  <tr class="current">
-{else}
-  <tr>
-{end}
-<td>Human player</td>
-<td><a href="http://en.wikipedia.org/wiki/Human">Homo sapiens</a></td>
-<td><a href="my_software?setCurrent=0">set to current</a></td>
-<td>You</td>
-<td>-</td>
-<td>English</td>
-<td>-</td>
-</tr>
-{if:isset(softwareArray)}
-    {foreach:softwareArray,i,software}
-        {if:software['id']==currentSoftwareID}
-            <tr class="current">
-        {else}
-            <tr>
-        {end}
-        <td>{software['name']}</td><td>{software['version']}</td>
-        <td><a href="my_software?setCurrent={software['id']}">set to current</a></td>
-        <td><ul>
-        {foreach:software['players'],i,player}
-            <li>{player['uname']} ({player['task']})
-            {if:player['id'] != USER_ID}
-                <a href="my_software.php?deleteTeammate={player['id']}&softwareID={software['id']}">
-                <img src="styling/delete.png" />
-                </a>
+    {if:isset(softwareArray)}
+        <label for="lastVersionID">lastVersionID</label>
+        <select name="lastVersionID" id="lastVersionID">
+            <option value="0">New software</option>
+            {foreach:softwareArray,i,software}
+                <option value="{software['id']}">{software['name']} {software['version']}
+                </option>
             {end}
-            </li>
-        {end}
-        </ul></td>
-        <td>
-        <form method="get" action="my_software.php">
-            <input type="text" name="addTeammate"/>
-            <input type="text" name="task" value="" placeholder="developer">
-            <input type="hidden" name="softwareID" value="{software['id']}">
-            <input type="submit" value="add"/>
-        </form>
-        </td>
-        <td>
-        {foreach:software['languages'],i,lang}
-            {if:i > 0},{end}
-            {lang['name']}
-            <a href="my_software.php?deleteLang={lang['id']}&softwareID={software['id']}">
-            <img src="styling/delete.png" />
-            </a>
-        {end}
-        </td>
-        <td>
-        <form method="get" action="my_software.php">
-            <input type="text" name="addLanguage"/>
-            <input type="hidden" name="softwareID" value="{software['id']}">
-            <input type="submit" value="add"/>
-        </form>
-        </td>
-        </tr>
+        </select>
     {end}
-{end}
+    <label for="changelog">Changelog</label>
+    <textarea name="changelog" id="changelog"></textarea>
+
+    <input type="submit" />
+    </fieldset>
+    </form>
+
+    <h1>List</h1>
+    <table>
+    <tr>
+    <th>Name of your Software</th>
+    <th>Version</th>
+    <th>action</th>
+    <th>team</th>
+    <th>add user by username</th>
+    <th>languages</th>
+    <th>add language</th>
+    </tr>
+    {if:(currentSoftwareID == 0)}
+      <tr class="current">
+    {else}
+      <tr>
+    {end}
+    <td>Human player</td>
+    <td><a href="http://en.wikipedia.org/wiki/Human">Homo sapiens</a></td>
+    <td><a href="my_software?setCurrent=0">set to current</a></td>
+    <td>You</td>
+    <td>-</td>
+    <td>English</td>
+    <td>-</td>
+    </tr>
+    {if:isset(softwareArray)}
+        {foreach:softwareArray,i,software}
+            {if:software['id']==currentSoftwareID}
+                <tr class="current">
+            {else}
+                <tr>
+            {end}
+            <td>{software['name']}</td><td>{software['version']}</td>
+            <td><a href="my_software?setCurrent={software['id']}">set to current</a></td>
+            <td><ul>
+            {foreach:software['players'],i,player}
+                <li>{player['uname']} ({player['task']})
+                {if:player['id'] != USER_ID}
+                    <a href="my_software.php?deleteTeammate={player['id']}&softwareID={software['id']}">
+                    <img src="styling/delete.png" />
+                    </a>
+                {end}
+                </li>
+            {end}
+            </ul></td>
+            <td>
+            <form method="get" action="my_software.php">
+                <input type="text" name="addTeammate"/>
+                <input type="text" name="task" value="" placeholder="developer">
+                <input type="hidden" name="softwareID" value="{software['id']}">
+                <input type="submit" value="add"/>
+            </form>
+            </td>
+            <td>
+            {foreach:software['languages'],$i,lang}
+                {lang['name']}
+                <a href="my_software.php?deleteLang={lang['id']}&softwareID={software['id']}"><img src="styling/delete.png" /></a>
+            {end}
+            </td>
+            <td>
+            <form method="get" action="my_software.php">
+                <input type="text" name="addLanguage"/>
+                <input type="hidden" name="softwareID" value="{software['id']}">
+                <input type="submit" value="add"/>
+            </form>
+            </td>
+            </tr>
+        {end}
+    {end}
 </body>
 </html>
