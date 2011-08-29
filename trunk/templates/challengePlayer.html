@@ -1,29 +1,49 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <meta charset="utf-8" />
+  <meta name="description" content="A page where you can challenge another player." />
+  <title>Challenge another player - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
+  <link type="text/css" href="external/jquery-toastmessage/css/jquery.toastmessage.css" rel="stylesheet">
+  <script type="text/javascript" src="external/jquery-1.5.min.js"></script>
+  <script type="text/javascript" src="external/jquery-toastmessage/jquery.toastmessage-min.js"></script>
 </head>
 <body>
-{if:isset(alreadyChallengedPlayer)}
-    You've already challenged the player {alreadyChallengedPlayer}.<br/>
-    The current game has the id {alreadyChallengedGameID}.
-{end}
+    <script type="text/javascript" src="external/jquery-toastmessage/toast-custom.js"></script>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player" id="activetab"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
 
-{if:isset(startedGamePlayerID)}
-    You have started a game against the player with the ID {startedGamePlayerID}.<br/>
-    The Username of this Player is {startedGamePlayerUsername}.<br/>
-    The new gameID is {startedGameID}.
-{end}
-
-{if:isset(incorrectID)}
-    You have selected an incorrect ID.
-{end}
-
-{if:isset(possibleOpponents)}
-    <ul>
-    {foreach:possibleOpponents,i,playerArray}
-        <li><a href="challengePlayer.php?playerID={playerArray['id']}">{playerArray['uname']}</a></li>
+    {if:isset(alreadyChallengedPlayer)}
+        <script>showStickyErrorToast("You've already challenged the player {alreadyChallengedPlayer}.<br/>The current game has the id {alreadyChallengedGameID}.");</script>
+        <noscript>You've already challenged the player {alreadyChallengedPlayer}.<br/>The current game has the id {alreadyChallengedGameID}.</noscript>
     {end}
-    </ul>
-{end}
+
+    {if:isset(startedGamePlayerID)}
+        <script>showStickySuccessToast("You have started a game against the player with the ID {startedGamePlayerID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.")</script>
+         <noscript>You have started a game against the player with the ID {startedGamePlayerID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.</noscript>
+    {end}
+
+    {if:isset(incorrectID)}
+        <script>showStickyErrorToast("You have selected an incorrect ID.");</script>
+        <noscript>You have selected an incorrect ID.</noscript>
+    {end}
+
+    {if:isset(possibleOpponents)}
+        <ul>
+        {foreach:possibleOpponents,i,playerArray}
+            <li><a href="challengePlayer.php?playerID={playerArray['id']}">{playerArray['uname']}</a></li>
+        {end}
+        </ul>
+    {end}
 </body>
 </html>

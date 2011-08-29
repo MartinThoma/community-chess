@@ -1,21 +1,23 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <meta charset="utf-8" />
+  <meta name="description" content="Select what you want to do next." />
+  <title>Homepage - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
 </head>
 <body>
-Logged in with USER_ID {USER_ID}.<br/>
-Navigation:<br/>
-<ul>
-    <li><a href="status.php">status.php</a>: 
-        A list of all current / past games</li>
-    <li><a href="challengePlayer.php">challengePlayer.php</a>:
-        Challenge a player</li>
-    <li><a href="playChess.php">playChess.php</a>: play a game. You have to
-        provide a gameID via GET.</li>
-    <li><a href="my_software.php">my_software.php</a>: provide information 
-        about the chess software you have written.</li>
-    <li><a href="tournaments.php">tournaments.php</a>: create tournaments or
-        participate in a tournament</li>
-</ul>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage" id="activetab"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
+    Logged in with USER_ID {USER_ID}.<br/>
 </body>
 </html>

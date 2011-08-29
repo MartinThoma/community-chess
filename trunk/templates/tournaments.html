@@ -1,128 +1,150 @@
-<html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
 <head>
-    <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <meta charset="utf-8" />
+  <meta name="description" content="See all current and all past matches." />
+  <title>Tournaments - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
+  <link type="text/css" href="external/jquery-toastmessage/css/jquery.toastmessage.css" rel="stylesheet">
+  <script type="text/javascript" src="external/jquery-1.5.min.js"></script>
+  <script type="text/javascript" src="external/jquery-toastmessage/jquery.toastmessage-min.js"></script>
 </head>
 <body>
-{if:isset(alreadyChallengedPlayer)}
-    <div class="infobox">You've already challenged the player {alreadyChallengedPlayer}
-    The current game has the id {alreadyChallengedGameID}</div>
-{end}
-
-{if:isset(startedGamePlayerID)}
-    <div class="infobox">You have started a game against the player with the ID {startedGamePlayerID}.
-    The Username of this Player is {startedGamePlayerUsername}</div>
-{end}
-
-{if:isset(incorrectID)}
-    <div class="infobox">You have selected an incorrect ID.</div>
-{end}
-
-{if:isset(joinedTournamentID)}
-    <div class="infobox">You joined the tournament with the ID {joinedTournamentID}.</div>
-{end}
-
-{if:isset(joinTournamentFailed)}
-    <div class="infobox">I couldn't add you to the tournament. Do you already participate?</div>
-{end}
-
-{if:isset(detailsPlayers)}
-    <h1>Details of tournament</h1>
-    <table>
-    <tr>
-    <th>playerID</th>
-    <th>joinedDate</th>
-    <th>games won / played</th>
-    <th>challenge</th>
-    </tr>
-    {foreach:detailsPlayers,i,player}
-        <tr>
-        <th>{player['playerID']}</th>
-        <th>{player['joinedDate']}</th>
-        <th>{player['gamesWon']} / {player['gamesPlayed']}</th>
-        <th>
-        {if:(player['playerID'] != USER_ID)}
-            <a href="tournaments.php?challengePlayerID={player['playerID']}&tournamentID={detailsTournamentID}">challenge</a>
-        {else}
-            -
-        {end}
-        </th>
-        </tr>
+    <script type="text/javascript" src="external/jquery-toastmessage/toast-custom.js"></script>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments" id="activetab"><span>Tournaments</span></a></li>
+      </ul>
+    </div>
+    <br style="clear:both;"/>
+    {if:isset(alreadyChallengedPlayer)}
+        <script>showStickyErrorToast("You've already challenged the player {alreadyChallengedPlayer}. The current game has the id {alreadyChallengedGameID}.");</script>
+        <noscript>You've already challenged the player {alreadyChallengedPlayer}. The current game has the id {alreadyChallengedGameID}.</noscript>
     {end}
-    </table>
-{end}
 
-<h1>New tournament</h1>
-<form method="post" action="tournaments.php">
-<fieldset>
-<legend>Initiate new tournament</legend>
+    {if:isset(startedGamePlayerID)}
+        <script>showStickyNoticeToast("You have started a game against the player with the ID {startedGamePlayerID}. The Username of this Player is {startedGamePlayerUsername}.");</script>
+        <noscript>You have started a game against the player with the ID {startedGamePlayerID}. The Username of this Player is {startedGamePlayerUsername}.</noscript>
+    {end}
 
-<label for="tournamentName">Name</label>
-<input type="text" id="tournamentName" name="tournamentName" />
+    {if:isset(incorrectID)}
+        <script>showStickyWarningToast("You have selected an incorrect ID.");</script>
+        <noscript>You have selected an incorrect ID.</noscript>
+    {end}
 
-<label for="description">description</label>
-<input type="text" id="description" name="description" />
+    {if:isset(joinedTournamentID)}
+        <script>showStickyNoticeToast("You joined the tournament with the ID {joinedTournamentID}.");</script>
+        <noscript>You joined the tournament with the ID {joinedTournamentID}.</noscript>
+    {end}
 
-<label for="password">password (leaf blank for no password)</label>
-<input type="password" id="password" name="password" />
+    {if:isset(joinTournamentFailed)}
+        <script>showStickyErrorToast("I couldn't add you to the tournament. Do you already participate?");</script>
+        <noscript>I couldn't add you to the tournament. Do you already participate?</noscript>
+    {end}
 
-<label for="closingDate">closingDate</label>
-<input type="text" id="closingDate" name="closingDate" value="{closingDate}" />
-<input type="submit" />
-</fieldset>
-</form>
-
-<h1>All tournaments</h1>
-<table border="1">
-<tr>
-    <th>Name</th>
-    <th>Password</th>
-    <th>Description</th>
-    <th>Initiation Date</th>
-    <th>Closing Date</th>
-    <th>Status</th>
-    <th>action</th>
-</tr>
-
-{if:isset(allTournaments)}
-    {foreach:allTournaments,i,tournament}
-        {if:doIParticipate[i]}
-            <tr class="current">
-        {else}
+    {if:isset(detailsPlayers)}
+        <h1>Details of tournament</h1>
+        <table>
+        <tr>
+        <th>playerID</th>
+        <th>joinedDate</th>
+        <th>games won / played</th>
+        <th>challenge</th>
+        </tr>
+        {foreach:detailsPlayers,i,player}
             <tr>
-        {end}
-        <td>{tournament['name']}</td>
-        <td>
-        {if:isPasswordNeeded[i]}
-            Yes
-        {else}
-            No
-        {end}
-        </td>
-        <td>{tournament['description']}</td>
-        <td>{tournament['initiationDate']}</td>
-        <td>{tournament['closingDate']}</td>
-        <td>{tournament['status']}</td>
-        <td>
-        {if:(tournament['status'] == 'openForInvitations')}
-            {if:doIParticipate[i]}
-                <a href="tournaments.php?deleteParticipation={tournament['id']}">delete Participation</a>
+            <th>{player['playerID']}</th>
+            <th>{player['joinedDate']}</th>
+            <th>{player['gamesWon']} / {player['gamesPlayed']}</th>
+            <th>
+            {if:(player['playerID'] != USER_ID)}
+                <a href="tournaments.php?challengePlayerID={player['playerID']}&tournamentID={detailsTournamentID}">challenge</a>
             {else}
-                {if:isPasswordNeeded[i]}
-                   
-                    <form method="get" action="tournaments.php">
-                    <input type="hidden" name="enterID" value="{tournament['id']}"/>
-                    <input type="password" name="password" />
-                    <input type="submit" value="participate" />
-                    </form>
+                -
+            {end}
+            </th>
+            </tr>
+        {end}
+        </table>
+    {end}
+
+    <h1>New tournament</h1>
+    <form method="post" action="tournaments.php">
+    <fieldset>
+    <legend>Initiate new tournament</legend>
+
+    <label for="tournamentName">Name</label>
+    <input type="text" id="tournamentName" name="tournamentName" />
+
+    <label for="description">description</label>
+    <input type="text" id="description" name="description" />
+
+    <label for="password">password (leaf blank for no password)</label>
+    <input type="password" id="password" name="password" />
+
+    <label for="closingDate">closingDate</label>
+    <input type="text" id="closingDate" name="closingDate" value="{closingDate}" />
+    <input type="submit" />
+    </fieldset>
+    </form>
+
+    <h1>All tournaments</h1>
+    <table border="1">
+    <tr>
+        <th>Name</th>
+        <th>Password</th>
+        <th>Description</th>
+        <th>Initiation Date</th>
+        <th>Closing Date</th>
+        <th>Status</th>
+        <th>action</th>
+    </tr>
+
+    {if:isset(allTournaments)}
+        {foreach:allTournaments,i,tournament}
+            {if:doIParticipate[i]}
+                <tr class="current">
+            {else}
+                <tr>
+            {end}
+            <td>{tournament['name']}</td>
+            <td>
+            {if:isPasswordNeeded[i]}
+                Yes
+            {else}
+                No
+            {end}
+            </td>
+            <td>{tournament['description']}</td>
+            <td>{tournament['initiationDate']}</td>
+            <td>{tournament['closingDate']}</td>
+            <td>{tournament['status']}</td>
+            <td>
+            {if:(tournament['status'] == 'openForInvitations')}
+                {if:doIParticipate[i]}
+                    <a href="tournaments.php?deleteParticipation={tournament['id']}"><img src="styling/disconnect.png" alt="don't participate" title="don't participate"/></a>
                 {else}
-                    <a href="tournaments.php?enterID={tournament['id']}">participate</a>
+                    {if:isPasswordNeeded[i]}
+                       
+                        <form method="get" action="tournaments.php">
+                        <input type="hidden" name="enterID" value="{tournament['id']}"/>
+                        <input type="password" name="password" />
+                        <input type="submit" value="participate" />
+                        </form>
+                    {else}
+                        <a href="tournaments.php?enterID={tournament['id']}"><img src="styling/connect.png" alt="participate" title="participate"/></a>
+                    {end}
                 {end}
             {end}
+            <a href="tournaments.php?getDetails={tournament['id']}"><img src="styling/magnifier.png" alt="details" title="details" /></a>
+            </td>
+          </tr>
         {end}
-        <a href="tournaments.php?getDetails={tournament['id']}">details</a>
-        </td>
-      </tr>
     {end}
-{end}
 </body>
 </html>
