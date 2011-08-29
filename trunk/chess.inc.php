@@ -230,11 +230,20 @@ function chessMain($t)
         }
     }
 
-    if (isPlayerCheck($currentBoard, $yourColor))          $youCheck = 'Yes';
-    else                                                   $youCheck = 'No';
-    if (isPlayerCheck($currentBoard, $opponentColor)) $opponentCheck = 'Yes';
-    else                                              $opponentCheck = 'No';
+    if (isPlayerCheck($currentBoard, $yourColor))          $youCheck = true;
+    else                                                   $youCheck = false;
+    if (isPlayerCheck($currentBoard, $opponentColor)) $opponentCheck = true;
+    else                                              $opponentCheck = false;
 
+    $board = array();
+    for ($y=0;$y<8;$y++) {
+        $line = array();
+        for ($x=0;$x<8;$x++) {
+            $line[] = substr($currentBoard, $x+8*$y, 1);
+        }
+        $board[] = $line;
+    }
+    $t->assign('board', $board);
     $t->assign('line1', substr($currentBoard, 56, 8));
     $t->assign('line2', substr($currentBoard, 48, 8));
     $t->assign('line3', substr($currentBoard, 40, 8));

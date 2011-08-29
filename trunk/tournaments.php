@@ -157,10 +157,10 @@ $results = selectFromTable($rows, 'chess_turnaments', $cond, 100);
 $doIParticipate   = array();
 $isPasswordNeeded = array();
 $t->assign('allTournaments', $results);
-$emptyMD5 = "d41d8cd98f00b204e9800998ecf8427e"
+$emptyMD5 = "d41d8cd98f00b204e9800998ecf8427e";
 foreach ($results as $result) {
     $doIParticipate[]   = in_array($result['id'], $myParticipations);
-    $isPasswordNeeded[] = ($result['password'] != $emptyMD);
+    $isPasswordNeeded[] = ($result['password'] != $emptyMD5);
 }
 $t->assign('doIParticipate', $doIParticipate);
 $t->assign('isPasswordNeeded', $isPasswordNeeded);

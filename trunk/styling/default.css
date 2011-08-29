@@ -1,7 +1,14 @@
+body {
+    margin:0;
+    padding:0;
+}
 .current {
     background-color: lime;
 }
+.whiteField {
+    background-color: #ffce9e;
+}
 
-.infobox {
-    background-color: yellow;
+.blackField {
+    background-color: #d18b47;
 }
