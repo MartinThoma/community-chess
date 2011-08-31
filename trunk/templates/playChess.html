@@ -24,6 +24,11 @@
     <td>
 
     <table style="text-align:center;">
+        <tr><td colspan="10">{if:$this->data->yourColor=='white'}
+                                {if:youCheck}<span class="stressed">You are check.</span>{end}
+                            {else}
+                                {if:opponentCheck}<span class="stressed">Opponent is check.</span>{end}
+                            {end} (Black)</td></tr>
         <tr><td colspan="10">{if:$this->data->yourColor=='white'}You{else}Your opponent{end} (White)</td></tr>
         <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
     {foreach:board,y,line}
@@ -35,6 +40,11 @@
     {end}
         <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
         <tr><td colspan="10">{if:$this->data->yourColor=='black'}You{else}Your opponent{end} (Black)</td></tr>
+        <tr><td colspan="10">{if:$this->data->yourColor=='black'}
+                                {if:youCheck}<span class="stressed">You are check.</span>{end}
+                            {else}
+                                {if:opponentCheck}<span class="stressed">Opponent is check.</span>{end}
+                            {end} (Black)</td></tr>
     </table>
 
     </td>
@@ -45,8 +55,6 @@
             It's your opponents turn.
         {end}
         <br/>
-        {if:youCheck}You are check.<br/>{end}
-        {if:opponentCheck}Opponent is check.<br/>{end}
         Game-ID: {CURRENT_GAME_ID} (<a href="playChess.php?gameID={CURRENT_GAME_ID}">refresh</a>)<br/>
     </td>
     </tr>

@@ -12,3 +12,9 @@ body {
 .blackField {
     background-color: #d18b47;
 }
+
+.stressed {
+    color: red;
+    font-weight:bold;
+    font-size:+4;
+}
