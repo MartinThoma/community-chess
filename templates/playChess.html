@@ -32,11 +32,11 @@
         <tr><td colspan="10">{if:$this->data->yourColor=='white'}You{else}Your opponent{end} (White)</td></tr>
         <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
     {foreach:board,y,line}
-        <tr><th>{y}</th>
+        <tr><th>{(y+1)}</th>
         {foreach:line,x,piece}
              {displayField($this->data->piece, $this->data->x+1, $this->data->y+1)}
         {end}
-        <th>{y}</th></tr>
+        <th>{(y+1)}</th></tr>
     {end}
         <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
         <tr><td colspan="10">{if:$this->data->yourColor=='black'}You{else}Your opponent{end} (Black)</td></tr>

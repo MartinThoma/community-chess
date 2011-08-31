@@ -33,15 +33,13 @@ define("USER_ID", getUserID());
 /******************************************************************************/
 /* functions
 *******************************************************************************/
-/** This function gets the id of the user
+/** Return the UserID if the User is logged in. 
+ *  If no user is logged in return false
  *
  * @return int
  */
 function getUserID()
 {
-    /* Return the UserID if the User is logged in.
-                         else return false */
-
     /* Begin of code which can be replaced by your code */
     if (!isset($_SESSION['UserId']) OR !isset($_SESSION['Password'])) {
         return false;
@@ -71,17 +69,6 @@ function getUserSoftwareID($UserID)
     $c   = "WHERE id='$UserID'";
     $row = selectFromTable(array('currentChessSoftware'), 'chess_players', $c);
     return $row['currentChessSoftware'];
-}
-
-/** This function returns a html-formated string
- *
- * @param string $text The message
- *
- * @return string
- */
-function msg($text)
-{
-    return '<div class="infobox">'.$text.'</div>';
 }
 
 /** This function selects some rows from the specified table and returns
@@ -135,6 +122,8 @@ function insertIntoTable($keyValuePairs, $table)
 }
 
 /** This function uptates some rows in a table
+ *  $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
+ *                         VALUES ('value1', 'value2');
  *
  * @param string $table     the table from which the rows should be updated
  * @param array  $keyValue  all key=>values
@@ -144,8 +133,7 @@ function insertIntoTable($keyValuePairs, $table)
  */
 function updateDataInTable($table, $keyValue, $condition)
 {
-    /* $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
-                VALUES ('value1', 'value2'); */
+
     /* Begin of code which can be replaced by your code */
     $query  = "UPDATE  `$table` SET  ";
     $values = "";
