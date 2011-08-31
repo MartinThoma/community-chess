@@ -27,3 +27,16 @@ by
 $result = $db->sql_query($query);
 }}} 
 in these functions.
+
+= login.wrapper.php =
+The relevant values are:
+
+  * tables: `chess_players` - `phpbb_users`
+    * rows: `id` - `user_id`
+    * rows: `uname` - `username`
+    * rows: `upass` - `user_password`
+  * scripts: `login.wrapper.php` - `ucp.php`
+
+At the moment, I don't know how I can use the login-script from phpBB for community chess. 
+
+The row `currentChessSoftware` in the table `chess_players` is also a problem. I should possibly add a new table with the current chess software to player correlation.
