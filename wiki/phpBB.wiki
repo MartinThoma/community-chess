@@ -1,0 +1,29 @@
+#summary How can community chess be used with phpBB? A little tutorial.
+
+= wrapper.inc.php =
+
+These lines should be added directly after `set_include_path('templates');`
+
+{{{
+define('IN_PHPBB', true);
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : '../phpBB3/';
+$phpEx = substr(strrchr(__FILE__, '.'), 1);
+include($phpbb_root_path . 'common.' . $phpEx);
+}}}
+
+If your relative phpBB-path is not '../phpBB3/' please change it.
+
+Add the following line to the functions `selectFromTable()`, `insertIntoTable()`, `updateDataInTable()`, `deleteFromTable()` after `/* Begin of code which can be replaced by your code */`:
+{{{
+global $db;
+}}}
+
+Also replace 
+{{{
+$result = mysql_query($query);
+}}} 
+by 
+{{{
+$result = $db->sql_query($query);
+}}} 
+in these functions.
