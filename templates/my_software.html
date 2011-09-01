@@ -82,7 +82,7 @@
             <td><a href="my_software?setCurrent={software['id']}">set to current</a></td>
             <td><ul>
             {foreach:software['players'],i,player}
-                <li>{player['uname']} ({player['task']})
+                <li>{player['user_name']} ({player['task']})
                 {if:player['id'] != USER_ID}
                     <a href="my_software.php?deleteTeammate={player['id']}&softwareID={software['id']}">
                     <img src="styling/delete.png" />

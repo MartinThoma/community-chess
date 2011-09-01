@@ -24,14 +24,14 @@ CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `tournamentID` int(11) NOT NULL DEFAULT '0' COMMENT 'If tournamentID = 0, its not a game of a tournament',
   `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
   `currentBoard` varchar(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
-  `moveList` text NOT NULL,
+  `moveList` text NOT NULL DEFAULT '',
   `noCaptureAndPawnMoves` int(11) NOT NULL DEFAULT '0',
   `whiteCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `whiteCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `blackCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `blackCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
-  `whitePlayerID` int(11) NOT NULL,
-  `blackPlayerID` int(11) NOT NULL,
+  `whiteUserID` int(11) NOT NULL,
+  `blackUserID` int(11) NOT NULL,
   `whitePlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
   `blackPlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
   `whoseTurnIsIt` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 means white, 1 means black',
@@ -109,9 +109,9 @@ CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tournamentID` int(11) NOT NULL DEFAULT '0',
   `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
-  `moveList` text NOT NULL,
-  `whitePlayerID` int(11) NOT NULL,
-  `blackPlayerID` int(11) NOT NULL,
+  `moveList` text NOT NULL DEFAULT '',
+  `whiteUserID` int(11) NOT NULL,
+  `blackUserID` int(11) NOT NULL,
   `whitePlayerSoftwareID` int(11) NOT NULL,
   `blackPlayerSoftwareID` int(11) NOT NULL,
   `outcome` tinyint(4) NOT NULL COMMENT '0 means white won, 1 means black won, 2 means draw',
@@ -128,22 +128,22 @@ CREATE TABLE IF NOT EXISTS `chess_pastGames` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chess_players`
+-- Table structure for table `chess_users`
 --
 
-CREATE TABLE IF NOT EXISTS `chess_players` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `uname` varchar(255) NOT NULL,
-  `upass` varchar(32) NOT NULL,
+CREATE TABLE IF NOT EXISTS `chess_users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(255) NOT NULL,
+  `user_password` varchar(32) NOT NULL,
   `currentChessSoftware` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
--- Dumping data for table `chess_players`
+-- Dumping data for table `chess_users`
 --
 
-INSERT INTO `chess_players` (`id`, `uname`, `upass`, `currentChessSoftware`) VALUES
+INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `currentChessSoftware`) VALUES
 (1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 0),
 (2, 'test', '098f6bcd4621d373cade4e832627b4f6', 0);
 
@@ -156,7 +156,7 @@ INSERT INTO `chess_players` (`id`, `uname`, `upass`, `currentChessSoftware`) VAL
 CREATE TABLE IF NOT EXISTS `chess_software` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `adminPlayerID` int(11) NOT NULL,
+  `adminUserID` int(11) NOT NULL,
   `version` varchar(20) NOT NULL,
   `lastVersionID` int(11) NOT NULL COMMENT '0 if this is the first version',
   `changelog` text NOT NULL,
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS `chess_software` (
 
 CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `playerID` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `softwareID` int(11) NOT NULL,
   `task` varchar(255) NOT NULL DEFAULT 'Admin' COMMENT 'What did this person do? What was his/her job?',
   PRIMARY KEY (`id`)
@@ -216,13 +216,13 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
 CREATE TABLE IF NOT EXISTS `chess_turnamentPlayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `turnamentID` int(11) NOT NULL,
-  `playerID` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
   `turnamentNumber` int(11) NOT NULL,
   `joinedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `gamesWon` int(11) NOT NULL DEFAULT '0' COMMENT 'If gamesWon < gamesPlayed, the player can''t play any more games in the current turnament',
   `gamesPlayed` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `turnamentID` (`turnamentID`,`playerID`)
+  UNIQUE KEY `turnamentID` (`turnamentID`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --

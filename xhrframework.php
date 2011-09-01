@@ -7,9 +7,9 @@
  * If a seperator is needed (lists), a :: is used.
  * action = {'login', 'getLastMoveTime', 'challengeUser', 'whoseTurnIsIt', 
  *           'listCurrentGames', 'listPastGames', 'getBoard'}
- * gameID: Is an Integer and needed for some actions
- * userID: Is an Integer and needed for some actions
- * move  : Submit a move    (e.g.      move=1214 or      move=1718q)
+ * gameID : Is an Integer and needed for some actions
+ * user_id: Is an Integer and needed for some actions
+ * move   : Submit a move    (e.g.      move=1214 or      move=1718q)
  * iccfalpha: Submit a move (e.g. iccfalpha=a2a4 or iccfalpha=a7a8q)
  *
  * PHP Version 5
@@ -37,8 +37,8 @@ if (isset($_GET['action'])) {
     if ($_GET['action'] == 'getLastMoveTime') {
         if (isset($_GET['gameID'])) {
             $gameID = intval($_GET['gameID']);
-            $cond   = "WHERE `id`=$gameID AND (`whitePlayerID` = ".USER_ID;
-            $cond  .= " OR `blackPlayerID` = ".USER_ID.")";
+            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
+            $cond  .= " OR `blackUserID` = ".USER_ID.")";
             $result = selectFromTable(array('lastMove'), 
                             'chess_currentGames', 
                             $cond, 1);
@@ -47,17 +47,17 @@ if (isset($_GET['action'])) {
             exit("ERROR:You have to provide a valid gameID");
         }
     } else if ($_GET['action'] == 'challengeUser') {
-        if (isset($_GET['userID'])) {
-            $userID = intval($_GET['userID']);
-            exit(challengeUser($_GET['userID'], $t));
+        if (isset($_GET['user_id'])) {
+            $user_id = intval($_GET['user_id']);
+            exit(challengeUser($_GET['user_id'], $t));
         } else {
-            exit("ERROR:You have to specify a userID.");
+            exit("ERROR:You have to specify a user_id.");
         }
     } else if ($_GET['action'] == 'whoseTurnIsIt') {
         if (isset($_GET['gameID'])) {
             $gameID = intval($_GET['gameID']);
-            $cond   = "WHERE `id`=$gameID AND (`whitePlayerID` = ".USER_ID;
-            $cond  .= " OR `blackPlayerID` = ".USER_ID.")";
+            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
+            $cond  .= " OR `blackUserID` = ".USER_ID.")";
             $result = selectFromTable(array('whoseTurnIsIt'), 
                             'chess_currentGames', 
                             $cond, 1);
@@ -69,7 +69,7 @@ if (isset($_GET['action'])) {
             exit("ERROR:You have to provide a valid gameID");
         }
     } else if ($_GET['action'] == 'listCurrentGames') {
-        $condition = "WHERE `whitePlayerID`=".USER_ID." OR `blackPlayerID`=".USER_ID;
+        $condition = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
         $rows = selectFromTable(array('id'), 'chess_currentGames', $condition, 100);
         $IDs = array();
         foreach ($rows as $row) {
@@ -77,7 +77,7 @@ if (isset($_GET['action'])) {
         }
         exit(implode('::', $IDs));
     } else if ($_GET['action'] == 'listPastGames') {
-        $condition = "WHERE `whitePlayerID`=".USER_ID." OR `blackPlayerID`=".USER_ID;
+        $condition = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
         $rows = selectFromTable(array('id'), 'chess_pastGames', $condition, 100);
         $IDs = array();
         foreach ($rows as $row) {
@@ -87,8 +87,8 @@ if (isset($_GET['action'])) {
     } else if ($_GET['action'] == 'getBoard') {
         if (isset($_GET['gameID'])) {
             $gameID = intval($_GET['gameID']);
-            $cond   = "WHERE `id`=$gameID AND (`whitePlayerID` = ".USER_ID;
-            $cond  .= " OR `blackPlayerID` = ".USER_ID.")";
+            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
+            $cond  .= " OR `blackUserID` = ".USER_ID.")";
             $result = selectFromTable(array('currentBoard'), 
                             'chess_currentGames', 
                             $cond, 1);

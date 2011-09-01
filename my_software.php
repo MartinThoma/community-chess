@@ -43,7 +43,7 @@ if (isset($_GET['deleteLang'])) {
     $softwareID = intval($_GET['softwareID']);
 
     // Is player admin of this software?
-    $cond   = "WHERE `adminPlayerID` = ".USER_ID." AND `id` = ".$softwareID;
+    $cond   = "WHERE `adminUserID` = ".USER_ID." AND `id` = ".$softwareID;
     $result = selectFromTable(array('id'), "chess_software", $cond);
     if ($result['id'] != $softwareID) {
         exit("You are not admin of this software!");
@@ -59,20 +59,20 @@ if (isset($_GET['deleteLang'])) {
 if (isset($_GET['addTeammate'])) {
     $softwareID = intval($_GET['softwareID']);
     // Is player admin of this software?
-    $cond   = "WHERE `adminPlayerID` = ".USER_ID." AND `id` = ".$softwareID;
-    $result = selectFromTable(array('id'), "chess_software", $cond);
+    $cond   = "WHERE `adminUserID` = ".USER_ID." AND `id` = ".$softwareID;
+    $result = selectFromTable(array('id'), 'chess_software', $cond);
     if ($result['id'] != $softwareID) {
-        exit("You are not admin of this software!");
+        exit('You are not admin of this software!');
     }
 
-    $username = mysql_real_escape_string($_GET['addTeammate']);
-    $cond     = "WHERE `uname`='$username'";
-    $result   = selectFromTable(array('id'), "chess_players", $cond);
+    $user_name = mysql_real_escape_string($_GET['addTeammate']);
+    $cond      = "WHERE `user_name`='$user_name'";
+    $result    = selectFromTable(array('user_id'), 'chess_users', $cond);
     if ($result !== false) {
         $task = mysql_real_escape_string($_GET['task']);
 
         $keyValuePairs               = array();
-        $keyValuePairs['playerID']   = $result['id'];
+        $keyValuePairs['user_id']   = $result['id'];
         $keyValuePairs['softwareID'] = $softwareID;
         $keyValuePairs['task']       = $task;
         insertIntoTable($keyValuePairs, "chess_softwareDeveloper");
@@ -86,22 +86,22 @@ if (isset($_GET['deleteTeammate'])) {
     $softwareID = intval($_GET['softwareID']);
 
     // Is player admin of this software?
-    $cond   = "WHERE `adminPlayerID` = ".USER_ID." AND `id` = ".$softwareID;
+    $cond   = "WHERE `adminUserID` = ".USER_ID." AND `id` = ".$softwareID;
     $result = selectFromTable(array('id'), "chess_software", $cond);
     if ($result['id'] != $softwareID) {
         exit("You are not admin of this software!");
     }
 
-    $cond   = "WHERE `playerID` = $teammateID AND `softwareID` = $softwareID ";
+    $cond   = "WHERE `user_id` = $teammateID AND `softwareID` = $softwareID ";
     $cond  .= "AND `task` != 'Admin'";
     $result = selectFromTable(array('id'), "chess_softwareDeveloper", $cond);
     deleteFromTable("chess_softwareDeveloper", $result['id']);
 }
 
 if (isset($_GET['setCurrent'])) {
-    $cond     = "WHERE  `chess_players`.`id` =".USER_ID;
-    $keyValue = array("currentChessSoftware"=>intval($_GET['setCurrent']));
-    updateDataInTable("chess_players", $keyValue, $cond);
+    $cond     = "WHERE  `user_id` =".USER_ID;
+    $keyValue = array('currentChessSoftware'=>intval($_GET['setCurrent']));
+    updateDataInTable('chess_users', $keyValue, $cond);
 }
 if (isset($_POST['newSoftwareName'])) {
     $name      = mysql_real_escape_string($_POST['newSoftwareName']);
@@ -115,7 +115,7 @@ if (isset($_POST['newSoftwareName'])) {
 
     $keyValuePairs                  = array();
     $keyValuePairs['name']          = $name;
-    $keyValuePairs['adminPlayerID'] = USER_ID;
+    $keyValuePairs['adminUserID']   = USER_ID;
     $keyValuePairs['version']       = $version;
     $keyValuePairs['lastVersionID'] = $lastVersionID;
     $keyValuePairs['changelog']     = $changelog;
@@ -124,7 +124,7 @@ if (isset($_POST['newSoftwareName'])) {
 
 
     $keyValuePairs               = array();
-    $keyValuePairs['playerID']   = USER_ID;
+    $keyValuePairs['user_id']    = USER_ID;
     $keyValuePairs['softwareID'] = $softwareID;
     $keyValuePairs['task']       = 'Admin';
 
@@ -141,7 +141,7 @@ foreach ($languages as $lang) {
     $langIndex[$lang['id']] = $lang['name'];
 }
 
-$cond        = "WHERE `playerID`=".USER_ID;
+$cond        = "WHERE `user_id`=".USER_ID;
 $row         = array('softwareID');
 $softwareIds = selectFromTable($row, "chess_softwareDeveloper", $cond, 10);
 
@@ -154,13 +154,13 @@ if (count($softwareIds) > 0) {
         $basicInformation = selectFromTable($rows, "chess_software", $cond);
         // List of teammates
         $cond      = "WHERE `softwareID`=$id";
-        $row       = array('playerID', 'task');
-        $playerIDs = selectFromTable($row, "chess_softwareDeveloper", $cond, 100);
+        $row       = array('user_id', 'task');
+        $userIDs   = selectFromTable($row, 'chess_softwareDeveloper', $cond, 100);
         $players   = array();
-        foreach ($playerIDs as $uID) {
-            $cond      = "WHERE `id`=".$uID['playerID'];
-            $player    = selectFromTable(array('id', 'uname'), 
-                                         "chess_players", $cond);
+        foreach ($userIDs as $uID) {
+            $cond      = 'WHERE `user_id`='.$uID['user_id'];
+            $player    = selectFromTable(array('user_id', 'user_name'), 
+                                         'chess_users', $cond);
             $players[] = array_merge($player, array('task'=>$uID['task']));
         }
         // Languages
