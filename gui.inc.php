@@ -20,7 +20,7 @@
  *
  * @return string the new board
  */
-function displayField($figure, $x, $y)
+function displayField($figure, $x, $y, $yourTurn, $from)
 {
     if (strtoupper($figure)!=$figure) {
         // Discern black from white pieces for windows servers, as
@@ -29,13 +29,25 @@ function displayField($figure, $x, $y)
     }
     
     /* x and y are in [1;8]*/
-    if (($x+($y-1)*8 + $y)%2==0) {
+    if(($x)*10+($y) == $from) {
+        $chessfieldColor = 'highlight';
+    } else if (($x+($y-1)*8 + $y)%2==0) {
         $chessfieldColor = 'black';
     } else {
         $chessfieldColor = 'white';
     }
+
+
     $return  = '<td class="'.$chessfieldColor.'Field">';
-    $return .= '<img src="figures/'.$figure.'.png" alt="'.$figure.'"/>';
+    if($yourTurn){
+        if($from) {
+            $return .= '<a href="playChess.php?gameID='.CURRENT_GAME_ID.'&from='.$from.'&to='.$x.$y.'">';
+        } else {
+            $return .= '<a href="playChess.php?gameID='.CURRENT_GAME_ID.'&from='.$x.$y.'">';
+        }
+    }
+    $return .= '<img src="figures/'.$figure.'.png" alt="'.$figure.'" border="0"/>';
+    if($yourTurn){$return .= '</a>';}
     $return .= '</td>';
     return $return;
 }
