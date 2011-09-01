@@ -36,7 +36,7 @@ define('ERR_NOT_YOUR_PIECE', 'ERROR: The chess piece on field (%u | %u) is %s.'.
  *  The following data is optional: $_GET['move'], $_GET['iccfalpha'], 
  *  $_GET['claim50MoveRule'], $_GET['claimThreefoldRepetition']
  * 
- * @param object $t        template-object
+ * @param object $t template-object
  *
  * @return string the new board
  */
@@ -46,7 +46,7 @@ function chessMain($t)
      * Get CURRENT_GAME_ID and some game-relevant variables                   *  
      **************************************************************************/
     if (isset($_GET['gameID'])) {
-        $gameID = intval($_GET['gameID']);
+        $gameID = (int) $_GET['gameID'];
         $row    = array('currentBoard','whoseTurnIsIt', 'whiteUserID', 
                        'blackUserID', 'moveList', 'noCaptureAndPawnMoves', 'id');
         $cond   = 'WHERE (`whiteUserID` = '.USER_ID.' OR `blackUserID` = ';
@@ -366,8 +366,8 @@ function getValidMoveQuery($move)
         exit(ERR_MOVE_QUERY_LENGTH);
     }
 
-    $from = intval(substr($move, 0, 2));
-    $to   = intval(substr($move, 2, 2));
+    $from = (int) substr($move, 0, 2);
+    $to   = (int) substr($move, 2, 2);
 
     if (strlen($move) == 5) $promotion = substr($move, 4, 1);
     else                    $promotion = '';
@@ -464,8 +464,8 @@ function getCoordinates($index)
 {
     $x = $index % 8;
     $y = ($index - $x)/8;
-    $x++;
-    $y++;
+    ++$x;
+    ++$y;
     return array($x, $y);
 }
 
@@ -681,8 +681,8 @@ function finishGame($outcome)
 
     $keyValue                          = array();
     $keyValue['moveList']              = $moveList;
-    $keyValue['whiteUserID']         = $whiteUserID;
-    $keyValue['blackUserID']         = $blackUserID;
+    $keyValue['whiteUserID']           = $whiteUserID;
+    $keyValue['blackUserID']           = $blackUserID;
     $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
     $keyValue['blackPlayerSoftwareID'] = $blackPlayerSoftwareID;
     $keyValue['outcome']               = $outcome;

@@ -31,8 +31,8 @@ if (isset($_POST['tournamentName'])) {
 }
 
 if (isset($_GET['challengeUserID'])) {
-    $user_id      = intval($_GET['challengeUserID']);
-    $tournamentID = intval($_GET['tournamentID']);
+    $user_id      = (int) $_GET['challengeUserID'];
+    $tournamentID = (int) $_GET['tournamentID'];
 
     $cond           = 'WHERE `user_id` = '.$user_id.' AND `user_id` != '.USER_ID;
     $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
@@ -92,7 +92,7 @@ if (isset($_GET['challengeUserID'])) {
 }
 
 if (isset($_GET['enterID'])) {
-    $tournamentID = intval($_GET['enterID']);
+    $tournamentID = (int) $_GET['enterID'];
     if (isset($_GET['password'])) {
         $pass = md5($_GET['password']);
     } else {
@@ -114,7 +114,7 @@ if (isset($_GET['enterID'])) {
 }
 
 if (isset($_GET['deleteParticipation'])) {
-    $tournamentID = intval($_GET['deleteParticipation']);
+    $tournamentID = (int) $_GET['deleteParticipation'];
     $cond         = "WHERE turnamentID=$tournamentID AND `user_id`=".USER_ID;
     $result       = selectFromTable(array('id'), 'chess_turnamentPlayers', $cond);
     deleteFromTable('chess_turnamentPlayers', $result['id']);
@@ -130,7 +130,7 @@ foreach ($result as $row) {
 }
 
 if (isset($_GET['getDetails'])) {
-    $id = intval($_GET['getDetails']);
+    $id = (int) $_GET['getDetails'];
     $t->assign('detailsTournamentID', $id);
 
     $rows    = array();

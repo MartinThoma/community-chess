@@ -20,15 +20,16 @@
  *
  * @return string the new board
  */
-function displayField($figure, $x, $y){
-    if(strtoupper($figure)!=$figure){
+function displayField($figure, $x, $y)
+{
+    if (strtoupper($figure)!=$figure) {
         // Discern black from white pieces for windows servers, as
         // FAT is case-insensitive.
         $figure .= "b";
     }
     
     /* x and y are in [1;8]*/
-    if (($x+($y-1)*8 + $y)%2==0){
+    if (($x+($y-1)*8 + $y)%2==0) {
         $chessfieldColor = 'black';
     } else {
         $chessfieldColor = 'white';
