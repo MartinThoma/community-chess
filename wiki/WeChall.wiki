@@ -1,0 +1,19 @@
+#summary How can community chess be used with WeChall-Code? A little tutorial.
+
+= login.wrapper.php =
+
+The relevant values are:
+
+  * tables: chess_players - phpbb_users
+    * rows: id - user_id
+    * rows: uname - user_name
+    * rows: upass - user_password
+  * scripts: login.wrapper.php - /modules/Login
+
+At the moment, I don't know how I can use the login-module from WeChall for community chess.
+
+The row currentChessSoftware in the table chess_players is also a problem. I should possibly add a new table with the current chess software to player correlation.
+
+
+= Resources =
+  * [http://www.wechall.net/wechall.zip wechall.net/wechall.zip]
