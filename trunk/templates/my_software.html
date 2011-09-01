@@ -6,6 +6,7 @@
   <title>Software - Community Chess</title> 
   <link rel="stylesheet" type="text/css" href="styling/default.css" />
   <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
     <div id="tabs1">
@@ -58,7 +59,7 @@
     <th>languages</th>
     <th>add language</th>
     </tr>
-    {if:(currentSoftwareID == 0)}
+    {if:($this->data->currentSoftwareID == 0)}
       <tr class="current">
     {else}
       <tr>
@@ -73,7 +74,7 @@
     </tr>
     {if:isset(softwareArray)}
         {foreach:softwareArray,i,software}
-            {if:software['id']==currentSoftwareID}
+            {if:software['id']==$this->data->currentSoftwareID}
                 <tr class="current">
             {else}
                 <tr>
@@ -83,7 +84,7 @@
             <td><ul>
             {foreach:software['players'],i,player}
                 <li>{player['user_name']} ({player['task']})
-                {if:player['id'] != USER_ID}
+                {if:player['user_id'] != USER_ID}
                     <a href="my_software.php?deleteTeammate={player['id']}&softwareID={software['id']}">
                     <img src="styling/delete.png" />
                     </a>
