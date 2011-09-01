@@ -13,6 +13,10 @@ body {
     background-color: #d18b47;
 }
 
+.highlightField {
+    background-color: lime;
+}
+
 .stressed {
     color: red;
     font-weight:bold;

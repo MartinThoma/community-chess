@@ -96,6 +96,20 @@ function chessMain($t)
         define('MOVE', $move);
     }
 
+    if (isset($_GET['from']) and isset($_GET['to'])) {
+        $from = (int) $_GET['from'];
+        $to   = (int) $_GET['to'];
+        $array      = getValidMoveQuery($from.$to);
+        $move       = $array[0];
+        $from_index = $array[1];
+        $to_index   = $array[2];
+        $from_x     = $array[3];
+        $from_y     = $array[4];
+        $to_x       = $array[5];
+        $to_y       = $array[6];
+        define('MOVE', $move);
+    }
+
     if (isset($_GET['pgn'])) {
         // TODO: insert Code as soon as possible
         // define MOVE in my notation
@@ -230,6 +244,19 @@ function chessMain($t)
         }
     }
 
+    $t->assign('from', false);
+    if (isset($_GET['from'])) {
+        $from = (int) $_GET['from'];
+        $y = $from % 10;
+        $x = ($from - $y)/10;
+        $index = ($x - 1) + (($y-1)*8);
+        $piece = getPieceByIndex($currentBoard, $index);
+        if (isMyPiece($piece, $yourColor)) {
+
+            $t->assign('from', $from);
+        }
+    }
+
     if (isPlayerCheck($currentBoard, $yourColor))          $youCheck = true;
     else                                                   $youCheck = false;
     if (isPlayerCheck($currentBoard, $opponentColor)) $opponentCheck = true;
@@ -257,6 +284,7 @@ function chessMain($t)
     $t->assign('yourColor', $yourColor);
     $t->assign('youCheck', $youCheck);
     $t->assign('youCheck', $youCheck);
+    $t->assign('yourTurn', ($whoseTurnIsItLanguage == $yourColor));
     $t->assign('opponentCheck', $opponentCheck);
     $t->assign('CURRENT_GAME_ID', CURRENT_GAME_ID);
     return $currentBoard;
