@@ -22,10 +22,10 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 CREATE TABLE IF NOT EXISTS `chess_currentGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tournamentID` int(11) NOT NULL DEFAULT '0' COMMENT 'If tournamentID = 0, its not a game of a tournament',
-  `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
-  `currentBoard` varchar(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
+  `timeLimit` mediumint(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set. Maximum is 16,777,215 which would be over 194 days',
+  `currentBoard` char(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
   `moveList` text NOT NULL DEFAULT '',
-  `noCaptureAndPawnMoves` int(11) NOT NULL DEFAULT '0',
+  `noCaptureAndPawnMoves` smallint(11) unsigned NOT NULL DEFAULT '0' COMMENT 'How many turns was neither a capture- nor a pawn move?',
   `whiteCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `whiteCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `blackCastlingKingsidePossible` tinyint(1) NOT NULL DEFAULT '1',
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS `chess_currentGames` (
 CREATE TABLE IF NOT EXISTS `chess_currentGamesThreefoldRepetition` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `gameID` int(11) NOT NULL,
-  `board` varchar(64) NOT NULL,
+  `board` char(64) NOT NULL,
   `whiteCastlingKingsidePossible` tinyint(1) NOT NULL,
   `whiteCastlingQueensidePossible` tinyint(1) NOT NULL,
   `blackCastlingKingsidePossible` tinyint(1) NOT NULL,
@@ -108,7 +108,7 @@ INSERT INTO `chess_languages` (`id`, `name`, `used`) VALUES
 CREATE TABLE IF NOT EXISTS `chess_pastGames` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `tournamentID` int(11) NOT NULL DEFAULT '0',
-  `timeLimit` int(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set.',
+  `timeLimit` mediumint(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set. Maximum is 16,777,215 which would be over 194 days',
   `moveList` text NOT NULL DEFAULT '',
   `whiteUserID` int(11) NOT NULL,
   `blackUserID` int(11) NOT NULL,
@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS `chess_pastGames` (
 CREATE TABLE IF NOT EXISTS `chess_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(255) NOT NULL,
-  `user_password` varchar(32) NOT NULL,
+  `user_password` char(32) NOT NULL,
   `currentChessSoftware` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
@@ -239,7 +239,7 @@ CREATE TABLE IF NOT EXISTS `chess_turnamentPlayers` (
 CREATE TABLE IF NOT EXISTS `chess_turnaments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `password` varchar(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
+  `password` char(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
   `description` text NOT NULL,
   `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `closingDate` datetime NOT NULL,

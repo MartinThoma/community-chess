@@ -168,7 +168,7 @@ function deleteFromTable($table, $id)
 {
     /* Begin of code which can be replaced by your code */
     $table = mysql_real_escape_string($table);
-    $id    = intval($id);
+    $id    = (int) $id;
     $query = "DELETE FROM `$table` WHERE `$table`.`id` = $id LIMIT 1";
     mysql_query($query);
 
@@ -178,8 +178,9 @@ function deleteFromTable($table, $id)
 
 /** This function logs the user in. The session variables get stored.
  * 
- * @param string $user_name     the username
- * @param string $user_password the plaintext password
+ * @param string  $user_name     the username
+ * @param string  $user_password the plaintext password
+ * @param boolean $redirect      should the user be redirected to index.php?
  *
  * @return string session_id()
  */
@@ -207,7 +208,7 @@ function login($user_name, $user_password, $redirect = true)
  */
 function challengeUser($user_id, $t)
 {
-    $id             = intval($user_id);
+    $id             = (int) $user_id;
     $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
     $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
     $challengedUser = $row['user_name'];
@@ -235,6 +236,7 @@ function challengeUser($user_id, $t)
                                'blackUserID'=>$id,
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
+
             $gameID = insertIntoTable($keyValuePairs, 'chess_currentGames');
 
             $t->assign('startedGamePlayerID', $id);
