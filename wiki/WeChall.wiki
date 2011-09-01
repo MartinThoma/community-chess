@@ -4,10 +4,10 @@
 
 The relevant values are:
 
-  * tables: chess_players - gwf_user
-    * rows: id - user_id
-    * rows: uname - user_name
-    * rows: upass - user_password
+  * tables: chess_users - gwf_user
+    * rows: user_id - user_id
+    * rows: user_name - user_name
+    * rows: user_password - user_password
   * scripts: login.wrapper.php - /modules/Login
 
 At the moment, I don't know how I can use the login-module from WeChall for community chess.
