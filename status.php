@@ -17,12 +17,15 @@ if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
-$condition = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
+$condition = "WHERE (`whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID.") ";
+$conAppend = "AND `outcome` = -1";
 
-$rows = selectFromTable(array('id'), 'chess_currentGames', $condition, 100);
+$rows = selectFromTable(array('id'), 'chess_games', $condition.$conAppend, 100);
 $t->assign('currentGames', $rows);
 
-$rows = selectFromTable(array('id'), 'chess_pastGames', $condition, 100);
+$conAppend = "AND `outcome` > -1";
+
+$rows = selectFromTable(array('id'), 'chess_games', $condition.$conAppend, 100);
 $t->assign('pastGames', $rows);
 
 echo $t->output('status.html');
