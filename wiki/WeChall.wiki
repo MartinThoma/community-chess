@@ -4,7 +4,7 @@
 
 The relevant values are:
 
-  * tables: chess_players - phpbb_users
+  * tables: chess_players - gwf_user
     * rows: id - user_id
     * rows: uname - user_name
     * rows: upass - user_password
