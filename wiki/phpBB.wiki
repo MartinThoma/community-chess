@@ -40,3 +40,10 @@ The relevant values are:
 At the moment, I don't know how I can use the login-script from phpBB for community chess. 
 
 The row `currentChessSoftware` in the table `chess_players` is also a problem. I should possibly add a new table with the current chess software to player correlation.
+
+= Resources =
+  * [http://wiki.phpbb.com/Main_Page wiki.phpbb.com]
+    * [http://wiki.phpbb.com/Creating_modules creating modules] ([http://wiki.phpbb.com/Main_Page Erstellen von Modulen])
+    * [http://area51.phpbb.com/docs/31x/coding-guidelines.html Coding Guidelines]
+    * [http://wiki.phpbb.com/Best_Practices:PHP Best Practices:PHP]
+    * [http://wiki.phpbb.com/Best_Practices:mySQL Best Practices: mySQL]
