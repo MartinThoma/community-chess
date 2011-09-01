@@ -214,7 +214,7 @@ function challengeUser($user_id, $t)
     $challengedUser = $row['user_name'];
     if ($row !== false) {
         $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id";
-        $row  = selectFromTable(array('id'), 'chess_currentGames', $cond);
+        $row  = selectFromTable(array('id'), 'chess_games', $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -237,7 +237,7 @@ function challengeUser($user_id, $t)
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
 
-            $gameID = insertIntoTable($keyValuePairs, 'chess_currentGames');
+            $gameID = insertIntoTable($keyValuePairs, 'chess_games');
 
             $t->assign('startedGamePlayerID', $id);
             $t->assign('startedGamePlayerUsername', $challengedUser);

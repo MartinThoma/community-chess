@@ -41,7 +41,7 @@ if (isset($_GET['challengeUserID'])) {
         $cond  = "WHERE (`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";
         $cond .= " OR (`whiteUserID` = $user_id AND `blackUserID`=".USER_ID.") ";
         $cond .= "AND tournamentID=$tournamentID";
-        $row   = selectFromTable(array('id'), 'chess_currentGames', $cond);
+        $row   = selectFromTable(array('id'), 'chess_games', $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -81,7 +81,7 @@ if (isset($_GET['challengeUserID'])) {
                                'blackUserID'=>$user_id,
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
-            insertIntoTable($keyValuePairs, 'chess_currentGames');
+            insertIntoTable($keyValuePairs, 'chess_games');
 
             $t->assign('startedGameUserID', $user_id);
             $t->assign('startedGamePlayerUsername', $challengedUser);
