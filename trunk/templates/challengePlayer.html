@@ -28,9 +28,9 @@
         <noscript>You've already challenged the player {alreadyChallengedPlayer}.<br/>The current game has the id {alreadyChallengedGameID}.</noscript>
     {end}
 
-    {if:isset(startedGamePlayerID)}
-        <script>showStickySuccessToast("You have started a game against the player with the ID {startedGamePlayerID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.")</script>
-         <noscript>You have started a game against the player with the ID {startedGamePlayerID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.</noscript>
+    {if:isset(startedGameUserID)}
+        <script>showStickySuccessToast("You have started a game against the player with the ID {startedGameUserID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.")</script>
+         <noscript>You have started a game against the player with the ID {startedGameUserID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.</noscript>
     {end}
 
     {if:isset(incorrectID)}
@@ -41,7 +41,7 @@
     {if:isset(possibleOpponents)}
         <ul>
         {foreach:possibleOpponents,i,playerArray}
-            <li><a href="challengePlayer.php?playerID={playerArray['id']}">{playerArray['uname']}</a></li>
+            <li><a href="challengePlayer.php?user_id={playerArray['user_id']}">{playerArray['user_name']}</a></li>
         {end}
         </ul>
     {end}

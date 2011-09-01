@@ -33,7 +33,7 @@ define("USER_ID", getUserID());
 /******************************************************************************/
 /* functions
 *******************************************************************************/
-/** Return the UserID if the User is logged in. 
+/** Return the user_id if the User is logged in. 
  *  If no user is logged in return false
  *
  * @return int
@@ -41,17 +41,18 @@ define("USER_ID", getUserID());
 function getUserID()
 {
     /* Begin of code which can be replaced by your code */
-    if (!isset($_SESSION['UserId']) OR !isset($_SESSION['Password'])) {
+    if (!isset($_SESSION['user_id']) OR !isset($_SESSION['user_password'])) {
         return false;
     };
 
-    $uid       = mysql_real_escape_string($_SESSION['UserId']);
-    $upass     = mysql_real_escape_string($_SESSION['Password']);
-    $condition = "WHERE id='$uid' AND upass='$upass'";
-    $row       = selectFromTable(array('id'), 'chess_players', $condition);
+    $user_id       = mysql_real_escape_string($_SESSION['user_id']);
+    $user_password = mysql_real_escape_string($_SESSION['user_password']);
+    $condition     = "WHERE `user_id`='$user_id' ";
+    $condition    .= "AND `user_password`='$user_password'";
+    $row           = selectFromTable(array('user_id'), 'chess_users', $condition);
 
-    if ($row['id'] === $_SESSION['UserId'] AND $row['id'] > 0) {
-        return $row['id'];
+    if ($row['user_id'] === $_SESSION['user_id'] AND $row['user_id'] > 0) {
+        return $row['user_id'];
     } else {
         return false;
     }
@@ -60,14 +61,14 @@ function getUserID()
 
 /** This function gets the Software-ID of the User
  *
- * @param int $UserID the ID of the user
+ * @param int $user_id the ID of the user
  *
  * @return int
  */
-function getUserSoftwareID($UserID)
+function getUserSoftwareID($user_id)
 {
-    $c   = "WHERE id='$UserID'";
-    $row = selectFromTable(array('currentChessSoftware'), 'chess_players', $c);
+    $c   = "WHERE `user_id`='$user_id'";
+    $row = selectFromTable(array('currentChessSoftware'), 'chess_users', $c);
     return $row['currentChessSoftware'];
 }
 
@@ -85,8 +86,8 @@ function getUserSoftwareID($UserID)
 function selectFromTable($rows, $table, $condition, $limit = 1)
 {
     /* Begin of code which can be replaced by your code */
-    $row    = implode(",", $rows);
-    $query  = "SELECT $row FROM `$table` $condition LIMIT $limit";
+    $row    = implode("`,`", $rows);
+    $query  = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
     $result = mysql_query($query);
     if ($limit == 1) {
         $row = mysql_fetch_assoc($result);
@@ -177,19 +178,19 @@ function deleteFromTable($table, $id)
 
 /** This function logs the user in. The session variables get stored.
  * 
- * @param string $uname the username
- * @param string $upass the plaintext password
+ * @param string $user_name     the username
+ * @param string $user_password the plaintext password
  *
  * @return string session_id()
  */
-function login($uname, $upass, $redirect = true)
+function login($user_name, $user_password, $redirect = true)
 {
-    $condition  = 'WHERE uname="'.mysql_real_escape_string($uname);
-    $condition .= '" AND upass="'.md5($upass).'"';
-    $row        = selectFromTable(array('id'), 'chess_players', $condition);
+    $condition  = 'WHERE user_name="'.mysql_real_escape_string($user_name);
+    $condition .= '" AND user_password="'.md5($user_password).'"';
+    $row        = selectFromTable(array('user_id'), 'chess_users', $condition);
     if ($row !== false) {
-        $_SESSION['UserId']   = $row['id'];
-        $_SESSION['Password'] = md5($upass);
+        $_SESSION['user_id']       = $row['user_id'];
+        $_SESSION['user_password'] = md5($user_password);
         if ($redirect) {
             header('Location: index.php');
         }
@@ -199,19 +200,19 @@ function login($uname, $upass, $redirect = true)
 
 /** This function makes user-challenges
  * 
- * @param int    $playerID the challenged playerID
- * @param object $t        template-object
+ * @param int    $user_id the challenged user_id
+ * @param object $t       template-object
  *
  * @return string message with the result
  */
-function challengeUser($playerID, $t)
+function challengeUser($user_id, $t)
 {
-    $id             = intval($playerID);
-    $cond           = 'WHERE `id` = '.$id.' AND `id` != '.USER_ID;
-    $row            = selectFromTable(array('uname'), 'chess_players', $cond);
-    $challengedUser = $row['uname'];
+    $id             = intval($user_id);
+    $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
+    $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
+    $challengedUser = $row['user_name'];
     if ($row !== false) {
-        $cond = "WHERE `whitePlayerID` = ".USER_ID." AND `blackPlayerID`=$id";
+        $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id";
         $row  = selectFromTable(array('id'), 'chess_currentGames', $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
@@ -219,19 +220,19 @@ function challengeUser($playerID, $t)
             return "ERROR:You have already challenged this player. ".
                    "This Game has the gameID ".$row['id'].".";
         } else {
-            $cond   = "WHERE `id` = ".USER_ID." OR `id`=$id";      
-            $rows   = array('id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, "chess_players", $cond, 2);
+            $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$id";      
+            $rows   = array('user_id', 'currentChessSoftware');  
+            $result = selectFromTable($rows, 'chess_users', $cond, 2);
 
-            if ($result[0]['id'] == USER_ID) {
+            if ($result[0]['user_id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
                 $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
             } else {
                 $blackPlayerSoftwareID = $result[0]['currentChessSoftware'];
                 $whitePlayerSoftwareID = $result[1]['currentChessSoftware'];
             }
-            $keyValuePairs = array('whitePlayerID'=>USER_ID, 
-                               'blackPlayerID'=>$id,
+            $keyValuePairs = array('whiteUserID'=>USER_ID, 
+                               'blackUserID'=>$id,
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
             $gameID = insertIntoTable($keyValuePairs, 'chess_currentGames');

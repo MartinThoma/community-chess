@@ -19,8 +19,8 @@ if(!isset($_SESSION)) session_start();
 require_once 'wrapper.inc.php';
 $t = new vemplator();
 
-if (isset($_POST['username'])) {
-    login($_POST['username'], $_POST['password']);
+if (isset($_POST['user_name'])) {
+    login($_POST['user_name'], $_POST['user_password']);
 }
 
 echo $t->output('login.html');

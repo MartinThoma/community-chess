@@ -47,9 +47,9 @@ function chessMain($t)
      **************************************************************************/
     if (isset($_GET['gameID'])) {
         $gameID = intval($_GET['gameID']);
-        $row    = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
-                       'blackPlayerID', 'moveList', 'noCaptureAndPawnMoves', 'id');
-        $cond   = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
+        $row    = array('currentBoard','whoseTurnIsIt', 'whiteUserID', 
+                       'blackUserID', 'moveList', 'noCaptureAndPawnMoves', 'id');
+        $cond   = 'WHERE (`whiteUserID` = '.USER_ID.' OR `blackUserID` = ';
         $cond  .= USER_ID.') AND `id` = '.$gameID;
         $result = selectFromTable($row, 'chess_currentGames', $cond);
 
@@ -64,7 +64,7 @@ function chessMain($t)
             } else {
                 $whoseTurnIsItLanguage = 'black';
             }
-            if ($result['whitePlayerID'] == USER_ID) {
+            if ($result['whiteUserID'] == USER_ID) {
                 $yourColor     = 'white';
                 $opponentColor = 'black';
             } else {
@@ -207,9 +207,9 @@ function chessMain($t)
         }
     }
 
-    $row    = array('currentBoard','whoseTurnIsIt', 'whitePlayerID', 
-                   'blackPlayerID');
-    $cond   = 'WHERE (`whitePlayerID` = '.USER_ID.' OR `blackPlayerID` = ';
+    $row    = array('currentBoard','whoseTurnIsIt', 'whiteUserID', 
+                   'blackUserID');
+    $cond   = 'WHERE (`whiteUserID` = '.USER_ID.' OR `blackUserID` = ';
     $cond  .= USER_ID.') AND `id` = '.CURRENT_GAME_ID;
     $result = selectFromTable($row, 'chess_currentGames', $cond);
 
@@ -221,7 +221,7 @@ function chessMain($t)
         } else {
             $whoseTurnIsItLanguage = 'black';
         }
-        if ($result['whitePlayerID'] == USER_ID) {
+        if ($result['whiteUserID'] == USER_ID) {
             $yourColor     = 'white';
             $opponentColor = 'black';
         } else {
@@ -662,7 +662,7 @@ function getAllDiagonalFields($board, $x, $y)
  */
 function finishGame($outcome)
 {
-    $rows      = array('moveList', 'whitePlayerID', 'blackPlayerID', 
+    $rows      = array('moveList', 'whiteUserID', 'blackUserID', 
                        'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                        'whoseTurnIsIt', 'startTime', 'lastMove');
     $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
@@ -670,8 +670,8 @@ function finishGame($outcome)
     $result = selectFromTable($rows, 'chess_currentGames', $condition);
 
     $moveList              = $result['moveList'];
-    $whitePlayerID         = $result['whitePlayerID'];
-    $blackPlayerID         = $result['blackPlayerID'];
+    $whiteUserID           = $result['whiteUserID'];
+    $blackUserID           = $result['blackUserID'];
     $whitePlayerSoftwareID = $result['whitePlayerSoftwareID'];
     $blackPlayerSoftwareID = $result['blackPlayerSoftwareID'];
     $startTime             = $result['startTime'];
@@ -681,8 +681,8 @@ function finishGame($outcome)
 
     $keyValue                          = array();
     $keyValue['moveList']              = $moveList;
-    $keyValue['whitePlayerID']         = $whitePlayerID;
-    $keyValue['blackPlayerID']         = $blackPlayerID;
+    $keyValue['whiteUserID']         = $whiteUserID;
+    $keyValue['blackUserID']         = $blackUserID;
     $keyValue['whitePlayerSoftwareID'] = $whitePlayerSoftwareID;
     $keyValue['blackPlayerSoftwareID'] = $blackPlayerSoftwareID;
     $keyValue['outcome']               = $outcome;

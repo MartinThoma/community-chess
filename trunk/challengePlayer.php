@@ -17,12 +17,12 @@ if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
-if (isset($_GET['playerID'])) {
-    challengeUser($_GET['playerID'], $t);
+if (isset($_GET['user_id'])) {
+    challengeUser($_GET['user_id'], $t);
 } else {
-    $rows = array('id', 'uname');
-    $cond = "WHERE `id` != ".USER_ID;
-    $rows = selectFromTable($rows, 'chess_players', $cond, 10);
+    $rows = array('user_id', 'user_name');
+    $cond = "WHERE `user_id` != ".USER_ID;
+    $rows = selectFromTable($rows, 'chess_users', $cond, 10);
 
     $t->assign('possibleOpponents', $rows);
 }

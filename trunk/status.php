@@ -17,7 +17,7 @@ if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
-$condition = "WHERE `whitePlayerID`=".USER_ID." OR `blackPlayerID`=".USER_ID;
+$condition = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
 
 $rows = selectFromTable(array('id'), 'chess_currentGames', $condition, 100);
 $t->assign('currentGames', $rows);

@@ -27,9 +27,9 @@
         <noscript>You've already challenged the player {alreadyChallengedPlayer}. The current game has the id {alreadyChallengedGameID}.</noscript>
     {end}
 
-    {if:isset(startedGamePlayerID)}
-        <script>showStickyNoticeToast("You have started a game against the player with the ID {startedGamePlayerID}. The Username of this Player is {startedGamePlayerUsername}.");</script>
-        <noscript>You have started a game against the player with the ID {startedGamePlayerID}. The Username of this Player is {startedGamePlayerUsername}.</noscript>
+    {if:isset(startedGameUserID)}
+        <script>showStickyNoticeToast("You have started a game against the player with the ID {startedGameUserID}. The Username of this Player is {startedGamePlayerUsername}.");</script>
+        <noscript>You have started a game against the player with the ID {startedGameUserID}. The Username of this Player is {startedGamePlayerUsername}.</noscript>
     {end}
 
     {if:isset(incorrectID)}
@@ -51,19 +51,19 @@
         <h1>Details of tournament</h1>
         <table>
         <tr>
-        <th>playerID</th>
+        <th>user_id</th>
         <th>joinedDate</th>
         <th>games won / played</th>
         <th>challenge</th>
         </tr>
         {foreach:detailsPlayers,i,player}
             <tr>
-            <th>{player['playerID']}</th>
+            <th>{player['user_id']}</th>
             <th>{player['joinedDate']}</th>
             <th>{player['gamesWon']} / {player['gamesPlayed']}</th>
             <th>
-            {if:(player['playerID'] != USER_ID)}
-                <a href="tournaments.php?challengePlayerID={player['playerID']}&tournamentID={detailsTournamentID}">challenge</a>
+            {if:(player['user_id'] != USER_ID)}
+                <a href="tournaments.php?challengeUserID={player['user_id']}&tournamentID={detailsTournamentID}">challenge</a>
             {else}
                 -
             {end}
