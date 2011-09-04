@@ -1450,6 +1450,22 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     $from_coord    = getCoordinates($from_index);
     $cond          = 'WHERE  `chess_games`.`id` ='.CURRENT_GAME_ID;
 
+    $submissionTime = time();
+    $rows           = array('timeLimit', 'lastMove');
+    $result         = selectFromTable($rows, 'chess_games', $cond);
+    $timeNeeded     = $submissionTime - $result['lastMove'];
+    if ($timeNeeded > $result['timeLimit']) {
+        if ($yourColor == 'white') {
+            finishGame(0);
+        } else {
+            finishGame(1);
+        }
+        exit("Game finished. You lost. You needed too much time for your move. ".
+             "You needed $timeNeeded seconds, but only ".$result['timeLimit'].
+             " seconds were allowed per move.");
+    }
+    
+
     if ($piece == 'p' or $piece == 'P') {
         $pawnMoved = true;
     } else {
