@@ -213,7 +213,8 @@ function challengeUser($user_id, $t)
     $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
-        $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id";
+        $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
+        $cond.= 'AND `outcome` = -1';
         $row  = selectFromTable(array('id'), 'chess_games', $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
