@@ -696,7 +696,7 @@ function finishGame($outcome)
     $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
 
     $keyValue['outcome']  = $outcome;
-    $keyValue['lastMove'] = $endTime;
+    $keyValue['lastMove'] = time();
 
     updateDataInTable('chess_games', $keyValue, $condition);
     return true;
@@ -1454,7 +1454,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     $rows           = array('timeLimit', 'lastMove');
     $result         = selectFromTable($rows, 'chess_games', $cond);
     $timeNeeded     = $submissionTime - $result['lastMove'];
-    if ($timeNeeded > $result['timeLimit']) {
+    if ($timeNeeded > $result['timeLimit'] and $result['timeLimit'] != 0) {
         if ($yourColor == 'white') {
             finishGame(0);
         } else {
