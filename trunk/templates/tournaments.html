@@ -95,18 +95,17 @@
     </form>
 
     <h1>All tournaments</h1>
-    <table border="1">
-    <tr>
-        <th>Name</th>
-        <th>Password</th>
-        <th>Description</th>
-        <th>Initiation Date</th>
-        <th>Closing Date</th>
-        <th>Status</th>
-        <th>action</th>
-    </tr>
-
-    {if:isset(allTournaments)}
+    {if:(count($this->data->allTournaments) > 0)}
+        <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Password</th>
+            <th>Description</th>
+            <th>Initiation Date</th>
+            <th>Closing Date</th>
+            <th>Status</th>
+            <th>action</th>
+        </tr>
         {foreach:allTournaments,i,tournament}
             {if:doIParticipate[i]}
                 <tr class="current">
@@ -146,6 +145,8 @@
             </td>
           </tr>
         {end}
+    {else}
+        <p>Currently are no tournaments running</p>
     {end}
 </body>
 </html>

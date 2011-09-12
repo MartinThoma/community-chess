@@ -11,7 +11,7 @@
  * @version  SVN: <svn_id>
  * @link     http://code.google.com/p/community-chess/
  */
-error_reporting(E_ALL);
+
 require_once 'external/vemplator.php';
 set_include_path('templates');
 
@@ -41,14 +41,12 @@ define("USER_ID", getUserID());
 function getUserID()
 {
     /* Begin of code which can be replaced by your code */
-    if (!isset($_SESSION['user_id']) OR !isset($_SESSION['user_password'])) {
+    if (!isset($_SESSION['user_id'])) {
         return false;
     };
 
     $user_id       = mysql_real_escape_string($_SESSION['user_id']);
-    $user_password = mysql_real_escape_string($_SESSION['user_password']);
     $condition     = "WHERE `user_id`='$user_id' ";
-    $condition    .= "AND `user_password`='$user_password'";
     $row           = selectFromTable(array('user_id'), 'chess_users', $condition);
 
     if ($row['user_id'] === $_SESSION['user_id'] AND $row['user_id'] > 0) {
@@ -191,7 +189,6 @@ function login($user_name, $user_password, $redirect = true)
     $row        = selectFromTable(array('user_id'), 'chess_users', $condition);
     if ($row !== false) {
         $_SESSION['user_id']       = $row['user_id'];
-        $_SESSION['user_password'] = md5($user_password);
         if ($redirect) {
             header('Location: index.php');
         }
