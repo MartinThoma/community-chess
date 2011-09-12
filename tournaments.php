@@ -145,7 +145,7 @@ if (isset($_GET['getDetails'])) {
     $t->assign('detailsPlayers', $results);
 }
 
-$time = mktime() + 7*24*60*60;
+$time = time() + 7*24*60*60;
 $t->assign('closingDate', date("Y-m-d H:i:s", $time));
 
 $rows    = array('id','name','password','description','initiationDate');
