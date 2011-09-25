@@ -40,7 +40,7 @@ if (isset($_GET['action'])) {
             $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
             $cond  .= " OR `blackUserID` = ".USER_ID.")";
             $result = selectFromTable(array('lastMove'), 
-                            'chess_games', 
+                            GAMES_TABLE, 
                             $cond, 1);
             exit($result['lastMove']);
         } else {
@@ -59,7 +59,7 @@ if (isset($_GET['action'])) {
             $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
             $cond  .= " OR `blackUserID` = ".USER_ID.")";
             $result = selectFromTable(array('whoseTurnIsIt'), 
-                            'chess_games', 
+                            GAMES_TABLE, 
                             $cond, 1);
 
             $search  = array(0, 1);
@@ -71,7 +71,7 @@ if (isset($_GET['action'])) {
     } else if ($_GET['action'] == 'listCurrentGames') {
         $con  = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
         $con .= " AND `outcome` = -1";
-        $rows = selectFromTable(array('id'), 'chess_games', $con, 100);
+        $rows = selectFromTable(array('id'), GAMES_TABLE, $con, 100);
         $IDs  = array();
         foreach ($rows as $row) {
             $IDs[] = $row['id'];
@@ -80,7 +80,7 @@ if (isset($_GET['action'])) {
     } else if ($_GET['action'] == 'listPastGames') {
         $con  = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
         $con .= " AND `outcome` > -1";
-        $rows = selectFromTable(array('id'), 'chess_games', $con, 100);
+        $rows = selectFromTable(array('id'), GAMES_TABLE, $con, 100);
         $IDs  = array();
         foreach ($rows as $row) {
             $IDs[] = $row['id'];
@@ -92,7 +92,7 @@ if (isset($_GET['action'])) {
             $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
             $cond  .= " OR `blackUserID` = ".USER_ID.")";
             $result = selectFromTable(array('currentBoard'), 
-                            'chess_games', 
+                            GAMES_TABLE, 
                             $cond, 1);
             exit($result['currentBoard']);
         } else {

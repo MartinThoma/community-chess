@@ -28,11 +28,24 @@ mysql_select_db(MYSQL_DATABASE) OR
           die("Could not use database, Errormessage: ".mysql_error());
 mysql_set_charset('utf8'); 
 
-define("USER_ID", getUserID());
-
 /******************************************************************************/
-/* functions
-*******************************************************************************/
+/* Table Names (constants)                                                    */
+/******************************************************************************/
+$table_prefix = 'chess_';
+define('USERS_TABLE',                      $table_prefix.'users');
+define('GAMES_TABLE',                      $table_prefix.'games');
+define('TURNAMENTS_TABLE',                 $table_prefix.'turnaments');
+define('TURNAMENT_PLAYERS_TABLE',          $table_prefix.'turnamentPlayers');
+define('SOFTWARE_TABLE',                   $table_prefix.'software');
+define('SOFTWARE_DEVELOPER_TABLE',         $table_prefix.'softwareDeveloper');
+define('SOFTWARE_LANGUAGES_TABLE',         $table_prefix.'softwareLanguages');
+define('LANGUAGES_TABLE',                  $table_prefix.'languages');
+define('GAMES_THREEFOLD_REPETITION_TABLE', $table_prefix.'gamesThreefoldRepetition');
+/******************************************************************************/
+define("USER_ID", getUserID());
+/******************************************************************************/
+/* functions                                                                  */
+/******************************************************************************/
 /** Return the user_id if the User is logged in. 
  *  If no user is logged in return false
  *
@@ -47,7 +60,7 @@ function getUserID()
 
     $user_id       = mysql_real_escape_string($_SESSION['user_id']);
     $condition     = "WHERE `user_id`='$user_id' ";
-    $row           = selectFromTable(array('user_id'), 'chess_users', $condition);
+    $row           = selectFromTable(array('user_id'), USERS_TABLE, $condition);
 
     if ($row['user_id'] === $_SESSION['user_id'] AND $row['user_id'] > 0) {
         return $row['user_id'];
@@ -66,7 +79,7 @@ function getUserID()
 function getUserSoftwareID($user_id)
 {
     $c   = "WHERE `user_id`='$user_id'";
-    $row = selectFromTable(array('currentChessSoftware'), 'chess_users', $c);
+    $row = selectFromTable(array('currentChessSoftware'), USERS_TABLE, $c);
     return $row['currentChessSoftware'];
 }
 
@@ -186,7 +199,7 @@ function login($user_name, $user_password, $redirect = true)
 {
     $condition  = 'WHERE user_name="'.mysql_real_escape_string($user_name);
     $condition .= '" AND user_password="'.md5($user_password).'"';
-    $row        = selectFromTable(array('user_id'), 'chess_users', $condition);
+    $row        = selectFromTable(array('user_id'), USERS_TABLE, $condition);
     if ($row !== false) {
         $_SESSION['user_id']       = $row['user_id'];
         if ($redirect) {
@@ -207,12 +220,12 @@ function challengeUser($user_id, $t)
 {
     $id             = (int) $user_id;
     $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
+    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
         $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
         $cond.= 'AND `outcome` = -1';
-        $row  = selectFromTable(array('id'), 'chess_games', $cond);
+        $row  = selectFromTable(array('id'), GAMES_TABLE, $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -221,7 +234,7 @@ function challengeUser($user_id, $t)
         } else {
             $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$id";      
             $rows   = array('user_id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, 'chess_users', $cond, 2);
+            $result = selectFromTable($rows, USERS_TABLE, $cond, 2);
 
             if ($result[0]['user_id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
@@ -235,7 +248,7 @@ function challengeUser($user_id, $t)
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
 
-            $gameID = insertIntoTable($keyValuePairs, 'chess_games');
+            $gameID = insertIntoTable($keyValuePairs, GAMES_TABLE);
 
             $t->assign('startedGamePlayerID', $id);
             $t->assign('startedGamePlayerUsername', $challengedUser);

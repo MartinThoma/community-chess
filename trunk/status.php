@@ -20,12 +20,12 @@ $t->assign('USER_ID', USER_ID);
 $condition = "WHERE (`whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID.") ";
 $conAppend = "AND `outcome` = -1";
 
-$rows = selectFromTable(array('id'), 'chess_games', $condition.$conAppend, 100);
+$rows = selectFromTable(array('id'), GAMES_TABLE, $condition.$conAppend, 100);
 $t->assign('currentGames', $rows);
 
 $conAppend = "AND `outcome` > -1";
 
-$rows = selectFromTable(array('id'), 'chess_games', $condition.$conAppend, 100);
+$rows = selectFromTable(array('id'), GAMES_TABLE, $condition.$conAppend, 100);
 $t->assign('pastGames', $rows);
 
 echo $t->output('status.html');
