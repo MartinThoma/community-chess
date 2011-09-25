@@ -12,3 +12,6 @@
    (so you rename phpbb3.wrapper.inc.php to wrapper.inc.php and 
     copy it to the main folder)
 8. Adjust '../phpBB3/' in wrapper.inc.php if neccessary.
+9. Adjust constants in constants.inc.php:
+   * Change USER_NAME_COLUMN to 'username'
+   * Change USERS_TABLE      to 'phpbb_users' (or whatever your phpbb prefix is)
