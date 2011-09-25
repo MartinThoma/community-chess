@@ -12,48 +12,7 @@ Here is what I've figured out so far:
   # Deleted install directory
 
 = How to integrate Community Chess into phpBB3 =
-
-= For developers =
-== wrapper.inc.php ==
-
-These lines should be added directly after `set_include_path('templates');`
-
-{{{
-define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : '../phpBB3/';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-}}}
-
-If your relative phpBB-path is not '../phpBB3/' please change it.
-
-Add the following line to the functions `selectFromTable()`, `insertIntoTable()`, `updateDataInTable()`, `deleteFromTable()` after `/* Begin of code which can be replaced by your code */`:
-{{{
-global $db;
-}}}
-
-Also replace 
-{{{
-$result = mysql_query($query);
-}}} 
-by 
-{{{
-$result = $db->sql_query($query);
-}}} 
-in these functions.
-
-== login.wrapper.php ==
-The relevant values are:
-
-  * tables: `chess_users` - `phpbb_users`
-    * rows: `user_id` - `user_id`
-    * rows: `user_name` - `username`
-    * rows: `user_password` - `user_password`
-  * scripts: `login.wrapper.php` - `ucp.php`
-
-At the moment, I don't know how I can use the login-script from phpBB for community chess. 
-
-The row `currentChessSoftware` in the table `chess_players` is also a problem. I should possibly add a new table with the current chess software to player correlation.
+Please follow the instructions in install/phpbb3.integration.txt
 
 = Resources =
   * [http://wiki.phpbb.com/Main_Page wiki.phpbb.com]
@@ -61,4 +20,5 @@ The row `currentChessSoftware` in the table `chess_players` is also a problem. I
     * [http://area51.phpbb.com/docs/31x/coding-guidelines.html Coding Guidelines]
     * [http://wiki.phpbb.com/Best_Practices:PHP Best Practices:PHP]
     * [http://wiki.phpbb.com/Best_Practices:mySQL Best Practices: mySQL]
+    * [http://wiki.phpbb.com/Database_Abstraction_Layer Database Abstraction Layer]
   * [http://www.3cc.org/2010/03/integrating-your-existing-site-into-phpbb3/ Integrating your existing site into phpBB3] - Thank you very much! This helped a lot!
