@@ -100,8 +100,8 @@ if (isset($_GET['deleteTeammate'])) {
 
 if (isset($_GET['setCurrent'])) {
     $cond     = "WHERE  `user_id` =".USER_ID;
-    $keyValue = array('currentChessSoftware'=>(int) $_GET['setCurrent']);
-    updateDataInTable(USERS_TABLE, $keyValue, $cond);
+    $keyValue = array('software_id'=>(int) $_GET['setCurrent']);
+    updateDataInTable(SOFTWARE_USER_TABLE, $keyValue, $cond);
 }
 if (isset($_POST['newSoftwareName'])) {
     $name      = mysql_real_escape_string($_POST['newSoftwareName']);
