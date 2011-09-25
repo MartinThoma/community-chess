@@ -70,7 +70,7 @@ function selectFromTable($rows, $table, $condition, $limit = 1)
     global $db;
     $row    = implode("`,`", $rows);
     $query  = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
-    $result = $db->sql_query($sql);
+    $result = $db->sql_query($query);
     if ($limit == 1) {
         $row = $db->sql_fetchrow($result);
     } else {
@@ -167,8 +167,8 @@ function challengeUser($user_id, $t)
 {
     $id             = (int) $user_id;
     $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
-    $challengedUser = $row['user_name'];
+    $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
+    $challengedUser = $row[USER_NAME_COLUMN];
     if ($row !== false) {
         $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
         $cond.= 'AND `outcome` = -1';

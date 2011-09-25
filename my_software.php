@@ -72,13 +72,13 @@ if (isset($_GET['addTeammate'])) {
         $task = mysql_real_escape_string($_GET['task']);
 
         $keyValuePairs               = array();
-        $keyValuePairs['user_id']    = $result['id'];
+        $keyValuePairs['user_id']    = $result['user_id'];
         $keyValuePairs['softwareID'] = $softwareID;
         $keyValuePairs['task']       = $task;
         insertIntoTable($keyValuePairs, SOFTWARE_DEVELOPER_TABLE);
-        $msg[] = "Added '$username' as a '$task'.";
+        $msg[] = "Added '$user_name' as a '$task'.";
     } else {
-        $msg[] = "The username '$username' was not in the database.";
+        $msg[] = "The username '$user_name' was not in the database.";
     }
 }
 if (isset($_GET['deleteTeammate'])) {
@@ -161,7 +161,11 @@ if (count($softwareIds) > 0) {
             $cond      = 'WHERE `user_id`='.$uID['user_id'];
             $player    = selectFromTable(array('user_id', USER_NAME_COLUMN), 
                                          USERS_TABLE, $cond);
-            $players[] = array_merge($player, array('task'=>$uID['task']));
+            // Quick'n dirt fix: 
+            // The template tries to acces $possibleOpponents[$i]['user_name']:
+            $fixedPlayer = array('user_id'=>$player['user_id'], 
+                                   'user_name'=>$player[USER_NAME_COLUMN]);
+            $players[] = array_merge($fixedPlayer, array('task'=>$uID['task']));
         }
         // Languages
         $cond      = "WHERE `softwareID`=$id";

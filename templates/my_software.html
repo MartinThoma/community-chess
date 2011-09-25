@@ -85,7 +85,7 @@
             {foreach:software['players'],i,player}
                 <li>{player['user_name']} ({player['task']})
                 {if:player['user_id'] != USER_ID}
-                    <a href="my_software.php?deleteTeammate={player['id']}&softwareID={software['id']}">
+                    <a href="my_software.php?deleteTeammate={player['user_id']}&softwareID={software['id']}">
                     <img src="styling/delete.png" />
                     </a>
                 {end}
