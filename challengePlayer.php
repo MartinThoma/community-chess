@@ -22,7 +22,7 @@ if (isset($_GET['user_id'])) {
 } else {
     $rows = array('user_id', 'user_name');
     $cond = "WHERE `user_id` != ".USER_ID;
-    $rows = selectFromTable($rows, 'chess_users', $cond, 10);
+    $rows = selectFromTable($rows, USERS_TABLE, $cond, 10);
 
     $t->assign('possibleOpponents', $rows);
 }

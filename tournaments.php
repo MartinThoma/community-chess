@@ -27,7 +27,7 @@ if (isset($_POST['tournamentName'])) {
     $keyValue['description'] = $description;
     $keyValue['password']    = $password;
     $keyValue['closingDate'] = $closingDate;
-    insertIntoTable($keyValue, "chess_turnaments");
+    insertIntoTable($keyValue, TURNAMENTS_TABLE);
 }
 
 if (isset($_GET['challengeUserID'])) {
@@ -35,13 +35,13 @@ if (isset($_GET['challengeUserID'])) {
     $tournamentID = (int) $_GET['tournamentID'];
 
     $cond           = 'WHERE `user_id` = '.$user_id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
+    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
         $cond  = "WHERE (`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";
         $cond .= " OR (`whiteUserID` = $user_id AND `blackUserID`=".USER_ID.") ";
         $cond .= "AND tournamentID=$tournamentID";
-        $row   = selectFromTable(array('id'), 'chess_games', $cond);
+        $row   = selectFromTable(array('id'), GAMES_TABLE, $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -50,7 +50,7 @@ if (isset($_GET['challengeUserID'])) {
             $rows    = array('user_id', 'gamesWon', 'gamesPlayed');
             $cond    = "WHERE turnamentID=$tournamentID AND (user_id=".USER_ID;
             $cond   .= " OR `user_id`=".$user_id.")";
-            $results =selectFromTable($rows, 'chess_turnamentPlayers', $cond, 2);
+            $results =selectFromTable($rows, TURNAMENT_PLAYERS_TABLE, $cond, 2);
             if (count($results)<2) {
                 exit("Either you or your opponent is not part of the tournament.");
             }
@@ -68,7 +68,7 @@ if (isset($_GET['challengeUserID'])) {
 
             $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
             $rows   = array('user_id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, "chess_users", $condition, 2);
+            $result = selectFromTable($rows, USERS_TABLE, $condition, 2);
 
             if ($result[0]['id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
@@ -81,7 +81,7 @@ if (isset($_GET['challengeUserID'])) {
                                'blackUserID'=>$user_id,
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
-            insertIntoTable($keyValuePairs, 'chess_games');
+            insertIntoTable($keyValuePairs, GAMES_TABLE);
 
             $t->assign('startedGameUserID', $user_id);
             $t->assign('startedGamePlayerUsername', $challengedUser);
@@ -100,12 +100,12 @@ if (isset($_GET['enterID'])) {
     }
     $cond   = "WHERE id=$tournamentID AND password='".$pass."' ";
     $cond  .= "AND closingDate > NOW()";
-    $result = selectFromTable(array('id'), 'chess_turnaments', $cond);
+    $result = selectFromTable(array('id'), TURNAMENTS_TABLE, $cond);
     if ($result['id'] != $tournamentID)
         exit("Wrong password or tournament is already closed.");
 
     $keyValue = array('turnamentID'=>$tournamentID, 'user_id'=>USER_ID);
-    $id       = insertIntoTable($keyValue, "chess_turnamentPlayers");
+    $id       = insertIntoTable($keyValue, TURNAMENT_PLAYERS_TABLE);
     if ($id > 0) {
         $t->assign('joinedTournamentID', $tournamentID);
     } else {
@@ -116,13 +116,13 @@ if (isset($_GET['enterID'])) {
 if (isset($_GET['deleteParticipation'])) {
     $tournamentID = (int) $_GET['deleteParticipation'];
     $cond         = "WHERE turnamentID=$tournamentID AND `user_id`=".USER_ID;
-    $result       = selectFromTable(array('id'), 'chess_turnamentPlayers', $cond);
-    deleteFromTable('chess_turnamentPlayers', $result['id']);
+    $result       = selectFromTable(array('id'), TURNAMENT_PLAYERS_TABLE, $cond);
+    deleteFromTable(TURNAMENT_PLAYERS_TABLE, $result['id']);
 }
 
 $cond   = "WHERE `user_id`=".USER_ID;
 $result = selectFromTable(array('turnamentID'), 
-                          'chess_turnamentPlayers', $cond, 100);
+                          TURNAMENT_PLAYERS_TABLE, $cond, 100);
 
 $myParticipations = array();
 foreach ($result as $row) {
@@ -141,7 +141,7 @@ if (isset($_GET['getDetails'])) {
     $rows[]  = 'gamesWon';
     $rows[]  = 'gamesPlayed';
     $cond    = "WHERE turnamentID=$id";
-    $results = selectFromTable($rows, 'chess_turnamentPlayers', $cond, 100);
+    $results = selectFromTable($rows, TURNAMENT_PLAYERS_TABLE, $cond, 100);
     $t->assign('detailsPlayers', $results);
 }
 
@@ -152,7 +152,7 @@ $rows    = array('id','name','password','description','initiationDate');
 $rows[]  = 'closingDate';
 $rows[]  = 'status';
 $cond    = "ORDER BY `initiationDate` DESC";
-$results = selectFromTable($rows, 'chess_turnaments', $cond, 100);
+$results = selectFromTable($rows, TURNAMENTS_TABLE, $cond, 100);
 
 $doIParticipate   = array();
 $isPasswordNeeded = array();

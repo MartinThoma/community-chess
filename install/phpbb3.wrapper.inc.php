@@ -47,7 +47,7 @@ function getUserID()
 function getUserSoftwareID($user_id)
 {
     $c   = "WHERE `user_id`='$user_id'";
-    $row = selectFromTable(array('currentChessSoftware'), 'chess_users', $c);
+    $row = selectFromTable(array('currentChessSoftware'), USERS_TABLE, $c);
     return $row['currentChessSoftware'];
 }
 
@@ -167,12 +167,12 @@ function challengeUser($user_id, $t)
 {
     $id             = (int) $user_id;
     $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), 'chess_users', $cond);
+    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
         $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
         $cond.= 'AND `outcome` = -1';
-        $row  = selectFromTable(array('id'), 'chess_games', $cond);
+        $row  = selectFromTable(array('id'), GAMES_TABLE, $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -181,7 +181,7 @@ function challengeUser($user_id, $t)
         } else {
             $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$id";      
             $rows   = array('user_id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, 'chess_users', $cond, 2);
+            $result = selectFromTable($rows, USERS_TABLE, $cond, 2);
 
             if ($result[0]['user_id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
@@ -195,7 +195,7 @@ function challengeUser($user_id, $t)
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
 
-            $gameID = insertIntoTable($keyValuePairs, 'chess_games');
+            $gameID = insertIntoTable($keyValuePairs, GAMES_TABLE);
 
             $t->assign('startedGamePlayerID', $id);
             $t->assign('startedGamePlayerUsername', $challengedUser);
