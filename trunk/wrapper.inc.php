@@ -210,7 +210,7 @@ function challengeUser($user_id, $t)
     $id             = (int) $user_id;
     $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
     $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
-    $challengedUser = $row['user_name'];
+    $challengedUser = $row[USER_NAME_COLUMN];
     if ($row !== false) {
         $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
         $cond.= 'AND `outcome` = -1';

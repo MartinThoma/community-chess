@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS `chess_turnamentPlayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `turnamentID` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `turnamentNumber` int(11) NOT NULL,
+  `turnamentNumber` int(11) NOT NULL DEFAULT '-1',
   `joinedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `gamesWon` int(11) NOT NULL DEFAULT '0' COMMENT 'If gamesWon < gamesPlayed, the player can''t play any more games in the current turnament',
   `gamesPlayed` int(11) NOT NULL DEFAULT '0',

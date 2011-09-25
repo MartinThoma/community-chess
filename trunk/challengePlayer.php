@@ -20,11 +20,19 @@ $t->assign('USER_ID', USER_ID);
 if (isset($_GET['user_id'])) {
     challengeUser($_GET['user_id'], $t);
 } else {
-    $rows = array('user_id', USER_NAME_COLUMN);
+    // look at the fix if you change something here!
+    $rows = array('user_id', USER_NAME_COLUMN); 
     $cond = "WHERE `user_id` != ".USER_ID;
     $rows = selectFromTable($rows, USERS_TABLE, $cond, 10);
+    // Quick'n dirt fix: 
+    // The template tries to acces $possibleOpponents[$i]['user_name']:
+    $fixedRows = array();
+    foreach($rows as $row){
+        $fixedRows[] = array('user_id'=>$row['user_id'], 
+                           'user_name'=>$row[USER_NAME_COLUMN]);
+    }
 
-    $t->assign('possibleOpponents', $rows);
+    $t->assign('possibleOpponents', $fixedRows);
 }
 echo $t->output('challengePlayer.html');
 ?>
