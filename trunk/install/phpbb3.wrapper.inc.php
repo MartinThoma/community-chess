@@ -12,8 +12,10 @@
  * @link     http://code.google.com/p/community-chess/
  */
 
-include_once("phpbb.php");
+include_once 'phpbb3.php';
 require_once 'external/vemplator.php';
+require_once 'constants.inc.php';
+
 set_include_path('templates');
 
 define("USER_ID", getUserID());
@@ -77,6 +79,7 @@ function selectFromTable($rows, $table, $condition, $limit = 1)
             $row[] = $a;
         }
     }
+    $db->sql_freeresult($result);
     return $row;
     /* End of code which can be replaced by your code */
 }
