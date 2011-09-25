@@ -36,7 +36,7 @@ if (isset($_GET['addLanguage'])) {
     $keyValuePairs               = array();
     $keyValuePairs['softwareID'] = $softwareID;
     $keyValuePairs['languageID'] = $langID;
-    insertIntoTable($keyValuePairs, LANGUAGES_TABLE);
+    insertIntoTable($keyValuePairs, SOFTWARE_LANGUAGES_TABLE);
 } 
 if (isset($_GET['deleteLang'])) {
     $langID     = (int) $_GET['deleteLang'];
