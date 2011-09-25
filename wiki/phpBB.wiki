@@ -1,6 +1,20 @@
 #summary How can community chess be used with phpBB? A little tutorial.
 
-= wrapper.inc.php =
+Some people might want to integrate Community Chess into [http://en.wikipedia.org/wiki/PhpBB phpBB3]. Some reasons could be:
+  * *Higher security*: Although I used mysql_real_escape_string and sometimes intval() to make it not too easy to use MySQL-Injections, I am quite sure that the phpBB3 developers thought of much more vulnerabilities
+  * *Existing project*: As the name suggests, I wrote Community Chess for some specific communities. They might already have their registered users. I don't want to force them to register for my software. There is no use in doing so.
+
+Here is what I've figured out so far:
+
+= My setup =
+  # Download [http://www.phpbb.com/downloads/olympus.php?from=submenu phpBB 3.0.9]
+  # Standard MySQL-installation
+  # Deleted install directory
+
+= How to integrate Community Chess into phpBB3 =
+
+= For developers =
+== wrapper.inc.php ==
 
 These lines should be added directly after `set_include_path('templates');`
 
@@ -28,7 +42,7 @@ $result = $db->sql_query($query);
 }}} 
 in these functions.
 
-= login.wrapper.php =
+== login.wrapper.php ==
 The relevant values are:
 
   * tables: `chess_users` - `phpbb_users`
@@ -47,3 +61,4 @@ The row `currentChessSoftware` in the table `chess_players` is also a problem. I
     * [http://area51.phpbb.com/docs/31x/coding-guidelines.html Coding Guidelines]
     * [http://wiki.phpbb.com/Best_Practices:PHP Best Practices:PHP]
     * [http://wiki.phpbb.com/Best_Practices:mySQL Best Practices: mySQL]
+  * [http://www.3cc.org/2010/03/integrating-your-existing-site-into-phpbb3/ Integrating your existing site into phpBB3] - Thank you very much! This helped a lot!
