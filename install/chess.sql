@@ -195,11 +195,11 @@ CREATE TABLE IF NOT EXISTS `chess_turnaments` (
   `password` varchar(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
   `description` text NOT NULL,
   `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `closingDate` datetime NOT NULL,
-  `finishedDate` datetime NOT NULL,
+  `closingDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `finishedDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `status` varchar(18) NOT NULL DEFAULT 'openForInvitations' COMMENT 'openForInvitations, closed, running, finished',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `chess_turnaments`
