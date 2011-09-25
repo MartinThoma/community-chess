@@ -74,10 +74,7 @@ function selectFromTable($rows, $table, $condition, $limit = 1)
     if ($limit == 1) {
         $row = $db->sql_fetchrow($result);
     } else {
-        $row = array();
-        while ($a = $db->sql_fetchrow($result)) {
-            $row[] = $a;
-        }
+        $row = $db->sql_fetchrowset($result);
     }
     $db->sql_freeresult($result);
     return $row;
