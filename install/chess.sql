@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 13. September 2011 um 22:03
+-- Erstellungszeit: 25. September 2011 um 20:05
 -- Server Version: 5.1.41
 -- PHP-Version: 5.3.2-1ubuntu4.9
 
@@ -135,20 +135,22 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
   `softwareID` int(11) NOT NULL,
   `task` varchar(255) NOT NULL DEFAULT 'Admin' COMMENT 'What did this person do? What was his/her job?',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 --
 -- Daten für Tabelle `chess_softwareDeveloper`
 --
 
+INSERT INTO `chess_softwareDeveloper` (`id`, `user_id`, `softwareID`, `task`) VALUES
+(1, 1, 1, 'Admin');
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_softwareLangages`
+-- Tabellenstruktur für Tabelle `chess_softwareLanguages`
 --
 
-CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
+CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `softwareID` int(11) NOT NULL,
   `languageID` int(11) NOT NULL,
@@ -156,7 +158,24 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLangages` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_softwareLangages`
+-- Daten für Tabelle `chess_softwareLanguages`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `chess_softwareUsers`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_softwareUsers` (
+  `user_id` int(11) NOT NULL,
+  `software_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Daten für Tabelle `chess_softwareUsers`
 --
 
 
@@ -199,7 +218,7 @@ CREATE TABLE IF NOT EXISTS `chess_turnaments` (
   `finishedDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `status` varchar(18) NOT NULL DEFAULT 'openForInvitations' COMMENT 'openForInvitations, closed, running, finished',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
 -- Daten für Tabelle `chess_turnaments`
@@ -216,7 +235,6 @@ CREATE TABLE IF NOT EXISTS `chess_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(255) NOT NULL,
   `user_password` varchar(32) NOT NULL,
-  `currentChessSoftware` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
@@ -224,7 +242,7 @@ CREATE TABLE IF NOT EXISTS `chess_users` (
 -- Daten für Tabelle `chess_users`
 --
 
-INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `currentChessSoftware`) VALUES
-(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 0),
-(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 0);
+INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6');
 

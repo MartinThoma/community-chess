@@ -67,15 +67,15 @@ if (isset($_GET['challengeUserID'])) {
 
 
             $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
-            $rows   = array('user_id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, USERS_TABLE, $condition, 2);
+            $rows   = array('user_id', 'software_id');  
+            $result = selectFromTable($rows, SOFTWARE_USER_TABLE, $condition, 2);
 
             if ($result[0]['id'] == USER_ID) {
-                $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
-                $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
+                $whitePlayerSoftwareID = $result[0]['software_id'];
+                $blackPlayerSoftwareID = $result[1]['software_id'];
             } else {
-                $blackPlayerSoftwareID = $result[0]['currentChessSoftware'];
-                $whitePlayerSoftwareID = $result[1]['currentChessSoftware'];
+                $blackPlayerSoftwareID = $result[0]['software_id'];
+                $whitePlayerSoftwareID = $result[1]['software_id'];
             }
             $keyValuePairs = array('whiteUserID'=>USER_ID, 
                                'blackUserID'=>$user_id,

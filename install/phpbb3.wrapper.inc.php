@@ -47,8 +47,8 @@ function getUserID()
 function getUserSoftwareID($user_id)
 {
     $c   = "WHERE `user_id`='$user_id'";
-    $row = selectFromTable(array('currentChessSoftware'), USERS_TABLE, $c);
-    return $row['currentChessSoftware'];
+    $row = selectFromTable(array('software_id'), SOFTWARE_USER_TABLE, $c);
+    return $row['software_id'];
 }
 
 /** This function selects some rows from the specified table and returns
@@ -180,15 +180,15 @@ function challengeUser($user_id, $t)
                    "This Game has the gameID ".$row['id'].".";
         } else {
             $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$id";      
-            $rows   = array('user_id', 'currentChessSoftware');  
-            $result = selectFromTable($rows, USERS_TABLE, $cond, 2);
+            $rows   = array('user_id', 'software_id');  
+            $result = selectFromTable($rows, SOFTWARE_USER_TABLE, $cond, 2);
 
             if ($result[0]['user_id'] == USER_ID) {
-                $whitePlayerSoftwareID = $result[0]['currentChessSoftware'];
-                $blackPlayerSoftwareID = $result[1]['currentChessSoftware'];
+                $whitePlayerSoftwareID = $result[0]['software_id'];
+                $blackPlayerSoftwareID = $result[1]['software_id'];
             } else {
-                $blackPlayerSoftwareID = $result[0]['currentChessSoftware'];
-                $whitePlayerSoftwareID = $result[1]['currentChessSoftware'];
+                $blackPlayerSoftwareID = $result[0]['software_id'];
+                $whitePlayerSoftwareID = $result[1]['software_id'];
             }
             $keyValuePairs = array('whiteUserID'=>USER_ID, 
                                'blackUserID'=>$id,
