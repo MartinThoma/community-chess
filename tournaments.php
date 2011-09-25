@@ -35,7 +35,7 @@ if (isset($_GET['challengeUserID'])) {
     $tournamentID = (int) $_GET['tournamentID'];
 
     $cond           = 'WHERE `user_id` = '.$user_id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
+    $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
         $cond  = "WHERE (`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";

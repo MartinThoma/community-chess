@@ -14,4 +14,10 @@ define('SOFTWARE_DEVELOPER_TABLE',         $table_prefix.'softwareDeveloper');
 define('SOFTWARE_LANGUAGES_TABLE',         $table_prefix.'softwareLanguages');
 define('LANGUAGES_TABLE',                  $table_prefix.'languages');
 define('GAMES_THREEFOLD_REPETITION_TABLE', $table_prefix.'gamesThreefoldRepetition');
+
+/******************************************************************************/
+/* Table Column names                                                         */
+/******************************************************************************/
+define('USER_NAME_COLUMN',                 'user_name');
+
 ?>
