@@ -66,7 +66,7 @@ if (isset($_GET['addTeammate'])) {
     }
 
     $user_name = mysql_real_escape_string($_GET['addTeammate']);
-    $cond      = "WHERE `user_name`='$user_name'";
+    $cond      = "WHERE `".USER_NAME_COLUMN."`='$user_name'";
     $result    = selectFromTable(array('user_id'), USERS_TABLE, $cond);
     if ($result !== false) {
         $task = mysql_real_escape_string($_GET['task']);
@@ -159,7 +159,7 @@ if (count($softwareIds) > 0) {
         $players = array();
         foreach ($userIDs as $uID) {
             $cond      = 'WHERE `user_id`='.$uID['user_id'];
-            $player    = selectFromTable(array('user_id', 'user_name'), 
+            $player    = selectFromTable(array('user_id', USER_NAME_COLUMN), 
                                          USERS_TABLE, $cond);
             $players[] = array_merge($player, array('task'=>$uID['task']));
         }

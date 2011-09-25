@@ -20,7 +20,7 @@ $t->assign('USER_ID', USER_ID);
 if (isset($_GET['user_id'])) {
     challengeUser($_GET['user_id'], $t);
 } else {
-    $rows = array('user_id', 'user_name');
+    $rows = array('user_id', USER_NAME_COLUMN);
     $cond = "WHERE `user_id` != ".USER_ID;
     $rows = selectFromTable($rows, USERS_TABLE, $cond, 10);
 
