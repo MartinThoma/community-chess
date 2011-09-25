@@ -135,14 +135,7 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
   `softwareID` int(11) NOT NULL,
   `task` varchar(255) NOT NULL DEFAULT 'Admin' COMMENT 'What did this person do? What was his/her job?',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
-
---
--- Daten für Tabelle `chess_softwareDeveloper`
---
-
-INSERT INTO `chess_softwareDeveloper` (`id`, `user_id`, `softwareID`, `task`) VALUES
-(1, 1, 1, 'Admin');
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -172,7 +165,7 @@ CREATE TABLE IF NOT EXISTS `chess_softwareUsers` (
   `user_id` int(11) NOT NULL,
   `software_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
 -- Daten für Tabelle `chess_softwareUsers`
