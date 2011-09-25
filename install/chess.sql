@@ -113,8 +113,8 @@ CREATE TABLE IF NOT EXISTS `chess_software` (
   `version` varchar(20) NOT NULL,
   `lastVersionID` int(11) NOT NULL COMMENT '0 if this is the first version',
   `changelog` text NOT NULL,
-  `BT2450Rating` int(11) NOT NULL,
-  `EloRating` double NOT NULL,
+  `BT2450Rating` int(11) NOT NULL DEFAULT '-1',
+  `EloRating` double NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
