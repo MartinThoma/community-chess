@@ -10,11 +10,9 @@
 = 2. Interfaces =
   * ~~Create an interface which allows players to specify the software they use.~~ (done: 2011-08-11)
   * Add an interface for starting turnaments
-  * Add an interface for specifying medals
-  * Add an interface for giving medals to a player
 
 = 3. Frameworks =
-  * Make it easy to use it with GWF 3 / wechall
+  * Make it easy to use it with [http://trac.gwf3.gizmore.org/browser GWF 3] / [http://www.wechall.net/wechall.zip WeChall]
   * phpBB
 
 = 4. Cleanup =
