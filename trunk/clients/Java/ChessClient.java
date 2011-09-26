@@ -66,7 +66,7 @@ public class ChessClient {
         getWebSite("?action=challengeUser&userID=" + playerID);
     }
 
-    public static void move(String move) {
+    public static void submitMove(String move) {
         getWebSite("?gameID="+gameID+"&move=" + move);
     }
 
@@ -77,7 +77,7 @@ public class ChessClient {
             System.out.println(getCurrentGamesIdList());
             System.out.println(getPastGamesIdList());
             challengePlayer("1");
-            move("1214");
+            submitMove("1214");
             System.out.println(getBoard());
         }
     }
