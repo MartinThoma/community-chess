@@ -3,38 +3,15 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 25. September 2011 um 20:05
+-- Erstellungszeit: 26. September 2011 um 08:26
 -- Server Version: 5.1.41
 -- PHP-Version: 5.3.2-1ubuntu4.9
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
--- Datenbank: `chess`
+-- Datenbank: `phpBB3`
 --
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `chess_currentGamesThreefoldRepetition`
---
-
-CREATE TABLE IF NOT EXISTS `chess_currentGamesThreefoldRepetition` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `gameID` int(11) NOT NULL,
-  `board` char(64) NOT NULL,
-  `whiteCastlingKingsidePossible` tinyint(1) NOT NULL,
-  `whiteCastlingQueensidePossible` tinyint(1) NOT NULL,
-  `blackCastlingKingsidePossible` tinyint(1) NOT NULL,
-  `blackCastlingQueensidePossible` tinyint(1) NOT NULL,
-  `enPassantPossible` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Daten für Tabelle `chess_currentGamesThreefoldRepetition`
---
-
 
 -- --------------------------------------------------------
 
@@ -66,6 +43,29 @@ CREATE TABLE IF NOT EXISTS `chess_games` (
 
 --
 -- Daten für Tabelle `chess_games`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `chess_gamesThreefoldRepetition`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_gamesThreefoldRepetition` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `gameID` int(11) NOT NULL,
+  `board` char(64) NOT NULL,
+  `whiteCastlingKingsidePossible` tinyint(1) NOT NULL,
+  `whiteCastlingQueensidePossible` tinyint(1) NOT NULL,
+  `blackCastlingKingsidePossible` tinyint(1) NOT NULL,
+  `blackCastlingQueensidePossible` tinyint(1) NOT NULL,
+  `enPassantPossible` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Daten für Tabelle `chess_gamesThreefoldRepetition`
 --
 
 
@@ -135,7 +135,12 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
   `softwareID` int(11) NOT NULL,
   `task` varchar(255) NOT NULL DEFAULT 'Admin' COMMENT 'What did this person do? What was his/her job?',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Daten für Tabelle `chess_softwareDeveloper`
+--
+
 
 -- --------------------------------------------------------
 

@@ -225,6 +225,10 @@ function challengeUser($user_id, $t)
             $rows   = array('user_id', 'software_id');  
             $result = selectFromTable($rows, SOFTWARE_USER_TABLE, $cond, 2);
 
+            // Maybe one of the rows doesn't exist?
+            checkSoftwareTableEntry(USER_ID);
+            checkSoftwareTableEntry($id);
+
             if ($result[0]['user_id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];
                 $blackPlayerSoftwareID = $result[1]['software_id'];
@@ -235,7 +239,8 @@ function challengeUser($user_id, $t)
             $keyValuePairs = array('whiteUserID'=>USER_ID, 
                                'blackUserID'=>$id,
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
-                               'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
+                               'blackPlayerSoftwareID'=>$blackPlayerSoftwareID,
+                               'moveList'=>'');
 
             $gameID = insertIntoTable($keyValuePairs, GAMES_TABLE);
 
@@ -248,4 +253,23 @@ function challengeUser($user_id, $t)
         $t->assign('incorrectID', true);
     }
 }
+
+/** This function checks if a row for the user in SOFTWARE_USER_TABLE does exist
+ *
+ * @param int $user_id the id of the user who gets the table check
+ *
+ * @return int always 0
+ */
+function checkSoftwareTableEntry($user_id)
+{
+    $cond = 'WHERE `user_id` = '.$user_id;
+    $row  = selectFromTable(array('software_id'), SOFTWARE_USER_TABLE, $cond);
+    if ($row == false) {
+        $keyValuePairs = array();
+        $keyValuePairs['user_id']     = $user_id;
+        $keyValuePairs['software_id'] = 0;
+        insertIntoTable($keyValuePairs, SOFTWARE_USER_TABLE);
+    }
+}
+
 ?>
