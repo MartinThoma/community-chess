@@ -1,0 +1,31 @@
+#summary What are tournaments and how do they work?
+
+= Introduction =
+
+A tournament is a competition involving a relatively large number of active chess players, but by far not the whole community.
+
+= Principles of a tournament =
+I will try to achieve a fair tournament system according to these principles:
+  # The best player should be on position 1, the second best player should be on position 2, ...
+  # Only chess knowledge and not luck with your opponents should lead to a high ranking in a tournament
+  # As few as possible time which has to be spend on playing with other player should be spent. I don't want to force the best player to resign from the top ranking just because other players can spent night over night with playing chess.
+
+= Why didn't you use ... =
+== Single-elimination tournament ==
+* *Draw* is possible in chess
+* *Bad ranking*: Imagine the best player plays against the second best in the first round. The second best player will rank as high as the worst player.
+* The *number of players* in a [http://en.wikipedia.org/wiki/Single-elimination_tournament Single-elimination tournament] sould be a a power of two.
+
+== Double-elimination tournament ==
+In [http://en.wikipedia.org/wiki/Double-elimination_tournament Double-elimination tournament] more games have to be played than in single elemination. This results in a much better ranking, but *draw* and the *number of players* are still a problem.
+
+== Round-robin tournament ==
+In a [http://en.wikipedia.org/wiki/Round-robin_tournament Round-robin tournament] every player has to play twice against every other player. This means (n*n - n)/2 games have to be played. I would like to have at least 20 players in every tournament. This would mean 190 games have to be played. This seems to be too much for me. 
+
+Additionally, I guess that many player will be quite inactive which will  lead to easy wins.
+
+= Implementation =
+Every tournament can be splitted into parts:
+  # *Opening Phase*: Players may register for participation.
+  # *Match Phase*: The players play against other players. 
+  # *Computation Phase*: Compute the result of the tournament.
