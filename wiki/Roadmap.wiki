@@ -19,3 +19,16 @@
 At the moment, the code is very ugly. I know it. But it was more important to me to get a working piece of fast code than writing it beautiful. 
 
 As soon as all features are implemented, I will clean the code.
+
+= 5. Beta-Testing =
+Set Community Chess online. Make at least five games which should have the following moves:
+  * Castling (Kingsside and Queensside)
+  * Promotion
+  * En passant
+  * Giving up
+
+= 6. Promotion =
+  * Set up a own (challenging) website?
+  * Create banner / images
+  * Integrate into different Challenge Websites
+  * Contact some chess magazines?
