@@ -12,9 +12,9 @@ I will try to achieve a fair tournament system according to these principles:
 
 = Why didn't you use ... =
 == Single-elimination tournament ==
-* *Draw* is possible in chess
-* *Bad ranking*: Imagine the best player plays against the second best in the first round. The second best player will rank as high as the worst player.
-* The *number of players* in a [http://en.wikipedia.org/wiki/Single-elimination_tournament Single-elimination tournament] sould be a a power of two.
+  * *Draw* is possible in chess
+  * *Bad ranking*: Imagine the best player plays against the second best in the first round. The second best player will rank as high as the worst player.
+  * The *number of players* in a [http://en.wikipedia.org/wiki/Single-elimination_tournament Single-elimination tournament] sould be a a power of two.
 
 == Double-elimination tournament ==
 In [http://en.wikipedia.org/wiki/Double-elimination_tournament Double-elimination tournament] more games have to be played than in single elemination. This results in a much better ranking, but *draw* and the *number of players* are still a problem.
@@ -29,3 +29,5 @@ Every tournament can be splitted into parts:
   # *Opening Phase*: Players may register for participation.
   # *Match Phase*: The players play against other players. 
   # *Computation Phase*: Compute the result of the tournament.
+
+Idea: Use the PageRanking algorithm.
