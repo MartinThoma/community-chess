@@ -53,7 +53,7 @@ if (isset($_GET['deleteLang'])) {
     $result = selectFromTable(array('id'), SOFTWARE_LANGUAGES_TABLE, $cond);
     deleteFromTable(SOFTWARE_LANGUAGES_TABLE, $result['id']);
     $keyValue = array("used" => "`used`-1");
-    updateDataInTable(SOFTWARE_LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
+    updateDataInTable(LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
 }
 
 if (isset($_GET['addTeammate'])) {
