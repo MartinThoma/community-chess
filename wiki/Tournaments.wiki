@@ -35,9 +35,9 @@ Every tournament can be splitted into parts:
   # *Match Phase*: The players play against other players. 
   # *Computation Phase*: Compute the result of the tournament.
 
-Idea: Use the PageRanking algorithm.
+Idea: Use the !PageRanking algorithm.
 
-= PageRank like algorithm =
+= !PageRank like algorithm =
 Every win can be treated as a link from the loser to the winner
 Every draw can be treated as two links (from a to b and b to a).
 
