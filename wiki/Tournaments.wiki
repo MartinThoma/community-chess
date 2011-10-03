@@ -51,7 +51,7 @@ SUMMAND = (1 - DAMPING_FACTOR)/ NR_OF_PLAYERS
 for (i=0; i<REPEAT_PR; i++) {
     foreach (player in players) {
         // How often did this player either lose or get a draw?
-        outlinks = getLoseOrDraw(player.id)
+        outlinks = getLoseOrDraw(player.id) + 1 // +1 to prevent devision by 0
         // Store this value in the database
         player.setOutlinks(outlinks)
         // How often did this player win or get draw?
