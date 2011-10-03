@@ -191,6 +191,7 @@ CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
   `joinedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `gamesWon` int(11) NOT NULL DEFAULT '0' COMMENT 'If gamesWon < gamesPlayed, the player can''t play any more games in the current tournament',
   `gamesPlayed` int(11) NOT NULL DEFAULT '0',
+  `pageRank` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tournamentID` (`tournamentID`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

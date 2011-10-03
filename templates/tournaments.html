@@ -55,25 +55,31 @@
 
     {if:isset(detailsPlayers)}
         <h1>Details of tournament</h1>
-        <table>
+        <table border="1">
         <tr>
-        <th>user_id</th>
-        <th>joinedDate</th>
-        <th>games won / played</th>
-        <th>challenge</th>
+            <th>user_id</th>
+            <th>joinedDate</th>
+            <th>games won / played</th>
+            <th>PageRank</th>
+            <th>challenge</th>
         </tr>
         {foreach:detailsPlayers,i,player}
             <tr>
-            <th>{player['user_id']}</th>
-            <th>{player['joinedDate']}</th>
-            <th>{player['gamesWon']} / {player['gamesPlayed']}</th>
-            <th>
-            {if:(player['user_id'] != USER_ID)}
-                <a href="tournaments.php?challengeUserID={player['user_id']}&tournamentID={detailsTournamentID}">challenge</a>
-            {else}
-                -
-            {end}
-            </th>
+                <td>{player['user_id']}</td>
+                <td>{player['joinedDate']}</td>
+                <td>{player['gamesWon']} / {player['gamesPlayed']}</td>
+                <td>{player['pageRank']}</td>
+                <td>
+                {if:(player['user_id'] != USER_ID)}
+                    {if:isset($this->data->tournamentDidntBeginn)}
+                        Tournament didn't begin.
+                    {else}
+                        <a href="tournaments.php?challengeUserID={player['user_id']}&tournamentID={detailsTournamentID}">challenge</a>
+                    {end}
+                {else}
+                    -
+                {end}
+                </td>
             </tr>
         {end}
         </table>
@@ -137,7 +143,7 @@
             <td>
             {if:(tournament['status'] == 'openForInvitations')}
                 {if:doIParticipate[i]}
-                    <a href="tournaments.php?deleteParticipation={tournament['id']}"><img src="styling/disconnect.png" alt="don't participate" title="don't participate"/></a>
+                    <a href="tournaments.php?deleteParticipation={tournament['id']}"><img src="styling/disconnect.png" alt="don't participate" title="don't participate" border="0"/></a>
                 {else}
                     {if:isPasswordNeeded[i]}
                        
@@ -147,11 +153,11 @@
                         <input type="submit" value="participate" />
                         </form>
                     {else}
-                        <a href="tournaments.php?enterID={tournament['id']}"><img src="styling/connect.png" alt="participate" title="participate"/></a>
+                        <a href="tournaments.php?enterID={tournament['id']}"><img src="styling/connect.png" alt="participate" title="participate" border="0"/></a>
                     {end}
                 {end}
             {end}
-            <a href="tournaments.php?getDetails={tournament['id']}"><img src="styling/magnifier.png" alt="details" title="details" /></a>
+            <a href="tournaments.php?getDetails={tournament['id']}"><img src="styling/magnifier.png" alt="details" title="details"  border="0"/></a>
             </td>
           </tr>
         {end}

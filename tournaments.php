@@ -37,9 +37,17 @@ if (isset($_POST['tournamentName'])) {
 }
 
 if (isset($_GET['challengeUserID'])) {
-    $user_id      = (int) $_GET['challengeUserID'];
     $tournamentID = (int) $_GET['tournamentID'];
+    $rows         = array('closingDate');
+    $cond         = "WHERE `id`=$tournamentID";
+    $result       = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
+    if (strtotime($result['closingDate']) > time()) {
+        // Tournament didn't begin. Don't try hacking it.
+        exit();
+    }
 
+
+    $user_id        = (int) $_GET['challengeUserID'];
     $cond           = 'WHERE `user_id` = '.$user_id.' AND `user_id` != '.USER_ID;
     $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
@@ -72,9 +80,9 @@ if (isset($_GET['challengeUserID'])) {
 
 
 
-            $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
-            $rows   = array('user_id', 'software_id');  
-            $result = selectFromTable($rows, SOFTWARE_USER_TABLE, $condition, 2);
+            $condition = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
+            $rows      = array('user_id', 'software_id');  
+            $result    = selectFromTable($rows, SOFTWARE_USER_TABLE, $condition, 2);
 
             if ($result[0]['id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];
@@ -139,6 +147,14 @@ if (isset($_GET['getDetails'])) {
     $id = (int) $_GET['getDetails'];
     $t->assign('detailsTournamentID', $id);
 
+
+    $rows   = array('closingDate');
+    $cond   = "WHERE `id`=$id";
+    $result = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
+    if (strtotime($result['closingDate']) > time()) {
+        $t->assign('tournamentDidntBeginn', true);
+    }
+
     $rows    = array();
     $rows[]  = 'id';
     $rows[]  = 'user_id';
@@ -146,6 +162,7 @@ if (isset($_GET['getDetails'])) {
     $rows[]  = 'joinedDate';
     $rows[]  = 'gamesWon';
     $rows[]  = 'gamesPlayed';
+    $rows[]  = 'pageRank';
     $cond    = "WHERE tournamentID=$id";
     $results = selectFromTable($rows, TOURNAMENT_PLAYERS_TABLE, $cond, 100);
     $t->assign('detailsPlayers', $results);
@@ -153,7 +170,7 @@ if (isset($_GET['getDetails'])) {
 
 $time = time() + 7*24*60*60;
 $t->assign('closingDate', date("Y-m-d H:i:s", $time));
-$time+= 7*24*60*60;
+$time += 7*24*60*60;
 $t->assign('finishedDate', date("Y-m-d H:i:s", $time));
 
 $rows    = array('id','name','password','description','initiationDate');

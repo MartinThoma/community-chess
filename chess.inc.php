@@ -1129,27 +1129,55 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCol
 function isBishopMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourColor)
 {
     if (abs($from_x - $to_x) == abs($from_y - $to_y)) {
-        // moving diagonal
-        if ($from_x < $to_x) {
+        // moving diagonal (same as queen)
+        if ($from_y < $to_y) {
             // moving up
-            for ($i=1; $i < ($to_x-$from_x); $i++) {
-                $x_tmp = $from_x + $i;
-                $y_tmp = $from_y + $i;
-                $index = getIndex($x_tmp, $from_y);
-                $piece = getPieceByIndex($currentBoard, $index);
-                if ($piece != '0') {
-                    exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+            if ($from_x < $to_x) {
+                // moving right up
+                for ($i=1; $i < ($to_y-$from_y); $i++) {
+                    $x_tmp = $from_x + $i;
+                    $y_tmp = $from_y + $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
+                }
+            } else {
+                // moving left up
+                for ($i=1; $i < ($to_y-$from_y); $i++) {
+                    $x_tmp = $from_x - $i;
+                    $y_tmp = $from_y + $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
                 }
             }
         } else {
             // moving down
-            for ($i=1; $i < ($from_x - $to_x); $i++) {
-                $x_tmp = $from_x - $i;
-                $y_tmp = $from_y - $i;
-                $index = getIndex($x_tmp, $y_tmp);
-                $piece = getPieceByIndex($currentBoard, $index);
-                if ($piece != '0') {
-                    exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+            if ($from_x < $to_x) {
+                // moving right down
+                for ($i=1; $i < ($from_y - $to_y); $i++) {
+                    $x_tmp = $from_x + $i;
+                    $y_tmp = $from_y - $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
+                }
+            } else {
+                // moving left down
+                for ($i=1; $i < ($from_y - $to_y); $i++) {
+                    $x_tmp = $from_x - $i;
+                    $y_tmp = $from_y - $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
                 }
             }
         }
@@ -1388,27 +1416,55 @@ function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCo
             }
         }
     } else if (abs($from_x - $to_x) == abs($from_y - $to_y)) {
-        // moving diagonal
-        if ($from_x < $to_x) {
+        // moving diagonal (same as bishop)
+        if ($from_y < $to_y) {
             // moving up
-            for ($i=1; $i < ($to_x-$from_x); $i++) {
-                $x_tmp = $from_x + $i;
-                $y_tmp = $from_y + $i;
-                $index = getIndex($x_tmp, $from_y);
-                $piece = getPieceByIndex($currentBoard, $index);
-                if ($piece != '0') {
-                    exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+            if ($from_x < $to_x) {
+                // moving right up
+                for ($i=1; $i < ($to_y-$from_y); $i++) {
+                    $x_tmp = $from_x + $i;
+                    $y_tmp = $from_y + $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
+                }
+            } else {
+                // moving left up
+                for ($i=1; $i < ($to_y-$from_y); $i++) {
+                    $x_tmp = $from_x - $i;
+                    $y_tmp = $from_y + $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
                 }
             }
         } else {
             // moving down
-            for ($i=1; $i < ($from_x - $to_x); $i++) {
-                $x_tmp = $from_x - $i;
-                $y_tmp = $from_y - $i;
-                $index = getIndex($x_tmp, $from_y);
-                $piece = getPieceByIndex($currentBoard, $index);
-                if ($piece != '0') {
-                    exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+            if ($from_x < $to_x) {
+                // moving right down
+                for ($i=1; $i < ($from_y - $to_y); $i++) {
+                    $x_tmp = $from_x + $i;
+                    $y_tmp = $from_y - $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
+                }
+            } else {
+                // moving left down
+                for ($i=1; $i < ($from_y - $to_y); $i++) {
+                    $x_tmp = $from_x - $i;
+                    $y_tmp = $from_y - $i;
+                    $index = getIndex($x_tmp, $y_tmp);
+                    $piece = getPieceByIndex($currentBoard, $index);
+                    if ($piece != '0') {
+                        exit("ERROR: On ($x_tmp | $y_tmp) is $piece.");
+                    }
                 }
             }
         }
