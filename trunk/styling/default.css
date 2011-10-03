@@ -2,6 +2,14 @@ body {
     margin:0;
     padding:0;
 }
+#content {
+    background-color: #F4F7FB;
+    width           : 800px;
+    margin-left     : auto;
+    margin-right    : auto;
+    padding         : 21px;
+    border          : 1px solid #BCD2E6;
+}
 .current {
     background-color: lime;
 }
@@ -21,4 +29,11 @@ body {
     color: red;
     font-weight:bold;
     font-size:+4;
+}
+
+/***********************************************************************************/
+/* HTML-Tags                                                                       */
+/***********************************************************************************/
+fieldset {
+    background-color: #efefef;
 }
