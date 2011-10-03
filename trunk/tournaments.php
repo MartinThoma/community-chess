@@ -21,13 +21,19 @@ if (isset($_POST['tournamentName'])) {
     $description    = mysql_real_escape_string($_POST['description']);
     $password       = md5($_POST['password']);
     $closingDate    = mysql_real_escape_string($_POST['closingDate']);
+    $finishedDate   = mysql_real_escape_string($_POST['finishedDate']);
 
-    $keyValue                = array();
-    $keyValue['name']        = $tournamentName;
-    $keyValue['description'] = $description;
-    $keyValue['password']    = $password;
-    $keyValue['closingDate'] = $closingDate;
-    insertIntoTable($keyValue, TURNAMENTS_TABLE);
+    if ($tournamentName == '') {
+        $t->assign('noTournamentName', true);
+    } else {
+        $keyValue                 = array();
+        $keyValue['name']         = $tournamentName;
+        $keyValue['description']  = $description;
+        $keyValue['password']     = $password;
+        $keyValue['closingDate']  = $closingDate;
+        $keyValue['finishedDate'] = $finishedDate;
+        insertIntoTable($keyValue, TOURNAMENTS_TABLE);
+    }
 }
 
 if (isset($_GET['challengeUserID'])) {
@@ -48,9 +54,9 @@ if (isset($_GET['challengeUserID'])) {
         } else {
             // Do both players participate in tournament?
             $rows    = array('user_id', 'gamesWon', 'gamesPlayed');
-            $cond    = "WHERE turnamentID=$tournamentID AND (user_id=".USER_ID;
+            $cond    = "WHERE tournamentID=$tournamentID AND (user_id=".USER_ID;
             $cond   .= " OR `user_id`=".$user_id.")";
-            $results =selectFromTable($rows, TURNAMENT_PLAYERS_TABLE, $cond, 2);
+            $results =selectFromTable($rows, TOURNAMENT_PLAYERS_TABLE, $cond, 2);
             if (count($results)<2) {
                 exit("Either you or your opponent is not part of the tournament.");
             }
@@ -100,12 +106,12 @@ if (isset($_GET['enterID'])) {
     }
     $cond   = "WHERE id=$tournamentID AND password='".$pass."' ";
     $cond  .= "AND closingDate > NOW()";
-    $result = selectFromTable(array('id'), TURNAMENTS_TABLE, $cond);
+    $result = selectFromTable(array('id'), TOURNAMENTS_TABLE, $cond);
     if ($result['id'] != $tournamentID)
         exit("Wrong password or tournament is already closed.");
 
-    $keyValue = array('turnamentID'=>$tournamentID, 'user_id'=>USER_ID);
-    $id       = insertIntoTable($keyValue, TURNAMENT_PLAYERS_TABLE);
+    $keyValue = array('tournamentID'=>$tournamentID, 'user_id'=>USER_ID);
+    $id       = insertIntoTable($keyValue, TOURNAMENT_PLAYERS_TABLE);
     if ($id > 0) {
         $t->assign('joinedTournamentID', $tournamentID);
     } else {
@@ -115,18 +121,18 @@ if (isset($_GET['enterID'])) {
 
 if (isset($_GET['deleteParticipation'])) {
     $tournamentID = (int) $_GET['deleteParticipation'];
-    $cond         = "WHERE turnamentID=$tournamentID AND `user_id`=".USER_ID;
-    $result       = selectFromTable(array('id'), TURNAMENT_PLAYERS_TABLE, $cond);
-    deleteFromTable(TURNAMENT_PLAYERS_TABLE, $result['id']);
+    $cond         = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
+    $result       = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
+    deleteFromTable(TOURNAMENT_PLAYERS_TABLE, $result['id']);
 }
 
 $cond   = "WHERE `user_id`=".USER_ID;
-$result = selectFromTable(array('turnamentID'), 
-                          TURNAMENT_PLAYERS_TABLE, $cond, 100);
+$result = selectFromTable(array('tournamentID'), 
+                          TOURNAMENT_PLAYERS_TABLE, $cond, 100);
 
 $myParticipations = array();
 foreach ($result as $row) {
-    $myParticipations[] = $row['turnamentID'];
+    $myParticipations[] = $row['tournamentID'];
 }
 
 if (isset($_GET['getDetails'])) {
@@ -136,23 +142,26 @@ if (isset($_GET['getDetails'])) {
     $rows    = array();
     $rows[]  = 'id';
     $rows[]  = 'user_id';
-    $rows[]  = 'turnamentNumber';
+    $rows[]  = 'tournamentNumber';
     $rows[]  = 'joinedDate';
     $rows[]  = 'gamesWon';
     $rows[]  = 'gamesPlayed';
-    $cond    = "WHERE turnamentID=$id";
-    $results = selectFromTable($rows, TURNAMENT_PLAYERS_TABLE, $cond, 100);
+    $cond    = "WHERE tournamentID=$id";
+    $results = selectFromTable($rows, TOURNAMENT_PLAYERS_TABLE, $cond, 100);
     $t->assign('detailsPlayers', $results);
 }
 
 $time = time() + 7*24*60*60;
 $t->assign('closingDate', date("Y-m-d H:i:s", $time));
+$time+= 7*24*60*60;
+$t->assign('finishedDate', date("Y-m-d H:i:s", $time));
 
 $rows    = array('id','name','password','description','initiationDate');
 $rows[]  = 'closingDate';
+$rows[]  = 'finishedDate';
 $rows[]  = 'status';
 $cond    = "ORDER BY `initiationDate` DESC";
-$results = selectFromTable($rows, TURNAMENTS_TABLE, $cond, 100);
+$results = selectFromTable($rows, TOURNAMENTS_TABLE, $cond, 100);
 
 $doIParticipate   = array();
 $isPasswordNeeded = array();

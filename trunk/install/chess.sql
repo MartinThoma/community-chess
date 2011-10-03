@@ -180,33 +180,33 @@ CREATE TABLE IF NOT EXISTS `chess_softwareUsers` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_turnamentPlayers`
+-- Tabellenstruktur für Tabelle `chess_tournamentPlayers`
 --
 
-CREATE TABLE IF NOT EXISTS `chess_turnamentPlayers` (
+CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `turnamentID` int(11) NOT NULL,
+  `tournamentID` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
-  `turnamentNumber` int(11) NOT NULL DEFAULT '-1',
+  `tournamentNumber` int(11) NOT NULL DEFAULT '-1',
   `joinedDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `gamesWon` int(11) NOT NULL DEFAULT '0' COMMENT 'If gamesWon < gamesPlayed, the player can''t play any more games in the current turnament',
+  `gamesWon` int(11) NOT NULL DEFAULT '0' COMMENT 'If gamesWon < gamesPlayed, the player can''t play any more games in the current tournament',
   `gamesPlayed` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `turnamentID` (`turnamentID`,`user_id`)
+  UNIQUE KEY `tournamentID` (`tournamentID`,`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_turnamentPlayers`
+-- Daten für Tabelle `chess_tournamentPlayers`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_turnaments`
+-- Tabellenstruktur für Tabelle `chess_tournaments`
 --
 
-CREATE TABLE IF NOT EXISTS `chess_turnaments` (
+CREATE TABLE IF NOT EXISTS `chess_tournaments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `password` varchar(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
@@ -219,7 +219,7 @@ CREATE TABLE IF NOT EXISTS `chess_turnaments` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_turnaments`
+-- Daten für Tabelle `chess_tournaments`
 --
 
 
