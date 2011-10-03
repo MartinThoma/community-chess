@@ -24,6 +24,10 @@
     </div>
     <div id="content">
     <br style="clear:both;"/>
+    {if:isset(cantExitStartedAlready)}
+        <script>showStickyErrorToast("You can't exit the tournament as it started already.");</script>
+        <noscript>You can't exit the tournament as it started already.</noscript>
+    {end}
     {if:isset(noTournamentName)}
         <script>showStickyErrorToast("You have to set a tournament name.");</script>
         <noscript>You have to set a tournament name.</noscript>

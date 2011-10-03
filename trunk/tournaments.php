@@ -12,6 +12,7 @@
  * @link     http://code.google.com/p/community-chess/
  */
 require_once 'wrapper.inc.php';
+require_once 'additional.inc.php';
 if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
@@ -52,9 +53,9 @@ if (isset($_GET['challengeUserID'])) {
     $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
-        $cond  = "WHERE (`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";
-        $cond .= " OR (`whiteUserID` = $user_id AND `blackUserID`=".USER_ID.") ";
-        $cond .= "AND tournamentID=$tournamentID";
+        $cond  = "WHERE ((`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";
+        $cond .= " OR (`whiteUserID` = $user_id AND `blackUserID`=".USER_ID.")) ";
+        $cond .= "AND `tournamentID`=$tournamentID AND `outcome` = -1";
         $row   = selectFromTable(array('id'), GAMES_TABLE, $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
@@ -78,7 +79,9 @@ if (isset($_GET['challengeUserID'])) {
                 exit("You have lost at least one game.");
             }
 
-
+            // Maybe one of the rows doesn't exist?
+            checkSoftwareTableEntry(USER_ID);
+            checkSoftwareTableEntry($id);
 
             $condition = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
             $rows      = array('user_id', 'software_id');  
@@ -129,9 +132,17 @@ if (isset($_GET['enterID'])) {
 
 if (isset($_GET['deleteParticipation'])) {
     $tournamentID = (int) $_GET['deleteParticipation'];
-    $cond         = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
-    $result       = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
-    deleteFromTable(TOURNAMENT_PLAYERS_TABLE, $result['id']);
+    // participants may only exit if the tournament hasn't started jet
+    $rows   = array('closingDate');
+    $cond   = "WHERE `id`=$tournamentID";
+    $result = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
+    if (strtotime($result['closingDate']) > time()) {
+        $cond         = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
+        $result       = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
+        deleteFromTable(TOURNAMENT_PLAYERS_TABLE, $result['id']);
+    } else {
+        $t->assign('cantExitStartedAlready', true);
+    }
 }
 
 $cond   = "WHERE `user_id`=".USER_ID;
