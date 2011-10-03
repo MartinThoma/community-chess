@@ -23,6 +23,11 @@
       </ul>
     </div>
     <br style="clear:both;"/>
+    {if:isset(noTournamentName)}
+        <script>showStickyErrorToast("You have to set a tournament name.");</script>
+        <noscript>You have to set a tournament name.</noscript>
+    {end}
+
     {if:isset(alreadyChallengedPlayer)}
         <script>showStickyErrorToast("You've already challenged the player {alreadyChallengedPlayer}. The current game has the id {alreadyChallengedGameID}.");</script>
         <noscript>You've already challenged the player {alreadyChallengedPlayer}. The current game has the id {alreadyChallengedGameID}.</noscript>
@@ -90,6 +95,9 @@
 
     <label for="closingDate">closingDate</label>
     <input type="text" id="closingDate" name="closingDate" value="{closingDate}" />
+
+    <label for="finishedDate">finishedDate</label>
+    <input type="text" id="finishedDate" name="finishedDate" value="{finishedDate}" />
     <input type="submit" />
     </fieldset>
     </form>
@@ -103,6 +111,7 @@
             <th>Description</th>
             <th>Initiation Date</th>
             <th>Closing Date</th>
+            <th>Finished Date</th>
             <th>Status</th>
             <th>action</th>
         </tr>
@@ -123,6 +132,7 @@
             <td>{tournament['description']}</td>
             <td>{tournament['initiationDate']}</td>
             <td>{tournament['closingDate']}</td>
+            <td>{tournament['finishedDate']}</td>
             <td>{tournament['status']}</td>
             <td>
             {if:(tournament['status'] == 'openForInvitations')}
