@@ -699,6 +699,44 @@ function finishGame($outcome)
     $keyValue['lastMove'] = time();
 
     updateDataInTable(GAMES_TABLE, $keyValue, $condition);
+
+    // Was this game a tournament game?
+    $cond   = 'WHERE `id` = '.CURRENT_GAME_ID;
+    $rows   = array('tournamentID', 'whiteUserID', 'blackUserID');
+    $result = selectFromTable($rows, GAMES_TABLE, $cond);
+    if($result['tournamentID'] != 0){
+        if (($outcome == 0 and $result['whiteUserID'] == USER_ID) or 
+            ($outcome == 1 and $result['blackUserID'] == USER_ID)) {
+            // The player won
+            $keyValue = array();
+            $keyValue['gamesWon']    = "`gamesWon` + 1";
+            $keyValue['gamesPlayed'] = "`gamesPlayed` + 1";
+            $condition = "WHERE `tournamentID` = ".$result['tournamentID']." ";
+            $condition.= "AND `user_id` = ".USER_ID;
+            updateDataInTable(TOURNAMENT_PLAYERS_TABLE, $keyValue, $condition);
+        } else if (($outcome == 1 and $result['whiteUserID'] == USER_ID) or 
+                   ($outcome == 0 and $result['blackUserID'] == USER_ID)) {
+            // The player lost
+            $keyValue = array();
+            $keyValue['gamesPlayed'] = "`gamesPlayed` + 1";
+            $condition = "WHERE `tournamentID` = ".$result['tournamentID']." ";
+            $condition.= "AND `user_id` = ".USER_ID;
+            updateDataInTable(TOURNAMENT_PLAYERS_TABLE, $keyValue, $condition);
+        } else if ($outcome == 2) {
+            // Draw
+            $keyValue = array();
+            $keyValue['gamesPlayed'] = "`gamesPlayed` + 1";
+            $condition = "WHERE `tournamentID` = ".$result['tournamentID']." ";
+            $condition.= "AND `user_id` = ".USER_ID;
+            updateDataInTable(TOURNAMENT_PLAYERS_TABLE, $keyValue, $condition);
+        } else {
+            exit('You had an $outcome of '.$outcome.'. '.
+                 'Please ask info@martin-thoma.de '.
+                 '(subject:Community Chess fix) to fix this!');
+        }
+        triggerPageRank($result['tournamentID']);
+    }
+
     return true;
 }
 /******************************************************************************
@@ -890,7 +928,7 @@ function hasValidMoves($board, $color)
                     $to_coord   = getCoordinates($to_index);
                     $tmp_x      = $to_coord[0];
                     $tmp_y      = $to_coord[1];
-                    if (!(abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2))
+                    if (!(abs($tmp_x-$from_coord[0]) + abs($tmp_y-$from_coord[1]) <= 2))
                         continue;
                     $piece = getPieceByIndex($board, getIndex($tmp_x, $tmp_y));
                     if ($piece == '0' or isOpponentsPiece($piece, $color)) {

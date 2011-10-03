@@ -24,6 +24,7 @@
 if(!isset($_SESSION)) session_start(); 
 require_once 'wrapper.inc.php';
 require_once 'chess.inc.php';
+require_once 'additional.inc.php';
 $t = new vemplator(); //required for some functions
 
 if (isset($_GET['action'])) {
