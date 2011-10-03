@@ -44,21 +44,22 @@ Every draw can be treated as two links (from a to b and b to a).
 {{{
 REPEAT_PR = 20
 DAMPING_FACTOR = 0.85
-INIT_VAL = 0.15
 INITIALISATION = 1.0
 Initialise all Players with pagerank = INITIALISATION
+SUMMAND = (1 - DAMPING_FACTOR)/ NR_OF_PLAYERS
+
 for (i=0; i<REPEAT_PR; i++) {
     foreach (player in players) {
-        # How often did this player either lose or get a draw?
+        // How often did this player either lose or get a draw?
         outlinks = getLoseOrDraw(player.id)
-        # Store this value in the database
+        // Store this value in the database
         player.setOutlinks(outlinks)
-        # How often did this player win or get draw?
+        // How often did this player win or get draw?
         inlinkScore = 0
         foreach(loser player won/made draw against) {
             inlinkScore += loser.pagerank / loser.outlinks
         }
-        player.pagerank = INIT_VAL + DAMPING_FACTOR * (score / outlinks)
+        player.pagerank = SUMMAND + DAMPING_FACTOR * (score / outlinks)
     }
 }
 }}}
