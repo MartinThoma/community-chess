@@ -187,9 +187,19 @@ $t->assign('finishedDate', date("Y-m-d H:i:s", $time));
 $rows    = array('id','name','password','description','initiationDate');
 $rows[]  = 'closingDate';
 $rows[]  = 'finishedDate';
-$rows[]  = 'status';
 $cond    = "ORDER BY `initiationDate` DESC";
 $results = selectFromTable($rows, TOURNAMENTS_TABLE, $cond, 100);
+$rows    = count($results);
+for ($i=0; $i<$rows; $i++) {
+    if (strtotime($results[$i]['finishedDate']) < time()) {
+        $status = 'Finished';
+    } else if (strtotime($results[$i]['closingDate']) < time()) {
+        $status = 'Matching Phase';
+    } else {
+        $status = 'Open for participation';
+    }
+    $results[$i]['status'] = $status;
+}
 
 $doIParticipate   = array();
 $isPasswordNeeded = array();
