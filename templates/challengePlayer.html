@@ -27,23 +27,31 @@
 
     {if:isset(alreadyChallengedPlayer)}
         <script>showStickyErrorToast("You've already challenged the player {alreadyChallengedPlayer}.<br/>The current game has the id {alreadyChallengedGameID}.");</script>
-        <noscript>You've already challenged the player {alreadyChallengedPlayer}.<br/>The current game has the id {alreadyChallengedGameID}.</noscript>
+        <noscript>
+            <p>You've already challenged the player {alreadyChallengedPlayer}.</p>
+            <p>The current game has the id {alreadyChallengedGameID}.</p>
+        </noscript>
     {end}
 
     {if:isset(startedGameUserID)}
         <script>showStickySuccessToast("You have started a game against the player with the ID {startedGameUserID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.")</script>
-         <noscript>You have started a game against the player with the ID {startedGameUserID}.<br/>The Username of this Player is {startedGamePlayerUsername}.<br/>The new gameID is {startedGameID}.</noscript>
+         <noscript>
+            <p>You have started a game against the player with the ID {startedGameUserID}.</p>
+            <p>The Username of this Player is {startedGamePlayerUsername}.</p>
+            <p>The new gameID is {startedGameID}.</p>
+        </noscript>
     {end}
 
     {if:isset(incorrectID)}
         <script>showStickyErrorToast("You have selected an incorrect ID.");</script>
-        <noscript>You have selected an incorrect ID.</noscript>
+        <noscript><p>You have selected an incorrect ID.</p></noscript>
     {end}
 
     {if:isset(possibleOpponents)}
+        <p>You can challenge these players:
         <ul>
         {foreach:possibleOpponents,i,playerArray}
-            <li><a href="challengePlayer.php?user_id={playerArray['user_id']}">{playerArray['user_name']}</a></li>
+            <li>challenge <a href="challengePlayer.php?user_id={playerArray['user_id']}">{playerArray['user_name']}</a></li>
         {end}
         </ul>
     {else}

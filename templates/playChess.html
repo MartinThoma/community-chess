@@ -52,12 +52,11 @@
     </td>
     <td>
         {if:$this->data->whoseTurnIsItLanguage==$this->data->yourColor}
-            It's your turn.
+            <p>It's your turn.</p>
         {else}
-            It's your opponents turn.
+            <p>It's your opponents turn.</p>
         {end}
-        <br/>
-        Game-ID: {CURRENT_GAME_ID} (<a href="playChess.php?gameID={CURRENT_GAME_ID}">refresh</a>)<br/>
+        <p>Game-ID: {CURRENT_GAME_ID} (<a href="playChess.php?gameID={CURRENT_GAME_ID}">refresh</a>)</p>
     </td>
     </tr>
     </table>

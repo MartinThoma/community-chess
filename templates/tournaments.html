@@ -95,20 +95,31 @@
     <fieldset>
     <legend>Initiate new tournament</legend>
 
+    <p>
     <label for="tournamentName">Name</label>
-    <input type="text" id="tournamentName" name="tournamentName" />
+    <input type="text" id="tournamentName" name="tournamentName" required="required"/>
+    </p>
 
+    <p>
     <label for="description">description</label>
     <input type="text" id="description" name="description" />
+    </p>
 
+    <p>
     <label for="password">password (leave blank for no password)</label>
     <input type="password" id="password" name="password" />
+    </p>
 
+    <p>
     <label for="closingDate">closingDate</label>
-    <input type="text" id="closingDate" name="closingDate" value="{closingDate}" />
+    <input type="datetime" id="closingDate" name="closingDate" value="{closingDate}" min="{closingDateMin}" max="{closingDateMax}"/>
+    </p>
 
+    <p>
     <label for="finishedDate">finishedDate</label>
-    <input type="text" id="finishedDate" name="finishedDate" value="{finishedDate}" />
+    <input type="datetime" id="finishedDate" name="finishedDate" value="{finishedDate}" min="{finishedDateMin}" max="{finishedDateMax}"/>
+    </p>
+
     <input type="submit" />
     </fieldset>
     </form>
