@@ -24,9 +24,9 @@ if ($user->data['user_id'] == ANONYMOUS) {
     ?>
     Welcome, anomalous!
     <form method="POST" action="../phpBB3/ucp.php?mode=login">
-    Username: <input type="text" name="username" size="20"><br />
-    Password: <input type="password" name="password" size="20"><br />
-    Remember Me?: <input type="checkbox" name="autologin"><br />
+      <p>Username: <input type="text" name="username" size="20"></p>
+      <p>Password: <input type="password" name="password" size="20"></p>
+      <p>Remember Me?: <input type="checkbox" name="autologin"></p>
     <input type="submit" value="Login" name="login">
     <input type="hidden" name="redirect" value="../community-chess/test.php">
     </form>

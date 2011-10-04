@@ -179,10 +179,22 @@ if (isset($_GET['getDetails'])) {
     $t->assign('detailsPlayers', $results);
 }
 
+
+/* closingDate client side validation *********************************************/
+$time = time() + 1*60*60;
+$t->assign('closingDateMin', date("Y-m-d\TH:i\Z", $time));
 $time = time() + 7*24*60*60;
-$t->assign('closingDate', date("Y-m-d H:i:s", $time));
-$time += 7*24*60*60;
-$t->assign('finishedDate', date("Y-m-d H:i:s", $time));
+$t->assign('closingDate', date("Y-m-d\TH:i\Z", $time));
+$time = time() + 1*31*24*60*60;
+$t->assign('closingDateMax', date("Y-m-d\TH:i\Z", $time));
+/* finishedDate client side validation *********************************************/
+$time = time() + 3*24*60*60;
+$t->assign('finishedDateMin', date("Y-m-d\TH:i\Z", $time));
+$time = time() + 14*24*60*60;
+$t->assign('finishedDate',    date("Y-m-d\TH:i\Z", $time));
+$time = time() + 2*31*24*60*60;
+$t->assign('finishedDateMax', date("Y-m-d\TH:i\Z", $time));
+
 
 $rows    = array('id','name','password','description','initiationDate');
 $rows[]  = 'closingDate';

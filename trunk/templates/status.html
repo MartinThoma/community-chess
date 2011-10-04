@@ -21,21 +21,25 @@
     <div id="content">
     <br style="clear:both;"/>
     {if:count(currentGames)>0}
-        Current game-IDs:<br/>
+        <p>Current game-IDs:</p>
+        <ul>
         {foreach:currentGames,i,gameId}
-	        <a href="playChess.php?gameID={gameId['id']}">{gameId['id']}</a><br/>
+	        <li>Play game with <a href="playChess.php?gameID={gameId['id']}">ID {gameId['id']}</a></li>
         {end}
+        </ul>
     {else}
-        No current games.<br/>
+        <p>No current games.</p>
     {end}
 
     {if:count(pastGames)>0}
-        Past game-IDs:<br/>
+        <p>Past game-IDs:</p>
+        <ul>
         {foreach:pastGames,i,gameId}
-	        {gameId['id']}  <br/>
+	        <li>{gameId['id']} </li>
         {end}
+        </ul>
     {else}
-        No past games.<br/>
+        <p>No past games.</p>
     {end}
     </div>
 </body>
