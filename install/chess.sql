@@ -215,7 +215,6 @@ CREATE TABLE IF NOT EXISTS `chess_tournaments` (
   `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `closingDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `finishedDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `status` varchar(18) NOT NULL DEFAULT 'openForInvitations' COMMENT 'openForInvitations, closed, running, finished',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
