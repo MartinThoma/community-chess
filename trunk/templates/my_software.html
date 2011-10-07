@@ -25,14 +25,20 @@
     <fieldset>
     <legend>Add a new software / version</legend>
 
+    <p>
     <label for="newSoftwareName">Name of your Software</label>
     <input type="text" name="newSoftwareName" id="newSoftwareName" 
            placeholder="Chessmaster "/>
+    </p>
 
+    <p>
     <label for="version">Version</label>
     <input type="text" name="version" id="version" placeholder="0.1.0"/>
+    </p>
+
 
     {if:isset(softwareArray)}
+        <p>
         <label for="lastVersionID">lastVersionID</label>
         <select name="lastVersionID" id="lastVersionID">
             <option value="0">New software</option>
@@ -41,11 +47,15 @@
                 </option>
             {end}
         </select>
+        </p>
     {end}
+
+    <p>
     <label for="changelog">Changelog</label>
     <textarea name="changelog" id="changelog"></textarea>
+    </p>
 
-    <input type="submit" />
+    <input type="submit" value="Insert new software entry into database"/>
     </fieldset>
     </form>
 

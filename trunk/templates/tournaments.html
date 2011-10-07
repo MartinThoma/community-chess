@@ -8,7 +8,7 @@
   <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
   <link type="text/css" href="external/jquery-toastmessage/css/jquery.toastmessage.css" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
-  <script type="text/javascript" src="external/jquery-1.5.min.js"></script>
+  <script type="text/javascript" src="external/jquery-1.6.4.min.js"></script>
   <script type="text/javascript" src="external/jquery-toastmessage/jquery.toastmessage-min.js"></script>
 </head>
 <body>
@@ -101,13 +101,13 @@
     </p>
 
     <p>
-    <label for="description">description</label>
+    <label for="description">Description</label>
     <input type="text" id="description" name="description" />
     </p>
 
     <p>
     <label for="password">password (leave blank for no password)</label>
-    <input type="password" id="password" name="password" />
+    <input type="password" id="password" name="password" autocomplete="off"/>
     </p>
 
     <p>
@@ -120,7 +120,7 @@
     <input type="datetime" id="finishedDate" name="finishedDate" value="{finishedDate}" min="{finishedDateMin}" max="{finishedDateMax}"/>
     </p>
 
-    <input type="submit" />
+    <input type="submit" value="Create tournament"/>
     </fieldset>
     </form>
 
