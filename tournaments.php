@@ -208,7 +208,7 @@ for ($i=0; $i<$rows; $i++) {
     } else if (strtotime($results[$i]['closingDate']) < time()) {
         $status = 'Matching Phase';
     } else {
-        $status = 'Open for participation';
+        $status = 'openForInvitations';#Open for participation';
     }
     $results[$i]['status'] = $status;
 }

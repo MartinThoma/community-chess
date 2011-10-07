@@ -46,3 +46,18 @@ body {
     margin-left     : auto;
     margin-right    : auto;
 }
+
+label {
+    width           : 150px;
+    display         : inline-block;
+}
+
+legend {
+    background-color: #D8D6FF;
+    padding         : 3px;
+    border          : 1px solid #BCD2E6;
+}
+
+input, textarea, select {
+    border          : 1px solid #BCD2E6;
+}
