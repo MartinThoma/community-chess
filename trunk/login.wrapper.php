@@ -14,14 +14,21 @@
  * @link     http://code.google.com/p/community-chess/
  */
 
-if(!isset($_SESSION)) session_start(); 
+if (!isset($_SESSION)) session_start();
 
 require_once 'wrapper.inc.php';
+require_once 'i18n.inc.php';
+
 $t = new vemplator();
 
 if (isset($_POST['user_name'])) {
     login($_POST['user_name'], $_POST['user_password']);
 }
 
+/* Assign variables for i18n with gettext ******************************************/
+$t->assign('username', _('username'));
+$t->assign('password', _('password'));
+
+/* Print the html ******************************************************************/
 echo $t->output('login.html');
 ?>
