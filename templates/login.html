@@ -10,8 +10,14 @@
 <body>
     <div id="content">
     <form method="post">
-        <p>Username: <input type="text" name="user_name" /></p>
-        <p>Password: <input type="password" name="user_password" /></p>
+        <p>
+            <label for="user_name">{username}:</label>
+            <input type="text" name="user_name" />
+        </p>
+        <p>
+            <label for="user_password">{password}:</label>
+            <input type="password" name="user_password" />
+        </p>
         <input type="submit"/>
     </form>
     </div>

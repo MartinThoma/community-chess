@@ -14,7 +14,9 @@
 
 require_once 'wrapper.inc.php';
 require_once 'additional.inc.php';
-if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
+require_once 'i18n.inc.php';
+
+if (USER_ID === false) exit(_("Please <a href='login.wrapper.php'>login</a>"));
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
