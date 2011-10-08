@@ -21,7 +21,14 @@ require_once 'i18n.inc.php';
 require_once 'external/lightOpenID/openid.php';
 
 /* OpenID **************************************************************************/
-function getRandomString($length = 5) {
+/** This function gives a random string
+ *
+ * @param int $length The length of the random string
+ *
+ * @return string a random string with $length characters
+ */
+function getRandomString($length = 5)
+{
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $string     = ''; 
     for ($i = 0; $i < $length; $i++) {
@@ -30,30 +37,26 @@ function getRandomString($length = 5) {
     return $string;
 }
 
-if ($_SERVER['SERVER_NAME'] == 'www.localhost') {
-    header("Location: http://localhost/community-chess/login.wrapper.php");
-}
-
 try {
-    $openid = new LightOpenID('localhost');
+    $openid           = new LightOpenID(HOST);
     $openid->required = array('contact/email');
     $openid->optional = array('namePerson/friendly', 'namePerson');
-    if(!$openid->mode) {
+    if (!$openid->mode) {
         if (isset($_POST['openid_identifier'])) {
             // e.g. http://martin-thoma.blogspot.com
             $openid->identity = $_POST['openid_identifier']; 
             header('Location: ' . $openid->authUrl());
         }
-    } elseif($openid->mode == 'cancel') {
+    } elseif ($openid->mode == 'cancel') {
         exit("ERROR: You've aborted the OpenID login process.");
     } else {
-        if($openid->validate()){
-            $rows   = array('user_id');
+        if ($openid->validate()) {
+            $rows       = array('user_id');
             $escapedURL = mysql_real_escape_string($openid->identity);
-            $cond   = 'WHERE `OpenID` = "'.$escapedURL.'"';
-            $result = selectFromTable($rows, USERS_OPENID, $cond);
+            $cond       = 'WHERE `OpenID` = "'.$escapedURL.'"';
+            $result     = selectFromTable($rows, USERS_OPENID, $cond);
             // Is the OpenID already in the database?
-            if($result == false){
+            if ($result == false) {
                 $openIDurl = $openid->identity;
 
                 // register the user
@@ -68,7 +71,7 @@ try {
                 $id = insertIntoTable($keyValuePairs, USERS_TABLE);
 
                 // set his OpenID
-                $keyValuePairs = array();
+                $keyValuePairs            = array();
                 $keyValuePairs['user_id'] = $id;
                 $keyValuePairs['OpenID']  = $openIDurl;
                 insertIntoTable($keyValuePairs, USERS_OPENID);

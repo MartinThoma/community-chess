@@ -36,7 +36,7 @@ function checkSoftwareTableEntry($user_id)
     $cond = 'WHERE `user_id` = '.$user_id;
     $row  = selectFromTable(array('software_id'), SOFTWARE_USER_TABLE, $cond);
     if ($row == false) {
-        $keyValuePairs = array();
+        $keyValuePairs                = array();
         $keyValuePairs['user_id']     = $user_id;
         $keyValuePairs['software_id'] = 0;
         insertIntoTable($keyValuePairs, SOFTWARE_USER_TABLE);
@@ -57,9 +57,9 @@ function challengeUser($user_id, $t)
     $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
     $challengedUser = $row[USER_NAME_COLUMN];
     if ($row !== false) {
-        $cond = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
-        $cond.= 'AND `outcome` = -1';
-        $row  = selectFromTable(array('id'), GAMES_TABLE, $cond);
+        $cond  = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
+        $cond .= 'AND `outcome` = -1';
+        $row   = selectFromTable(array('id'), GAMES_TABLE, $cond);
         if ($row !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -150,12 +150,12 @@ function pageRank($winnerArray, $loserArray, $repeatPR=20, $dampingFactor=0.85,
  */
 function triggerPageRank($tournamentID)
 {
-    $rows = array('user_id', 'whiteUserID', 'blackUserID', 'outcome');
-    $cond = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
-    $rows = selectFromTable($rows, GAMES_TABLE, $cond, 100);
+    $rows    = array('user_id', 'whiteUserID', 'blackUserID', 'outcome');
+    $cond    = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
+    $rows    = selectFromTable($rows, GAMES_TABLE, $cond, 100);
     $winners = array();
     $losers  = array();
-    foreach($rows as $row){
+    foreach ($rows as $row) {
         if ($row['outcome'] == 0) {
             $winners[$row['whiteuserID']][] = $row['blackUserID'];
             $losers[$row['blackUserID']][]  = $row['whiteuserID'];
@@ -163,8 +163,8 @@ function triggerPageRank($tournamentID)
             $losers[$row['whiteuserID']][]  = $row['blackUserID'];
             $winners[$row['blackUserID']][] = $row['whiteuserID'];
         } else if ($row['outcome'] == 2) {
-            $losers[$row['whiteuserID']][]  = $row['blackUserID'];
-            $losers[$row['blackUserID']][]  = $row['whiteuserID'];
+            $losers[$row['whiteuserID']][] = $row['blackUserID'];
+            $losers[$row['blackUserID']][] = $row['whiteuserID'];
 
             $winners[$row['whiteuserID']][] = $row['blackUserID'];
             $winners[$row['blackUserID']][] = $row['whiteuserID'];

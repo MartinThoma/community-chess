@@ -137,8 +137,8 @@ if (isset($_GET['deleteParticipation'])) {
     $cond   = "WHERE `id`=$tournamentID";
     $result = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
     if (strtotime($result['closingDate']) > time()) {
-        $cond         = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
-        $result       = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
+        $cond   = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
+        $result = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
         deleteFromTable(TOURNAMENT_PLAYERS_TABLE, $result['id']);
     } else {
         $t->assign('cantExitStartedAlready', true);
@@ -208,7 +208,7 @@ for ($i=0; $i<$rows; $i++) {
     } else if (strtotime($results[$i]['closingDate']) < time()) {
         $status = 'Matching Phase';
     } else {
-        $status = 'openForInvitations';#Open for participation';
+        $status = 'openForInvitations';
     }
     $results[$i]['status'] = $status;
 }
