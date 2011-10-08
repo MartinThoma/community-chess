@@ -45,9 +45,9 @@ function getUserID()
         return false;
     };
 
-    $user_id       = mysql_real_escape_string($_SESSION['user_id']);
-    $condition     = "WHERE `user_id`='$user_id' ";
-    $row           = selectFromTable(array('user_id'), USERS_TABLE, $condition);
+    $user_id   = mysql_real_escape_string($_SESSION['user_id']);
+    $condition = "WHERE `user_id`='$user_id' ";
+    $row       = selectFromTable(array('user_id'), USERS_TABLE, $condition);
 
     if ($row['user_id'] === $_SESSION['user_id'] AND $row['user_id'] > 0) {
         return $row['user_id'];
@@ -175,7 +175,7 @@ function login($user_name, $user_password, $redirect = true)
     $condition .= '" AND user_password="'.md5($user_password).'"';
     $row        = selectFromTable(array('user_id'), USERS_TABLE, $condition);
     if ($row !== false) {
-        $_SESSION['user_id']       = $row['user_id'];
+        $_SESSION['user_id'] = $row['user_id'];
         if ($redirect) {
             header('Location: index.php');
         }

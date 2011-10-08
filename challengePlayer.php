@@ -30,7 +30,7 @@ if (isset($_GET['user_id'])) {
     // Quick'n dirt fix: 
     // The template tries to acces $possibleOpponents[$i]['user_name']:
     $fixedRows = array();
-    foreach($rows as $row){
+    foreach ($rows as $row) {
         $fixedRows[] = array('user_id'=>$row['user_id'], 
                            'user_name'=>$row[USER_NAME_COLUMN]);
     }
