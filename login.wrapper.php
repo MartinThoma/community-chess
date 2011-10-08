@@ -18,6 +18,78 @@ if (!isset($_SESSION)) session_start();
 
 require_once 'wrapper.inc.php';
 require_once 'i18n.inc.php';
+require_once 'external/lightOpenID/openid.php';
+
+/* OpenID **************************************************************************/
+function getRandomString($length = 5) {
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $string     = ''; 
+    for ($i = 0; $i < $length; $i++) {
+        $string .= $characters[rand(0, strlen($characters))];
+    }
+    return $string;
+}
+
+if ($_SERVER['SERVER_NAME'] == 'www.localhost') {
+    header("Location: http://localhost/community-chess/login.wrapper.php");
+}
+
+try {
+    $openid = new LightOpenID('localhost');
+    $openid->required = array('contact/email');
+    $openid->optional = array('namePerson/friendly', 'namePerson');
+    if(!$openid->mode) {
+        if (isset($_POST['openid_identifier'])) {
+            // e.g. http://martin-thoma.blogspot.com
+            $openid->identity = $_POST['openid_identifier']; 
+            header('Location: ' . $openid->authUrl());
+        }
+    } elseif($openid->mode == 'cancel') {
+        exit("ERROR: You've aborted the OpenID login process.");
+    } else {
+        if($openid->validate()){
+            $rows   = array('user_id');
+            $escapedURL = mysql_real_escape_string($openid->identity);
+            $cond   = 'WHERE `OpenID` = "'.$escapedURL.'"';
+            $result = selectFromTable($rows, USERS_OPENID, $cond);
+            // Is the OpenID already in the database?
+            if($result == false){
+                $openIDurl = $openid->identity;
+
+                // register the user
+                $attributes = $openid->getAttributes();
+                $password   = getRandomString();
+
+                $keyValuePairs                  = array();
+                $keyValuePairs['user_name']     = getRandomString();
+                $keyValuePairs['user_password'] = md5($password);
+                $keyValuePairs['user_email']    = $attributes['contact/email'];
+
+                $id = insertIntoTable($keyValuePairs, USERS_TABLE);
+
+                // set his OpenID
+                $keyValuePairs = array();
+                $keyValuePairs['user_id'] = $id;
+                $keyValuePairs['OpenID']  = $openIDurl;
+                insertIntoTable($keyValuePairs, USERS_OPENID);
+
+                // log the user in
+                $_SESSION['user_id'] = ''.$id;
+                header('Location: index.php');
+            } else {
+                $_SESSION['user_id'] = $result['user_id'];
+                header('Location: index.php');
+            }
+        } else {
+            exit('ERROR: Please login at your identity provider.');
+        }
+    }
+} catch(ErrorException $e) {
+    exit($e->getMessage());
+}
+/* /OpenID *************************************************************************/
+
+
 
 $t = new vemplator();
 

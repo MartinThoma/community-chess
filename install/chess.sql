@@ -244,3 +244,16 @@ INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`) VALUES
 (1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
 (2, 'test', '098f6bcd4621d373cade4e832627b4f6');
 
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `chess_userOpenID`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
+  `userOpenID_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `OpenID` text NOT NULL,
+  PRIMARY KEY (`userOpenID_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
