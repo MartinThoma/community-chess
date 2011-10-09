@@ -68,11 +68,15 @@ function getUserID()
  *
  * @return array
  */
-function selectFromTable($rows, $table, $condition, $limit = 1)
+function selectFromTable($rows, $table, $condition = '', $limit = 1)
 {
     /* Begin of code which can be replaced by your code */
-    $row    = implode("`,`", $rows);
-    $query  = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
+    if (is_array($rows)) {
+        $row   = implode("`,`", $rows);
+        $query = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
+    } else {
+        $query = "SELECT $rows FROM `$table` $condition LIMIT $limit";
+    }
     $result = mysql_query($query);
     if ($limit == 1) {
         $row = mysql_fetch_assoc($result);
