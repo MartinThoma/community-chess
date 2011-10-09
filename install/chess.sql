@@ -163,17 +163,19 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_softwareUsers`
+-- Tabellenstruktur für Tabelle `chess_userAdditionalInformation`
 --
 
-CREATE TABLE IF NOT EXISTS `chess_softwareUsers` (
+CREATE TABLE IF NOT EXISTS `chess_userAdditionalInformation` (
   `user_id` int(11) NOT NULL,
+  `rank` int(11) NOT NULL DEFAULT '-1',
+  `pageRank` double NOT NULL DEFAULT '0.15',
   `software_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 --
--- Daten für Tabelle `chess_softwareUsers`
+-- Daten für Tabelle `chess_userAdditionalInformation`
 --
 
 

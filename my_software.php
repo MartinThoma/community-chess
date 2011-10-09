@@ -102,7 +102,7 @@ if (isset($_GET['deleteTeammate'])) {
 if (isset($_GET['setCurrent'])) {
     $cond     = "WHERE  `user_id` =".USER_ID;
     $keyValue = array('software_id'=>(int) $_GET['setCurrent']);
-    updateDataInTable(SOFTWARE_USER_TABLE, $keyValue, $cond);
+    updateDataInTable(USER_INFO_TABLE, $keyValue, $cond);
 }
 if (isset($_POST['newSoftwareName'])) {
     $name      = mysql_real_escape_string($_POST['newSoftwareName']);
@@ -159,14 +159,14 @@ if (count($softwareIds) > 0) {
         $userIDs = selectFromTable($row, SOFTWARE_DEVELOPER_TABLE, $cond, 100);
         $players = array();
         foreach ($userIDs as $uID) {
-            $cond      = 'WHERE `user_id`='.$uID['user_id'];
-            $player    = selectFromTable(array('user_id', USER_NAME_COLUMN), 
+            $cond   = 'WHERE `user_id`='.$uID['user_id'];
+            $player = selectFromTable(array('user_id', USER_NAME_COLUMN), 
                                          USERS_TABLE, $cond);
             // Quick'n dirt fix: 
             // The template tries to acces $possibleOpponents[$i]['user_name']:
             $fixedPlayer = array('user_id'=>$player['user_id'], 
                                    'user_name'=>$player[USER_NAME_COLUMN]);
-            $players[] = array_merge($fixedPlayer, array('task'=>$uID['task']));
+            $players[]   = array_merge($fixedPlayer, array('task'=>$uID['task']));
         }
         // Languages
         $cond      = "WHERE `softwareID`=$id";

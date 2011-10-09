@@ -21,11 +21,11 @@
 function getUserSoftwareID($user_id)
 {
     $c   = "WHERE `user_id`='$user_id'";
-    $row = selectFromTable(array('software_id'), SOFTWARE_USER_TABLE, $c);
+    $row = selectFromTable(array('software_id'), USER_INFO_TABLE, $c);
     return $row['software_id'];
 }
 
-/** This function checks if a row for the user in SOFTWARE_USER_TABLE does exist
+/** This function checks if a row for the user in USER_INFO_TABLE does exist
  *
  * @param int $user_id the id of the user who gets the table check
  *
@@ -34,12 +34,12 @@ function getUserSoftwareID($user_id)
 function checkSoftwareTableEntry($user_id)
 {
     $cond = 'WHERE `user_id` = '.$user_id;
-    $row  = selectFromTable(array('software_id'), SOFTWARE_USER_TABLE, $cond);
+    $row  = selectFromTable(array('software_id'), USER_INFO_TABLE, $cond);
     if ($row == false) {
         $keyValuePairs                = array();
         $keyValuePairs['user_id']     = $user_id;
         $keyValuePairs['software_id'] = 0;
-        insertIntoTable($keyValuePairs, SOFTWARE_USER_TABLE);
+        insertIntoTable($keyValuePairs, USER_INFO_TABLE);
     }
 }
 
@@ -72,7 +72,7 @@ function challengeUser($user_id, $t)
 
             $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$id";      
             $rows   = array('user_id', 'software_id');  
-            $result = selectFromTable($rows, SOFTWARE_USER_TABLE, $cond, 2);
+            $result = selectFromTable($rows, USER_INFO_TABLE, $cond, 2);
 
             if ($result[0]['user_id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];

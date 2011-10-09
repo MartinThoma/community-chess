@@ -85,7 +85,7 @@ if (isset($_GET['challengeUserID'])) {
 
             $condition = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
             $rows      = array('user_id', 'software_id');  
-            $result    = selectFromTable($rows, SOFTWARE_USER_TABLE, $condition, 2);
+            $result    = selectFromTable($rows, USER_INFO_TABLE, $condition, 2);
 
             if ($result[0]['id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];
@@ -184,7 +184,7 @@ if (isset($_GET['getDetails'])) {
 $time = time() + 1*60*60;
 $t->assign('closingDateMin', date("Y-m-d\TH:i\Z", $time));
 $time = time() + 7*24*60*60;
-$t->assign('closingDate', date("Y-m-d\TH:i\Z", $time));
+$t->assign('closingDate',    date("Y-m-d\TH:i\Z", $time));
 $time = time() + 1*31*24*60*60;
 $t->assign('closingDateMax', date("Y-m-d\TH:i\Z", $time));
 /* finishedDate client side validation *********************************************/
