@@ -77,6 +77,7 @@ function selectFromTable($rows, $table, $condition = '', $limit = 1)
     } else {
         $query = "SELECT $rows FROM `$table` $condition LIMIT $limit";
     }
+
     $result = mysql_query($query);
     if ($limit == 1) {
         $row = mysql_fetch_assoc($result);
