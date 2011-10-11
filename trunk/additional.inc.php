@@ -100,7 +100,8 @@ function challengeUser($user_id, $t)
 }
 
 /** Almost like the PageRank algorithm
- *  $inlinkScore isn't devided by outgoing links of the loser
+ *  $inlinkScore isn't devided by outgoing links of the loser.
+ *  You have to make sure that every userID is a key in winnerArray AND loserArray
  * 
  * @param array $winnerArray    array of arrays winner => loser
  * @param array $loserArray     array of arrays loser  => winner
@@ -108,7 +109,7 @@ function challengeUser($user_id, $t)
  * @param float $dampingFactor  damping factor of PR
  * @param float $initialisation doesn't really matter
  *
- * @return array playerID=>Ranking
+ * @return array playerID=>PageRank
  */
 function pageRank($winnerArray, $loserArray, $repeatPR=20, $dampingFactor=0.85, 
                    $initialisation=1.0)
@@ -142,36 +143,73 @@ function pageRank($winnerArray, $loserArray, $repeatPR=20, $dampingFactor=0.85,
     return $players;
 }
 
-/** Calculate the PageRank for all participants in the given tournament.
+/** Calculate the PageRank for either all players in a tournament or all players.
+ *  This function only generates the graph.
  * 
- * @param array $tournamentID int The id of a tournament which should get new values
+ * @param array $tournamentID int The id of a tournament which should get new values.
+ *                                If this parameter is 0, the global rank should be
+ *                                recalculated
  *
  * @return boolean true if tournament existed, false if not
  */
-function triggerPageRank($tournamentID)
+function triggerPageRank($tournamentID = 0)
 {
-    $rows    = array('user_id', 'whiteUserID', 'blackUserID', 'outcome');
-    $cond    = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
-    $rows    = selectFromTable($rows, GAMES_TABLE, $cond, 100);
+    $rows    = array('whiteUserID', 'blackUserID', 'outcome');
+
+    if ($tournamentID == 0) {
+        $cond = '';
+    } else {
+        $cond    = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
+    }
+
+    // get all UserIDs:
+    // TODO: This might soon get you into truble. Find a better solution for
+    //       selectFromTable!
+    $result  = selectFromTable(array('user_id'),USERS_TABLE, '', 1000);
+    $userIDs = array();
+    foreach ($result as $row) {
+        $userIDs[] = $row['user_id'];
+    }
+
+    // TODO: This might soon get you into truble. Find a better solution for
+    //       selectFromTable!
+    $games   = selectFromTable($rows, GAMES_TABLE, $cond, 1000);
     $winners = array();
     $losers  = array();
-    foreach ($rows as $row) {
-        if ($row['outcome'] == 0) {
-            $winners[$row['whiteuserID']][] = $row['blackUserID'];
-            $losers[$row['blackUserID']][]  = $row['whiteuserID'];
-        } else if ($row['outcome'] == 1) {
-            $losers[$row['whiteuserID']][]  = $row['blackUserID'];
-            $winners[$row['blackUserID']][] = $row['whiteuserID'];
-        } else if ($row['outcome'] == 2) {
-            $losers[$row['whiteuserID']][] = $row['blackUserID'];
-            $losers[$row['blackUserID']][] = $row['whiteuserID'];
+    foreach ($userIDs as $userID) {
+        $winners[$userID] = array();
+        $losers[$userID]  = array();
+    }
 
-            $winners[$row['whiteuserID']][] = $row['blackUserID'];
-            $winners[$row['blackUserID']][] = $row['whiteuserID'];
+    foreach ($games as $game) {
+        if ($game['outcome'] == 0) {
+            $winners[$game['whiteUserID']][] = $game['blackUserID'];
+            $losers[$game['blackUserID']][]  = $game['whiteUserID'];
+        } else if ($game['outcome'] == 1) {
+            $losers[$game['whiteUserID']][]  = $game['blackUserID'];
+            $winners[$game['blackUserID']][] = $game['whiteUserID'];
+        } else if ($game['outcome'] == 2) {
+            $losers[$game['whiteUserID']][] = $game['blackUserID'];
+            $losers[$game['blackUserID']][] = $game['whiteUserID'];
+
+            $winners[$game['whiteUserID']][] = $game['blackUserID'];
+            $winners[$game['blackUserID']][] = $game['whiteUserID'];
         } else {
-            exit("triggerPageRank should have outcome ".$row['outcome']);
+            exit("triggerPageRank should also have the outcome ".$game['outcome']);
         }
     }
+    // Now calculate the PageRank:
+    $pageRank = pageRank($winners, $losers);
+
+    // TODO: This should be done in one query
+    foreach ($pageRank as $userID=>$rank) {
+        $keyValue             = array();
+        $keyValue['pageRank'] = $rank;
+        updateDataInTable(USER_INFO_TABLE, $keyValue, "WHERE `user_id` = $userID");
+    }
+
+    // TODO: Recalculate `rank` in USER_INFO_TABLE
+    
     return true;
 }
 

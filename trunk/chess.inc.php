@@ -134,8 +134,17 @@ function chessMain($t)
                          $from_x, $from_y, $to_x, $to_y);
     }
 
+    if (isset($_GET['giveUp'])) {
+        // draw, as the 50 move rule was claimed
+        if ($yourColor == 'white') $outcome = 1;
+        else                       $outcome = 0;
+        finishGame($outcome);
+        exit('Game finished. You lost, as you gave up.');
+    }
+
     if (isset($_GET['claim50MoveRule'])) {
         if ($noCaptureAndPawnMoves >= 100) {
+            // draw, as the 50 move rule was claimed
             finishGame(2);
             exit('Game finished. Draw. You claimed draw by the fifty-move rule.');
         } else {
@@ -211,6 +220,7 @@ function chessMain($t)
                                     GAMES_THREEFOLD_REPETITION_TABLE, 
                                     $cond, 4);
         if (count($result) >= 3) {
+            // draw, as threefold repetition was claimed
             finishGame(2);
             exit('Game finished. Draw. You claimed draw by threefold repetition.');
         } else {
@@ -374,6 +384,8 @@ function processMove($whoseTurnIsItLanguage, $currentBoard, $moveList,
             $msg     = "$opponentColor has no valid moves but is not check. ".
                  'Draw.';
         }
+        // The opponent has no valid moves left. If he is check, the current player 
+        // won. Else it is draw.
         finishGame($outcome);
         exit($msg.' Game finished.');
     }
@@ -739,6 +751,9 @@ function finishGame($outcome)
         }
         triggerPageRank($result['tournamentID']);
     }
+
+    // Now the PageRank has to be recalculated
+    triggerPageRank();
 
     return true;
 }
@@ -1554,9 +1569,13 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     $timeNeeded     = $submissionTime - $result['lastMove'];
     if ($timeNeeded > $result['timeLimit'] and $result['timeLimit'] != 0) {
         if ($yourColor == 'white') {
-            finishGame(0);
-        } else {
+            // The current player needed too much time for his move, so he lost
+            // He is white, so black won the game => $outcome = 1
             finishGame(1);
+        } else {
+            // The current player needed too much time for his move, so he lost
+            // He is black, so white won the game => $outcome = 0
+            finishGame(0);
         }
         exit("Game finished. You lost. You needed too much time for your move. ".
              "You needed $timeNeeded seconds, but only ".$result['timeLimit'].

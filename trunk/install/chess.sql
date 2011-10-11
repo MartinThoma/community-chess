@@ -3,14 +3,14 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 26. September 2011 um 08:26
+-- Erstellungszeit: 11. Oktober 2011 um 08:58
 -- Server Version: 5.1.41
 -- PHP-Version: 5.3.2-1ubuntu4.9
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
--- Datenbank: `phpBB3`
+-- Datenbank: `chess`
 --
 
 -- --------------------------------------------------------
@@ -163,25 +163,6 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_userAdditionalInformation`
---
-
-CREATE TABLE IF NOT EXISTS `chess_userAdditionalInformation` (
-  `user_id` int(11) NOT NULL,
-  `rank` int(11) NOT NULL DEFAULT '-1',
-  `pageRank` double NOT NULL DEFAULT '0.15',
-  `software_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Daten für Tabelle `chess_userAdditionalInformation`
---
-
-
--- --------------------------------------------------------
-
---
 -- Tabellenstruktur für Tabelle `chess_tournamentPlayers`
 --
 
@@ -228,6 +209,43 @@ CREATE TABLE IF NOT EXISTS `chess_tournaments` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `chess_userAdditionalInformation`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_userAdditionalInformation` (
+  `user_id` int(11) NOT NULL,
+  `rank` int(11) NOT NULL DEFAULT '-1',
+  `pageRank` double NOT NULL DEFAULT '0.15',
+  `software_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Daten für Tabelle `chess_userAdditionalInformation`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `chess_userOpenID`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
+  `userOpenID_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `OpenID` text NOT NULL,
+  PRIMARY KEY (`userOpenID_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Daten für Tabelle `chess_userOpenID`
+--
+
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `chess_users`
 --
 
@@ -245,17 +263,4 @@ CREATE TABLE IF NOT EXISTS `chess_users` (
 INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`) VALUES
 (1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
 (2, 'test', '098f6bcd4621d373cade4e832627b4f6');
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `chess_userOpenID`
---
-
-CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
-  `userOpenID_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `OpenID` text NOT NULL,
-  PRIMARY KEY (`userOpenID_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
