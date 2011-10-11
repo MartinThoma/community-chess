@@ -198,17 +198,30 @@ function triggerPageRank($tournamentID = 0)
             exit("triggerPageRank should also have the outcome ".$game['outcome']);
         }
     }
-    // Now calculate the PageRank:
+    // Now calculate the PageRank array($userID=>$rank)
     $pageRank = pageRank($winners, $losers);
 
+    // Recalculate `rank` in USER_INFO_TABLE
+    $pageRanks      = array_unique(array_values($pageRank));
+    $rankTopageRank = array();
+    $rank           = 1;
+    while (count($pageRanks) > 0) {
+        $rankTopageRank[$rank] = max($pageRanks);
+        // remove the highes PR from the array
+        $pageRanks             = array_diff($pageRanks, array(max($pageRanks)));
+        $rank++;
+    }
+
+    // Write the PageRank into the database
     // TODO: This should be done in one query
     foreach ($pageRank as $userID=>$rank) {
         $keyValue             = array();
         $keyValue['pageRank'] = $rank;
+        $keyValue['rank']     = array_search($rank, $rankTopageRank);
         updateDataInTable(USER_INFO_TABLE, $keyValue, "WHERE `user_id` = $userID");
     }
 
-    // TODO: Recalculate `rank` in USER_INFO_TABLE
+
     
     return true;
 }
