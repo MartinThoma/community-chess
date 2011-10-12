@@ -38,8 +38,11 @@ Every tournament can be splitted into parts:
 Idea: Use the !PageRanking algorithm.
 
 = !PageRank like algorithm =
-Every win can be treated as a link from the loser to the winner
+Every win can be treated as a link from the loser to the winner.
+
 Every draw can be treated as two links (from a to b and b to a).
+
+The player with the highes PageRank is the best player.
 
 {{{
 REPEAT_PR = 20
