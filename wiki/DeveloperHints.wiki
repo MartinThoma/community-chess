@@ -1,8 +1,14 @@
-= Get the code =
+= Set up version =
+Download the latest code:
 {{{
 # Non-members may check out a read-only working copy anonymously over HTTP.
 svn checkout http://community-chess.googlecode.com/svn/trunk/ community-chess-read-only
 }}}
+
+  * Download the [http://www.phpbb.com/downloads/olympus.php?from=submenu latest version of phpBB] and put it in community-chess/forum
+  * Install phpBB3
+  * Make everything I mentioned in install/phpBB3
+  * Download the [http://www.phpbb.com/languages/ german language pack]
 
 = Create a downloadable version =
 {{{
