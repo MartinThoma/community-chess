@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="See all current and all past matches." />
+  <title>Ranking - Community Chess</title> 
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
+  <link type="text/css" href="external/jquery-toastmessage/css/jquery.toastmessage.css" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script type="text/javascript" src="external/jquery-1.6.4.min.js"></script>
+  <script type="text/javascript" src="external/jquery-toastmessage/jquery.toastmessage-min.js"></script>
+</head>
+<body>
+    <script type="text/javascript" src="external/jquery-toastmessage/toast-custom.js"></script>
+    <div id="tabs1">
+      <ul>
+        <li><a href="index.php"         title="Homepage"><span>Homepage</span></a></li>
+        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
+        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
+        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
+	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
+	    <li><a href="ranking.php"       title="Ranking"><span>Ranking</span></a></li>
+      </ul>
+    </div>
+    <div id="content">
+    <br style="clear:both;"/>
+    <h1>{username}'s Profile</h1>
+    <h2>Games played</h2>
+    <table>
+        <tr>
+            <th>Game ID</th>
+            <th>Tournament ID</th>
+            <th>Outcome</th>
+        </tr>
+    {foreach:games,i,game}
+        <tr><td>{game['id']}</td><td>{game['tournamentID']}</td><td>{game['outcome']}</td></tr>
+    {end}
+    </table>
+    </div>
+</body>
+</html>
