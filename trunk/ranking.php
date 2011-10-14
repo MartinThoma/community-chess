@@ -1,6 +1,6 @@
 <?php
 /**
- * create tournaments
+ * ranking
  *
  * PHP Version 5
  *
