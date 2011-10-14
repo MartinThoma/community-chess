@@ -12,12 +12,10 @@
   * *A blog*?: [http://en.wikipedia.org/wiki/WordPress WordPress]
   
 = Top-Level-Domain =
-Which TLD should I choose?
+I bought .com for Community Chess. I thought of the following before I bought it:
 
-.com: _commercial_
-  * original intended purpose for domains registered by commercial organizations. However eventually the distinction was lost when .com, .org and .net were opened for unrestricted registration.
-  * this TLD is well known and recognized as an URL by everybody
-
-.org: _organization_ - originally intended for non-profit organizations or organizations of a non-commercial character that did not meet the requirements for other gTLDs
-
-.net: _network_ - originally intended purpose for organizations involved in networking technologies, such as Internet service providers and other infrastructure companies
+  *.com: _commercial_
+    * original intended purpose for domains registered by commercial organizations. However eventually the distinction was lost when .com, .org and .net were opened for unrestricted registration.
+    * this TLD is well known and recognized as an URL by everybody
+  * .org: _organization_ - originally intended for non-profit organizations or organizations of a non-commercial character that did not meet the requirements for other gTLDs
+  * .net: _network_ - originally intended purpose for organizations involved in networking technologies, such as Internet service providers and other infrastructure companies
