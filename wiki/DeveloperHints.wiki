@@ -1,0 +1,17 @@
+= Get the code =
+{{{
+# Non-members may check out a read-only working copy anonymously over HTTP.
+svn checkout http://community-chess.googlecode.com/svn/trunk/ community-chess-read-only
+}}}
+
+= Create a downloadable version =
+{{{
+find community-chess/ -path '*/.*' -prune -o -type f -print | zip ~/community-chess.zip -@
+}}}
+
+= Translations =
+This will come soon. You might want to take a look at:
+  * [http://en.wikipedia.org/wiki/Poedit Poedit]
+  * [http://en.wikipedia.org/wiki/GNU_gettext GNU gettext]
+
+The translations are located at community-chess/i18n.
