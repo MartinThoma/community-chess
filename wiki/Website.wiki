@@ -1,0 +1,13 @@
+#summary What does a chess challenge website need
+
+= Requirements =
+  * only Perl and PHP
+  * only MySQL database
+
+= Software =
+
+  * *Challenges*: Community Chess 2.0. Version 1.0 will only have basic features
+  * *A forum*: I think about [http://en.wikipedia.org/wiki/PhpBB phpBB]
+  * *WeChall integration*: See [http://www.wechall.net/join_us join us]
+  * *A blog?*: [http://en.wikipedia.org/wiki/WordPress WordPress]
+  
