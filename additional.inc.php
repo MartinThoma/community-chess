@@ -56,11 +56,11 @@ function challengeUser($user_id, $t)
     $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
     $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
     $challengedUser = $row[USER_NAME_COLUMN];
-    if ($row !== false) {
+    if ($row !== false and $row !== null) {
         $cond  = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
         $cond .= 'AND `outcome` = -1';
         $row   = selectFromTable(array('id'), GAMES_TABLE, $cond);
-        if ($row !== false) {
+        if ($row !== false and $row !== null) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
             return "ERROR:You have already challenged this player. ".
@@ -154,7 +154,7 @@ function pageRank($winnerArray, $loserArray, $repeatPR=20, $dampingFactor=0.85,
  */
 function triggerPageRank($tournamentID = 0)
 {
-    $rows    = array('whiteUserID', 'blackUserID', 'outcome');
+    $rows = array('whiteUserID', 'blackUserID', 'outcome');
 
     if ($tournamentID == 0) {
         $cond = '';
@@ -165,7 +165,7 @@ function triggerPageRank($tournamentID = 0)
     // get all UserIDs:
     // TODO: This might soon get you into truble. Find a better solution for
     //       selectFromTable!
-    $result  = selectFromTable(array('user_id'),USERS_TABLE, '', 1000);
+    $result  = selectFromTable(array('user_id'), USERS_TABLE, '', 1000);
     $userIDs = array();
     foreach ($result as $row) {
         $userIDs[] = $row['user_id'];
@@ -208,7 +208,7 @@ function triggerPageRank($tournamentID = 0)
     while (count($pageRanks) > 0) {
         $rankTopageRank[$rank] = max($pageRanks);
         // remove the highes PR from the array
-        $pageRanks             = array_diff($pageRanks, array(max($pageRanks)));
+        $pageRanks = array_diff($pageRanks, array(max($pageRanks)));
         $rank++;
     }
 

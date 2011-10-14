@@ -400,16 +400,19 @@ function processMove($whoseTurnIsItLanguage, $currentBoard, $moveList,
  */
 function getValidMoveQuery($move)
 {
-    $move = mysql_real_escape_string($move);
+    preg_match('/^([1-8]{2})([1-8]{2})([bnpqrBNPQR]?)$/', $move, $matches);
+
     // Is the move-query well formed?
-    if (strlen($move) > 5 or strlen($move) < 4 ) {
+    if (count($matches) == 0) {
         exit(ERR_MOVE_QUERY_LENGTH);
+    } else {
+        $move = $matches[0];
     }
 
-    $from = (int) substr($move, 0, 2);
-    $to   = (int) substr($move, 2, 2);
+    $from = $matches[1];
+    $to   = $matches[2];
 
-    if (strlen($move) == 5) $promotion = substr($move, 4, 1);
+    if (strlen($move) == 5) $promotion = $matches[3];
     else                    $promotion = '';
 
     $from_y = $from % 10;
@@ -441,7 +444,7 @@ function getValidMoveQuery($move)
  */
 function getValidMoveQueryFromICCFalpha($move)
 {
-    $move    = mysql_real_escape_string($move);
+    $move    = sqlEscape($move);
     $search  = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
     $replace = array(1,2,3,4,5,6,7,8);
     $move    = str_replace($search, $replace, $move);
@@ -708,7 +711,7 @@ function finishGame($outcome)
     $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
 
     $keyValue['outcome']  = $outcome;
-    $keyValue['lastMove'] = time();
+    $keyValue['lastMove'] = date('Y-m-d H:i:s');
 
     updateDataInTable(GAMES_TABLE, $keyValue, $condition);
 

@@ -12,8 +12,10 @@
  * @link     http://code.google.com/p/community-chess/
  */
 
+
 require_once 'external/vemplator.php';
 require_once 'constants.inc.php';
+
 set_include_path('templates');
 
 if (!isset($_SESSION)) session_start();
@@ -30,6 +32,7 @@ mysql_select_db(MYSQL_DATABASE) OR
 mysql_set_charset('utf8'); 
 
 define("USER_ID", getUserID());
+
 /******************************************************************************/
 /* functions                                                                  */
 /******************************************************************************/
@@ -45,7 +48,7 @@ function getUserID()
         return false;
     };
 
-    $user_id   = mysql_real_escape_string($_SESSION['user_id']);
+    $user_id   = sqlEscape($_SESSION['user_id']);
     $condition = "WHERE `user_id`='$user_id' ";
     $row       = selectFromTable(array('user_id'), USERS_TABLE, $condition);
 
@@ -54,6 +57,30 @@ function getUserID()
     } else {
         return false;
     }
+    /* End of code which can be replaced by your code */
+}
+
+/** Get last inserted id after insert statement
+ *
+ * @return int id
+ */
+function lastInsertId()
+{
+    /* Begin of code which can be replaced by your code */
+    return mysql_insert_id();
+    /* End of code which can be replaced by your code */
+}
+
+/** Escape string used in sql query
+ *
+ * @param string $sql the string which should be escaped
+ *
+ * @return string
+ */
+function sqlEscape($sql)
+{
+    /* Begin of code which can be replaced by your code */
+    return mysql_real_escape_string($sql);
     /* End of code which can be replaced by your code */
 }
 
@@ -108,7 +135,7 @@ function insertIntoTable($keyValuePairs, $table)
     $query .= "'".implode("','", array_values($keyValuePairs))."'";
     $query .= ");";
     mysql_query($query);
-    return mysql_insert_id();
+    return lastInsertId();
     /* End of code which can be replaced by your code */
 }
 
@@ -157,7 +184,7 @@ function updateDataInTable($table, $keyValue, $condition)
 function deleteFromTable($table, $id)
 {
     /* Begin of code which can be replaced by your code */
-    $table = mysql_real_escape_string($table);
+    $table = sqlEscape($table);
     $id    = (int) $id;
     $query = "DELETE FROM `$table` WHERE `$table`.`id` = $id LIMIT 1";
     mysql_query($query);
@@ -176,7 +203,7 @@ function deleteFromTable($table, $id)
  */
 function login($user_name, $user_password, $redirect = true)
 {
-    $condition  = 'WHERE user_name="'.mysql_real_escape_string($user_name);
+    $condition  = 'WHERE user_name="'.sqlEscape($user_name);
     $condition .= '" AND user_password="'.md5($user_password).'"';
     $row        = selectFromTable(array('user_id'), USERS_TABLE, $condition);
     if ($row !== false) {

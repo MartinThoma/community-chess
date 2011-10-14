@@ -52,7 +52,7 @@ try {
     } else {
         if ($openid->validate()) {
             $rows       = array('user_id');
-            $escapedURL = mysql_real_escape_string($openid->identity);
+            $escapedURL = sqlEscape($openid->identity);
             $cond       = 'WHERE `OpenID` = "'.$escapedURL.'"';
             $result     = selectFromTable($rows, USERS_OPENID, $cond);
             // Is the OpenID already in the database?

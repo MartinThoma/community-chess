@@ -17,8 +17,8 @@
 require_once 'wrapper.inc.php';
 
 if (isset($_GET['username']) and isset($_GET['authkey'])) {
-    $username = mysql_real_escape_string($_GET['username']);
-    $authkey  = mysql_real_escape_string($_GET['authkey']);
+    $username = sqlEscape($_GET['username']);
+    $authkey  = sqlEscape($_GET['authkey']);
     if ($authkey == WECHALL_AUTH_KEY) {
         // Get all user information
         $condition = "WHERE `user_name` = '$username'";
