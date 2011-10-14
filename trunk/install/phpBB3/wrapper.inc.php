@@ -12,7 +12,7 @@
  * @link     http://code.google.com/p/community-chess/
  */
 
-include_once 'phpbb3.php';
+require_once 'phpbb3.php';
 require_once 'external/vemplator.php';
 require_once 'constants.inc.php';
 
@@ -32,11 +32,39 @@ function getUserID()
 {
     /* Begin of code which can be replaced by your code */
     global $user;
-    if($user->data['user_id'] == ANONYMOUS) {
+    if ($user->data['user_id'] == ANONYMOUS) {
         return false;
     } else {
         return $user->data['user_id'];
     }
+    /* End of code which can be replaced by your code */
+}
+
+/** Get last inserted id after insert statement
+ *
+ * @return int id
+ */
+function lastInsertId()
+{
+    /* Begin of code which can be replaced by your code */
+    global $db;
+
+    return $db->sql_nextid();
+    /* End of code which can be replaced by your code */
+}
+
+/** Escape string used in sql query
+ *
+ * @param string $sql the string which should be escaped
+ *
+ * @return string
+ */
+function sqlEscape($sql)
+{
+    /* Begin of code which can be replaced by your code */
+    global $db;
+
+    return $db->sql_escape($sql);
     /* End of code which can be replaced by your code */
 }
 
@@ -51,12 +79,18 @@ function getUserID()
  *
  * @return array
  */
-function selectFromTable($rows, $table, $condition, $limit = 1)
+function selectFromTable($rows, $table, $condition = '', $limit = 1)
 {
     /* Begin of code which can be replaced by your code */
     global $db;
-    $row    = implode("`,`", $rows);
-    $query  = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
+
+    if (is_array($rows)) {
+        $row   = implode("`,`", $rows);
+        $query = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
+    } else {
+        $query = "SELECT $rows FROM `$table` $condition LIMIT $limit";
+    }
+
     $result = $db->sql_query($query);
     if ($limit == 1) {
         $row = $db->sql_fetchrow($result);
@@ -80,10 +114,10 @@ function insertIntoTable($keyValuePairs, $table)
     /* Begin of code which can be replaced by your code */
     global $db;
 
-	$sql = 'INSERT INTO ' . $table . ' ' . $db->sql_build_array('INSERT', $keyValuePairs);
-	$db->sql_query($sql);
+    $sql = 'INSERT INTO '.$table.' ' .$db->sql_build_array('INSERT', $keyValuePairs);
+    $db->sql_query($sql);
 
-    return mysql_insert_id();
+    return lastInsertId();
     /* End of code which can be replaced by your code */
 }
 
@@ -134,7 +168,7 @@ function deleteFromTable($table, $id)
 {
     /* Begin of code which can be replaced by your code */
     global $db;
-    $table = mysql_real_escape_string($table);
+    $table = sqlEscape($table);
     $id    = (int) $id;
     $query = "DELETE FROM `$table` WHERE `$table`.`id` = $id LIMIT 1";
     $db->sql_query($query);

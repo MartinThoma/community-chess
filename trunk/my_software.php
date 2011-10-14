@@ -20,7 +20,7 @@ $t->assign('USER_ID', USER_ID);
 $msg = array();
 
 if (isset($_GET['addLanguage'])) {
-    $langName   = mysql_real_escape_string($_GET['addLanguage']);
+    $langName   = sqlEscape($_GET['addLanguage']);
     $softwareID = (int) $_GET['softwareID'];
     $cond       = "WHERE `name`='".$langName."'";
     $result     = selectFromTable(array('id', 'used'), LANGUAGES_TABLE, $cond);
@@ -66,11 +66,11 @@ if (isset($_GET['addTeammate'])) {
         exit('You are not admin of this software!');
     }
 
-    $user_name = mysql_real_escape_string($_GET['addTeammate']);
+    $user_name = sqlEscape($_GET['addTeammate']);
     $cond      = "WHERE `".USER_NAME_COLUMN."`='$user_name'";
     $result    = selectFromTable(array('user_id'), USERS_TABLE, $cond);
     if ($result !== false) {
-        $task = mysql_real_escape_string($_GET['task']);
+        $task = sqlEscape($_GET['task']);
 
         $keyValuePairs               = array();
         $keyValuePairs['user_id']    = $result['user_id'];
@@ -105,9 +105,9 @@ if (isset($_GET['setCurrent'])) {
     updateDataInTable(USER_INFO_TABLE, $keyValue, $cond);
 }
 if (isset($_POST['newSoftwareName'])) {
-    $name      = mysql_real_escape_string($_POST['newSoftwareName']);
-    $version   = mysql_real_escape_string($_POST['version']);
-    $changelog = mysql_real_escape_string($_POST['changelog']);
+    $name      = sqlEscape($_POST['newSoftwareName']);
+    $version   = sqlEscape($_POST['version']);
+    $changelog = sqlEscape($_POST['changelog']);
     if (isset($_POST['lastVersionID'])) {
         $lastVersionID = (int) $_POST['lastVersionID'];
     } else {

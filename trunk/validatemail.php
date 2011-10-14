@@ -17,9 +17,9 @@
 require_once 'wrapper.inc.php';
 
 if (isset($_GET['username']) and isset($_GET['email']) and isset($_GET['authkey'])) {
-    $username = mysql_real_escape_string($_GET['username']);
-    $email    = mysql_real_escape_string($_GET['email']);
-    $authkey  = mysql_real_escape_string($_GET['authkey']);
+    $username = sqlEscape($_GET['username']);
+    $email    = sqlEscape($_GET['email']);
+    $authkey  = sqlEscape($_GET['authkey']);
     if ($authkey == WECHALL_AUTH_KEY) {
         $condition = "WHERE `user_name` = '$username' AND `user_email` = '$email'";
         $result    = selectFromTable(array('user_id'), USERS_TABLE, $condition);

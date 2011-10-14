@@ -18,11 +18,11 @@ $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
 if (isset($_POST['tournamentName'])) {
-    $tournamentName = mysql_real_escape_string($_POST['tournamentName']);
-    $description    = mysql_real_escape_string($_POST['description']);
+    $tournamentName = sqlEscape($_POST['tournamentName']);
+    $description    = sqlEscape($_POST['description']);
     $password       = md5($_POST['password']);
-    $closingDate    = mysql_real_escape_string($_POST['closingDate']);
-    $finishedDate   = mysql_real_escape_string($_POST['finishedDate']);
+    $closingDate    = sqlEscape($_POST['closingDate']);
+    $finishedDate   = sqlEscape($_POST['finishedDate']);
 
     if ($tournamentName == '') {
         $t->assign('noTournamentName', true);
@@ -31,8 +31,8 @@ if (isset($_POST['tournamentName'])) {
         $keyValue['name']         = $tournamentName;
         $keyValue['description']  = $description;
         $keyValue['password']     = $password;
-        $keyValue['closingDate']  = $closingDate;
-        $keyValue['finishedDate'] = $finishedDate;
+        $keyValue['closingDate']  = date('Y-m-d H:i:s', strtotime($closingDate));
+        $keyValue['finishedDate'] = date('Y-m-d H:i:s', strtotime($finishedDate));
         insertIntoTable($keyValue, TOURNAMENTS_TABLE);
     }
 }
@@ -184,14 +184,14 @@ if (isset($_GET['getDetails'])) {
 $time = time() + 1*60*60;
 $t->assign('closingDateMin', date("Y-m-d\TH:i\Z", $time));
 $time = time() + 7*24*60*60;
-$t->assign('closingDate',    date("Y-m-d\TH:i\Z", $time));
+$t->assign('closingDate', date("Y-m-d\TH:i\Z", $time));
 $time = time() + 1*31*24*60*60;
 $t->assign('closingDateMax', date("Y-m-d\TH:i\Z", $time));
 /* finishedDate client side validation *********************************************/
 $time = time() + 3*24*60*60;
 $t->assign('finishedDateMin', date("Y-m-d\TH:i\Z", $time));
 $time = time() + 14*24*60*60;
-$t->assign('finishedDate',    date("Y-m-d\TH:i\Z", $time));
+$t->assign('finishedDate', date("Y-m-d\TH:i\Z", $time));
 $time = time() + 2*31*24*60*60;
 $t->assign('finishedDateMax', date("Y-m-d\TH:i\Z", $time));
 
