@@ -87,6 +87,31 @@ function sqlEscape($sql)
 /** This function selects some rows from the specified table and returns
  *  the associative array
  *
+ * @param array  $query the sql query
+ * @param string $limit the limit, either 1 or *
+ *
+ * @return array
+ */
+function selectDirect($query, $limit='*')
+{
+    /* Begin of code which can be replaced by your code */
+    $result = mysql_query($query);
+
+    if ($limit == 1) {
+        $row = mysql_fetch_assoc($result);
+    } else {
+        $row = array();
+        while ($a = mysql_fetch_assoc($result)) {
+            $row[] = $a;
+        }
+    }
+    return $row;
+    /* End of code which can be replaced by your code */
+}
+
+/** This function selects some rows from the specified table and returns
+ *  the associative array
+ *
  * @param array  $rows      all rows which should be selected. I never use "*"
  * @param string $table     the table from which the rows should be selected
  * @param string $condition the condition which rows should be selected

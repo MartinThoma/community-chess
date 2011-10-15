@@ -69,8 +69,16 @@ if (isset($_GET['action'])) {
         } else {
             exit("ERROR:You have to provide a valid gameID");
         }
+    } else if ($_GET['action'] == 'getPlayerIDs') {
+        $cond = "WHERE `user_id` != ".USER_ID;
+        $rows = selectFromTable(array('user_id'), USERS_TABLE, $cond, 100);
+        $IDs  = array();
+        foreach ($rows as $row) {
+            $IDs[] = $row['user_id'];
+        }
+        exit(implode('::', $IDs));
     } else if ($_GET['action'] == 'listCurrentGames') {
-        $con  = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
+        $con  = "WHERE (`whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID.") ";
         $con .= " AND `outcome` = -1";
         $rows = selectFromTable(array('id'), GAMES_TABLE, $con, 100);
         $IDs  = array();
@@ -96,6 +104,25 @@ if (isset($_GET['action'])) {
                             GAMES_TABLE, 
                             $cond, 1);
             exit($result['currentBoard']);
+        } else {
+            exit("ERROR:You have to provide a valid gameID");
+        }
+    } else if ($_GET['action'] == 'whoAmI') {
+        if (isset($_GET['gameID'])) {
+            $gameID = (int) $_GET['gameID'];
+            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
+            $cond  .= " OR `blackUserID` = ".USER_ID.")";
+            $result = selectFromTable(array('whiteUserID', 'blackUserID'), 
+                            GAMES_TABLE, 
+                            $cond, 1);
+            if ($result['whiteUserID'] == USER_ID) {
+                $whoAmI = 'white';
+            } else if ($result['blackUserID'] == USER_ID) {
+                $whoAmI = 'black';
+            } else {
+                $whoAmI = 'None';
+            }
+            exit($whoAmI);
         } else {
             exit("ERROR:You have to provide a valid gameID");
         }

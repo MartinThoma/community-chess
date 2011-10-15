@@ -32,8 +32,13 @@ $t->assign('maxPages', ceil($usercount/100));
 $t->assign('nrOfUsers', $usercount);
 
 // Get users with ranks
-$row       = array('rank', 'user_id', 'pageRank');
-$result    = selectFromTable($row, USER_INFO_TABLE, 'ORDER BY `rank`', 100);
+$query  = 'SELECT  `rank` , a.`user_id` ,  `pageRank` ,  `'.USER_NAME_COLUMN.'` AS ';
+$query .= '`user_name` ';
+$query .= 'FROM  `chess_userAdditionalInformation` AS b,  `chess_users` AS a ';
+$query .= 'WHERE b.`user_id` = a.`user_id` ';
+$query .= 'ORDER BY  `rank` ';
+$query .= 'LIMIT 100';
+$result = selectDirect($query);
 $t->assign('ranking', $result);
 
 echo $t->output('ranking.html');
