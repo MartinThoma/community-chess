@@ -94,10 +94,15 @@ class ChessClient(object):
         for y in xrange(0, 8):
             for x in xrange(0, 8):
                 pos = x + y*8
+                letter = content[pos:(pos+1)]
                 if content[pos:(pos+1)] in ['p', 'P']:
-                    board[x][y] = Pawn(content[pos:(pos+1)], x, y)
+                    board[x][y] = Pawn(letter, x, y)
+                elif content[pos:(pos+1)] in ['k', 'K']:
+                    board[x][y] = King(letter, x, y)
+                elif content[pos:(pos+1)] in ['n', 'N']:
+                    board[x][y] = Knight(letter, x, y)
                 else:
-                    board[x][y] = ChessPiece(content[pos:(pos+1)], 0, x, y)
+                    board[x][y] = ChessPiece(letter, 0, x, y)
         self.board = board
         return board
 
@@ -165,12 +170,14 @@ class ChessClient(object):
                         
 
     def gameLoop(self):
-        while self.myTurn == False:
-            print("Not your turn. Wait a second")
-            time.sleep(1)
-            self.colorsTurn = self.whoseTurnIsIt()
-            self.myTurn = (self.myColor == self.colorsTurn)
-        self.getBoard()
-        self.makeMove()
+        while True:
+            while self.myTurn == False:
+                print("Not your turn. Wait a second")
+                time.sleep(1)
+                self.colorsTurn = self.whoseTurnIsIt()
+                self.myTurn = (self.myColor == self.colorsTurn)
+            self.getBoard()
+            if self.makeMove():
+                print("Moved.")
 
 
