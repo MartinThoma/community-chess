@@ -404,7 +404,7 @@ function getValidMoveQuery($move)
 
     // Is the move-query well formed?
     if (count($matches) == 0) {
-        exit(ERR_MOVE_QUERY_LENGTH);
+        exit(ERR_MOVE_QUERY_LENGTH + " Yours was '".$move."'");
     } else {
         $move = $matches[0];
     }

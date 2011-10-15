@@ -3,46 +3,42 @@
 
 class ChessPiece(object):
     """ This is a super class for chess pieces """
-    def __init__(self, client, piece, color, value, x, y):
-        self.piece = piece
-        self.color = color
+    def __init__(self, letter, value, x, y):
+        self.letter = letter
+        self.color = self.getColor()
         self.value = value
         self.x     = x
         self.y     = y
 
-    def standardMoves(self):
-        """ Get a list of vectors for the standard moves. """
-        pass
+    def __str__(self):
+        return self.letter
 
-    def captureMoves(self):
-        """ Get a list of vectors for the caputure moves. """
-        pass
+    def __repr__(self):
+        pythonRepresentation  = ("Piece:\t%s\n" % self.letter)
+        pythonRepresentation += ("Value:\t%i\n" % self.value)
+        pythonRepresentation += ("Position:\t(%i|%i)\n" % (self.x, self.y))
+        return pythonRepresentation
+        #return self.letter
 
-    def getPossibleMoves(self, client):
-        """ Get a list of vectors for all possible moves. """
-        moveVectors = []
-
-        standard = self.standardMoves()
-        for move in standard:
-            if (self.x + move[0]) < 8 and (self.y + move[1]) < 8:
-                moveVectors.append(move)
-
-        capture = self.captureMoves()
-        for move in capture:
-            if (self.x + move[0]) < 8 and (self.y + move[1]) < 8 and \
-               client.isEnemy(move[0], move[1]):
-                moveVectors.append(move)
-
-        return moveVectors
-
-class Pawn(ChessPiece):
-    """ This is a pawn class """
-    def __init__(self, client, color, x, y):
-        ChessPiece.__init__(self, client, 'pawn', color, 1, x, y)
-        if color == 'P':
+    def getColor(self):
+        if self.letter.isupper():
             color = 'white'
         else:
             color = 'black'
+        self.color = color
+
+    def standardMoves(self):
+        """ Get a list of vectors for the standard moves. """
+        return []
+
+    def captureMoves(self):
+        """ Get a list of vectors for the caputure moves. """
+        return []
+
+class Pawn(ChessPiece):
+    """ This is a pawn class """
+    def __init__(self, letter, x, y):
+        ChessPiece.__init__(self, letter, 1, x, y)
 
     def standardMoves(self):
         if self.color == 'white':
@@ -56,3 +52,13 @@ class Pawn(ChessPiece):
         else:
             return [(1,-1), (-1,-1)]
 
+class King(ChessPiece):
+    """ This is a king class """
+    def __init__(self, client, color, x, y):
+        ChessPiece.__init__(self, client, 'king', 'K', -1, x, y)
+
+    def standardMoves(self):
+        return [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,1),(1,-1),(-1,-1)]
+
+    def captureMoves(self):
+        return [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,1),(1,-1),(-1,-1)]
