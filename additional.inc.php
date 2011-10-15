@@ -48,7 +48,7 @@ function checkSoftwareTableEntry($user_id)
  * @param int    $user_id the challenged user_id
  * @param object $t       template-object
  *
- * @return string message with the result
+ * @return int the new game id
  */
 function challengeUser($user_id, $t)
 {
@@ -92,7 +92,7 @@ function challengeUser($user_id, $t)
             $t->assign('startedGamePlayerID', $id);
             $t->assign('startedGamePlayerUsername', $challengedUser);
             $t->assign('startedGameID', $gameID);
-            return "New game started with gameID $gameID.";
+            return $gameID;
         }
     } else {
         $t->assign('incorrectID', true);
