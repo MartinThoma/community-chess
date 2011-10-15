@@ -54,11 +54,24 @@ class Pawn(ChessPiece):
 
 class King(ChessPiece):
     """ This is a king class """
-    def __init__(self, client, color, x, y):
-        ChessPiece.__init__(self, client, 'king', 'K', -1, x, y)
+    def __init__(self, letter, x, y):
+        ChessPiece.__init__(self, letter, 1, x, y)
+        self.moves = [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,1),(1,-1),(-1,-1)]
 
     def standardMoves(self):
-        return [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,1),(1,-1),(-1,-1)]
+        return self.moves
 
     def captureMoves(self):
-        return [(0,1),(1,0),(0,-1),(-1,0),(1,1),(-1,1),(1,-1),(-1,-1)]
+        return self.moves
+
+class Knight(ChessPiece):
+    """ This is a king class """
+    def __init__(self, letter, x, y):
+        ChessPiece.__init__(self, letter, 1, x, y)
+        self.moves = [(1,2),(-1,2),(1,-2),(-1,-2),(2,1),(-2,1),(2,-1),(-2,-1)]
+
+    def standardMoves(self):
+        return self.moves
+
+    def captureMoves(self):
+        return self.moves
