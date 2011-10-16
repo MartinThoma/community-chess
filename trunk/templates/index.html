@@ -4,27 +4,105 @@
   <meta charset="utf-8" />
   <meta name="description" content="Select what you want to do next." />
   <title>Homepage - Community Chess</title> 
-  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="stylesheet" type="text/css" href="styling/default2.css" />
   <link rel="stylesheet" type="text/css" href="external/navigation/navigation.css" />
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-    <div id="tabs1">
+    <div id="leftBar">
+      <img src="styling/logo.png" alt="Logo" title="logo"/>
       <ul>
-        <li><a href="index.php"         title="Homepage" id="activetab"><span>Homepage</span></a></li>
-        <li><a href="status.php"        title="All chess matches"><span>All chess matches</span></a></li>
-        <li><a href="challengePlayer.php" title="Challenge Player"><span>Challenge Player</span></a></li>
-        <li><a href="my_software.php"   title="My software"><span>My software</span></a></li>
-	    <li><a href="tournaments.php"   title="Tournaments"><span>Tournaments</span></a></li>
-	    <li><a href="ranking.php"       title="Ranking"><span>Ranking</span></a></li>
+        <li>
+            <a href="index.php" title="Home" id="activetab">
+                <img src="styling/house.png" alt="Home" title="Home"/>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="http://martin-thoma.com/tag/community-chess/" title="News">
+                <img src="styling/newspaper.png" alt="News" title="News"/>
+                <span>News</span>
+            </a>
+        </li>
+        <li>
+            <a href="challenges.php" title="Challenges">
+                <img src="styling/control_play.png" alt="Challenges" title="Challenges"/>
+                <span>Challenges</span>
+            </a>
+        </li>
+        <li>
+            <a href="ranking.php" title="Ranking">
+                <img src="styling/chart_bar.png" alt="Ranking" title="Ranking"/>
+                <span>Ranking</span>
+            </a>
+        </li>
+        <li>
+            <a href="profile.php" title="Profile">
+                <img src="styling/user.png" alt="Profile" title="Profile"/>
+                <span>Profile</span>
+            </a>
+        </li>
+        <li>
+            <a href="forum" title="Forum">
+                <img src="styling/group.png" alt="Forum" title="Forum"/>
+                <span>Forum</span>
+            </a>
+        </li>
       </ul>
+
+
+      <ul>
+        <li>
+            <a href="challengePlayer.php" title="Challenge">
+                <img src="styling/king.png" alt="Challenge" title="Challenge"/>
+                <span>Challenge</span>
+            </a>
+        </li>
+        <li>
+            <a href="status.php" title="My matches">
+                <img src="styling/application_view_list.png" alt="My matches" title="My matches"/>
+                <span>My matches</span>
+            </a>
+        </li>
+        <li>
+            <a href="tournaments.php" title="Tournaments">
+                <img src="styling/sitemap.png" alt="Tournaments" title="Tournaments"/>
+                <span>Tournaments</span>
+            </a>
+        </li>
+      </ul>
+
+
+      <ul>
+        <li>
+            <a href="contact.php" title="Contact">
+                <img src="styling/email.png" alt="Contact" title="Contact"/>
+                <span>Contact</span>
+            </a>
+        </li>
+        <li>
+            <a href="support.php" title="Support us">
+                <img src="styling/heart.png" alt="Support us" title="Support us"/>
+                <span>Support us</span>
+            </a>
+        </li>
+        <li>
+            <a href="logout.php" title="Logout">
+                <img src="styling/sitemap.png" alt="Logout" title="Logout"/>
+                <span>Logout</span>
+            </a>
+        </li>
+      </ul>
+
+    </div>
+    <div>
+        <p style="color:#a67000;font-size:38px;margin:0;padding:0;margin-left:180px">Community Chess</p>
     </div>
     <div id="content">
-    <br style="clear:both;"/>
-    <h1>{title}</h1>
-    <p>{firstParagraph}</p>
-    <h2>{information}</h2>
-    <p>{loggedInWithID} {USER_ID}.</p>
+        <h1>{title}</h1>
+        <p>{firstParagraph}</p>
+        <h2>{information}</h2>
+        <p>{loggedInWithID} {USER_ID}.</p>
     </div>
 </body>
 </html>

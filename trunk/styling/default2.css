@@ -1,0 +1,104 @@
+body {
+    margin:0;
+    padding:0;
+}
+#content {
+    background-color: #ffd273;
+    padding         : 21px;
+    margin-left     : 180px;
+}
+#tabs1 {
+    background-color: #FFF !important;
+}
+.current, .highlightField {
+    background-color: #C3FDB8;
+}
+.whiteField {
+    background-color: #ffce9e;
+}
+
+.blackField {
+    background-color: #d18b47;
+}
+
+.stressed {
+    color: red;
+    font-weight:bold;
+    font-size:+4;
+}
+
+.odd {
+    background-color: #ababab;
+}
+/***********************************************************************************/
+/* Navigation                                                                      */
+/***********************************************************************************/
+#leftBar {
+    width: 160px;
+    float: left;
+}
+
+#leftBar ul {
+    border: 2px solid #a67000;
+    list-style: none;
+    margin:0;
+    margin-bottom: 2px;
+    padding:0;
+    background-color: #ffd273;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-left: 2px;
+}
+
+#leftBar ul li {
+    height: 20px;
+}
+
+#leftBar ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #a67000;
+    display: block;
+}
+
+#activetab {
+    background-color: #FFC140;
+}
+
+#leftBar ul li:hover {
+    background-color: #FFC140;
+}
+
+/***********************************************************************************/
+/* HTML-Tags                                                                       */
+/***********************************************************************************/
+html {
+    background-color: #ffc140;
+}
+
+fieldset {
+    background-color: #efefef;
+}
+
+table {
+    background-color: #ffffee;
+}
+
+th {
+    background-color: #ffeeff;
+}
+
+label {
+    width           : 150px;
+    display         : inline-block;
+}
+
+legend {
+    background-color: #D8D6FF;
+    padding         : 3px;
+    border          : 1px solid #BCD2E6;
+}
+
+input, textarea, select {
+    border          : 1px solid #BCD2E6;
+}
