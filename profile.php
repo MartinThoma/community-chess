@@ -13,21 +13,26 @@
  */
 require_once 'wrapper.inc.php';
 require_once 'additional.inc.php';
-if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
+
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
 if (isset($_GET['username'])) {
     $t->assign('username', $_GET['username']);
-
-    $cond   = "WHERE `outcome` > 0 AND `whiteUserID` = ".USER_ID." OR `blackUserID`";
-    $cond  .= "= ".USER_ID;
-    $rows   = array('id', 'tournamentID', 'outcome');
-    $result = selectFromTable($rows, GAMES_TABLE, $cond, 10);
-    $t->assign('games', $result);
+} else if (USER_ID !== false) {
+    $cond   = "WHERE `user_id` = ".USER_ID;
+    $result = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
+    $t->assign('username', $result[USER_NAME_COLUMN]);
 } else {
-    exit('ERROR: No username given per GET');
+    exit('ERROR: No username given per GET and not logged in.');
 }
+
+$cond   = "WHERE `outcome` > 0 AND `whiteUserID` = ".USER_ID." OR `blackUserID`";
+$cond  .= "= ".USER_ID;
+$rows   = array('id', 'tournamentID', 'outcome');
+$result = selectFromTable($rows, GAMES_TABLE, $cond, 10);
+$t->assign('games', $result);
+
 
 
 echo $t->output('profile.html');

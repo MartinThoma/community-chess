@@ -264,3 +264,11 @@ INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`) VALUES
 (1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
 (2, 'test', '098f6bcd4621d373cade4e832627b4f6');
 
+
+CREATE TABLE IF NOT EXISTS `chess_challenges` (
+  `challenge_id` int(11) NOT NULL AUTO_INCREMENT,
+  `challenge_name` varchar(255) NOT NULL,
+  `challenge_points` int(11) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  PRIMARY KEY (`challenge_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
