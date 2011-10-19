@@ -24,9 +24,10 @@ if (isset($_GET['user_id'])) {
     challengeUser($_GET['user_id'], $t);
 } else {
     // look at the fix if you change something here!
-    $rows = array('user_id', USER_NAME_COLUMN); 
-    $cond = "WHERE `user_id` != ".USER_ID;
-    $rows = selectFromTable($rows, USERS_TABLE, $cond, 10);
+    $rows  = array('user_id', USER_NAME_COLUMN); 
+    $cond  = "WHERE `user_id` != ".USER_ID;
+    $cond .= EXCLUDE_USERS_SQL;
+    $rows  = selectFromTable($rows, USERS_TABLE, $cond, 10);
     // Quick'n dirt fix: 
     // The template tries to acces $possibleOpponents[$i]['user_name']:
     $fixedRows = array();

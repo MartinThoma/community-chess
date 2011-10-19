@@ -1,15 +1,11 @@
 1.  Have a working phpBB3 installation
-2.  Copy all Community Chess files in a own folder.
-    It doesn't matter if its within phpBB3 or not, but for updating it should
-    have its own folder.
-3.  Follow the Community Chess installation instructions
-4.  Execute phpbb.sql
-5.  Copy phpbb3.php, login.wrapper.php and wrapper.inc.php to the main 
+2.  Follow the Community Chess installation instructions
+3.  Execute phpbb.sql
+4.  Copy phpbb3.php, login.wrapper.php and wrapper.inc.php to the main 
     Community Chess folder
     (login.wrapper.php and wrapper.inc.php should replace the old ones)
-6.  Adjust 'forum/' in phpbb3.php if neccessary, e.g. to '../phpBB3/'
-7.  Adjust constants in constants.inc.php:
+5.  Adjust 'forum/' in phpbb3.php if neccessary, e.g. to '../phpBB3/'
+6.  Adjust constants in constants.inc.php:
      * Change USERS_TABLE      to 'phpbb_users' (or whatever your phpbb prefix is)
      * Change USER_NAME_COLUMN to 'username'
-8.  Add the following line to challengePlayer.php in line 28 to exclude Bots:
-     *     $cond.= " AND `group_id` != 6";
+     * Change EXCLUDE_USERS_SQL to ' AND `group_id` != 6 AND '.USERS_TABLE.'.`user_id` != 1'

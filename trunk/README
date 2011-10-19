@@ -16,7 +16,14 @@ You have downloaded version 0.1.0. This is NOT a stable version.
 ################################################################################
   * Copy all files to a folder where PHP can be executed
   * Create the database with chess.sql
-  * Modify wrapper.inc.php and login.wrapper.php to your needs
+
+  * Modify wrapper.inc.php and login.wrapper.php to your needs. If you want to 
+    integrate it into phpBB, go to install/phpBB
+
+  * You can delete the following folders:
+     * install
+     * design
+     * documentation
 
 ################################################################################
 # Notice                                                                       #
