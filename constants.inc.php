@@ -45,5 +45,6 @@ define('HOST',                             'localhost');
 // This password protects the user of private information disclosure. I generated it 
 // with this script: 
 define('WECHALL_AUTH_KEY',                 'ym8HpwcGS7SgkxPkW1RHcv4HHkavpdFf');
+define('EXCLUDE_USERS_SQL',                '');
 
 ?>

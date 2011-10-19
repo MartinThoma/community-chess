@@ -71,6 +71,30 @@ function sqlEscape($sql)
 /** This function selects some rows from the specified table and returns
  *  the associative array
  *
+ * @param array  $query the sql query
+ * @param string $limit the limit, either 1 or *
+ *
+ * @return array
+ */
+function selectDirect($query, $limit='*')
+{
+    /* Begin of code which can be replaced by your code */
+    global $db;
+
+    $result = $db->sql_query($query);
+    if ($limit == 1) {
+        $row = $db->sql_fetchrow($result);
+    } else {
+        $row = $db->sql_fetchrowset($result);
+    }
+    $db->sql_freeresult($result);
+    return $row;
+    /* End of code which can be replaced by your code */
+}
+
+/** This function selects some rows from the specified table and returns
+ *  the associative array
+ *
  * @param array  $rows      all rows which should be selected. I never use "*"
  * @param string $table     the table from which the rows should be selected
  * @param string $condition the condition which rows should be selected

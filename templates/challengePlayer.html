@@ -124,7 +124,7 @@
         <noscript><p>You have selected an incorrect ID.</p></noscript>
     {end}
 
-    {if:isset(possibleOpponents)}
+    {if:isset(possibleOpponents) and count(possibleOpponents) > 0}
         <p>You can challenge these players:
         <ul>
         {foreach:possibleOpponents,i,playerArray}
