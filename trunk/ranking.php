@@ -32,7 +32,7 @@ $t->assign('maxPages', ceil($usercount/100));
 $t->assign('nrOfUsers', $usercount);
 
 // Get users with ranks
-$query  = 'SELECT  `rank` , '.USERS_TABLE.'.`user_id` ,  `pageRank` ,  '
+$query  = 'SELECT  `rank` , '.USERS_TABLE.'.`user_id` ,  `pageRank` ,  ';
 $query .= '`'.USER_NAME_COLUMN.'` AS ';
 $query .= '`user_name` ';
 $query .= 'FROM  `'.USER_INFO_TABLE.'` AS b,  `'.USERS_TABLE.'`';

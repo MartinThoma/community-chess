@@ -3,4 +3,4 @@
 
 from PythonClient import *
 
-client = ChessClient('test', 'test')
+client = ChessClient('test', 'testtest')

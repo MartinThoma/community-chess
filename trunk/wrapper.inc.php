@@ -228,7 +228,7 @@ function deleteFromTable($table, $id)
  */
 function login($user_name, $user_password, $redirect = true)
 {
-    $condition  = 'WHERE user_name="'.sqlEscape($user_name);
+    $condition  = 'WHERE '.USER_NAME_COLUMN.'="'.sqlEscape($user_name);
     $condition .= '" AND user_password="'.md5($user_password).'"';
     $row        = selectFromTable(array('user_id'), USERS_TABLE, $condition);
     if ($row !== false) {
