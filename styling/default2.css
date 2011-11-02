@@ -15,10 +15,14 @@ body {
 }
 .whiteField {
     background-color: #ffce9e;
+	width: 50px;
+	height: 50px;
 }
 
 .blackField {
     background-color: #d18b47;
+	width: 50px;
+	height: 50px;
 }
 
 .stressed {

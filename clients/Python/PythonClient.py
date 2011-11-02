@@ -2,17 +2,23 @@
 # -*- coding: utf-8 -*-
 
 from ChessPieces import *
-import urllib, re, time
+import urllib, re, time, sys
 
 class ChessClient(object):
     """ This is a Community Chess Client Class """
 
     def __init__(self, username, password):
         """ Constructor """
-        self.baseUrl = "http://localhost/community-chess/xhrframework.php"
+        self.baseUrl = "http://community-chess.com/xhrframework.php"
         self.username = username
         self.password = password
-        self.cookie = 'PHPSESSID=' + self.login()
+
+        read = 'PHPSESSID=' + self.login()
+        if "ERROR" in read:
+            print read
+            sys.exit()
+        self.cookie = read
+
         self.currentGames = self.getCurrentGames()
         if len(self.currentGames) == 0:
             idList = self.getPlayerIDs()
@@ -66,6 +72,9 @@ class ChessClient(object):
     def getCurrentGames(self):
         """ Get a list with all current Game-IDs. """
         content = self.sendRequestWithCookie('?action=listCurrentGames')
+        if "ERROR:" in content:
+            print content
+            sys.exit()
         liste   = self.parseList(content)
         return liste
 

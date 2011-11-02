@@ -201,4 +201,27 @@ function deleteFromTable($table, $id)
     /* End of code which can be replaced by your code */
 }
 
+/** This function logs the user in. The session variables get stored.
+ * 
+ * @param string  $user_name     the username
+ * @param string  $user_password the plaintext password
+ * @param boolean $redirect      should the user be redirected to index.php?
+ *
+ * @return string session_id()
+ */
+function login($user_name, $user_password, $redirect = true)
+{
+    // TODO:Take a look at login.wrapper.php
+    $condition  = 'WHERE '.USER_NAME_COLUMN.'="'.sqlEscape($user_name);
+    $condition .= '" AND user_password="'.md5($user_password).'"';
+    $row        = selectFromTable(array('user_id'), USERS_TABLE, $condition);
+    if ($row !== false) {
+        $_SESSION['user_id'] = $row['user_id'];
+        if ($redirect) {
+            header('Location: index.php');
+        }
+    }
+    return session_id();
+}
+
 ?>
