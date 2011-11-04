@@ -5,11 +5,12 @@ import java.net.URL;
 import java.net.URLConnection;
 
 public class ChessClient {
-    private static final String BASE_URL = "http://localhost/community-chess/xhrframework.php";
+    private static final String BASE_URL = "http://community-chess.com/xhrframework.php";
     private static final String USER_NAME = "abc";
     private static final String USER_PASSWORD = "abc";
     private static String my_cookie = "";
     private static String gameID = "1";
+    private static ChessPiece[] board = new ChessPiece[64];
 
     /**
      * Reads a web page into a StringBuilder object
@@ -50,7 +51,27 @@ public class ChessClient {
     public static String getPastGamesIdList() {
         return getWebSite("?action=listPastGames");
     }
+    public static void printBoard() {
+        //System.out.println(board);
+        
+        for(ChessPiece piece: board) {
+            System.out.println(piece.name);
+        }
+    }
+
     /* Setter *****************************************************************/
+    public static void setBoard() {
+        String currentBoard = getBoard();
+        for (int i=0; i < 64; i++) {
+            if ( currentBoard.charAt(i) == 'P')  {
+                board[i] = new Pawn();
+                //board[i].name = "abc";
+            } else {
+                board[i] = new ChessPiece();
+            }
+            //System.out.println(currentBoard.charAt(i));
+        }
+    }
     /* Actions ****************************************************************/
     public static boolean login() {
         String returnVal = getWebSite("?action=login&username=" + USER_NAME + "&password=" + USER_PASSWORD);
@@ -73,12 +94,13 @@ public class ChessClient {
     /* Main *******************************************************************/
     public static void main(String[] args) {
         if ( login() ) {
-            System.out.println(getBoard());
-            System.out.println(getCurrentGamesIdList());
-            System.out.println(getPastGamesIdList());
-            challengePlayer("1");
+            setBoard();
+            //System.out.println(getCurrentGamesIdList());
+            //System.out.println(getPastGamesIdList());
+            //challengePlayer("1");
             submitMove("1214");
-            System.out.println(getBoard());
+            //System.out.println(getBoard());
+            printBoard();
         }
     }
 }
