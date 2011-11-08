@@ -9,11 +9,19 @@
 
 = 2. Interfaces =
   * ~~Create an interface which allows players to specify the software they use.~~ (done: 2011-08-11)
-  * Add an interface for starting turnaments
+  * ~~Add an interface for starting turnaments~~ (done some time ago)
 
 = 3. Frameworks =
-  * Make it easy to use it with [http://trac.gwf3.gizmore.org/browser GWF 3] / [http://www.wechall.net/wechall.zip WeChall]
-  * phpBB
+I will not support Frameworks as I thought an own challenge site would be nice.
+  * ~~Make it easy to use it with [http://trac.gwf3.gizmore.org/browser GWF 3] / [http://www.wechall.net/wechall.zip WeChall] ~~
+  * ~~phpBB~~
+
+= 3.1 Database =
+I am currently thinking about using Adodb:
+  * [http://phplens.com/lens/lensforum/topics.php?LeNs#LensBM_forumtpc Forum]
+  * [http://adodb.sourceforge.net/ Website]
+  * [http://en.wikipedia.org/wiki/ADOdb Wikipedia]
+  * Current version: 5.14
 
 = 4. Cleanup =
 At the moment, the code is very ugly. I know it. But it was more important to me to get a working piece of fast code than writing it beautiful. 
