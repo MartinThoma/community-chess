@@ -1,11 +1,9 @@
-import java.util.ArrayList;
-import java.util.Vector;
+/** The Pawn class represents the pawn chess piece. */
 
 public class Pawn extends ChessPiece {
-    int normalMoves[][] = {{0,1}, {0,-1}};
-    String name = "Pawn";
-
-    public Pawn () {
+    /** Constructor. */
+    public Pawn() {
+    int[][] normalMoves = {{0, 1}, {0, -1}};
         this.name = "Pawn";
         this.normalMove = normalMove;
     }

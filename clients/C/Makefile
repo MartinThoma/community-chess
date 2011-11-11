@@ -9,7 +9,7 @@ $(TARGET): $(OBJ)
 	$(CC) -lcurl -o $@ $(OBJ)
 
 clean:
-	rm -rf  $(TARGET) *.o returnedval.txt
+	rm -rf  $(TARGET) *.o
 
 distclean: clean
 	rm -rf $(TARGET)
