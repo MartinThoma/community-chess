@@ -21,8 +21,8 @@ if (isset($_GET['username'])) {
     $t->assign('username', $_GET['username']);
 } else if (USER_ID !== false) {
     $cond   = "WHERE `user_id` = ".USER_ID;
-    $result = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
-    $t->assign('username', $result[USER_NAME_COLUMN]);
+    $result = selectFromTable(array('user_name'), USERS_TABLE, $cond);
+    $t->assign('username', $result['user_name']);
 } else {
     exit('ERROR: No username given per GET and not logged in.');
 }

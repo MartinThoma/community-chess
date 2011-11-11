@@ -24,7 +24,7 @@ if (isset($_GET['user_id'])) {
     challengeUser($_GET['user_id'], $t);
 } else {
     // look at the fix if you change something here!
-    $rows  = array('user_id', USER_NAME_COLUMN); 
+    $rows  = array('user_id', 'user_name'); 
     $cond  = "WHERE `user_id` != ".USER_ID;
     $cond .= EXCLUDE_USERS_SQL;
     $rows  = selectFromTable($rows, USERS_TABLE, $cond, 10);
@@ -33,7 +33,7 @@ if (isset($_GET['user_id'])) {
     $fixedRows = array();
     foreach ($rows as $row) {
         $fixedRows[] = array('user_id'=>$row['user_id'], 
-                           'user_name'=>$row[USER_NAME_COLUMN]);
+                           'user_name'=>$row['user_name']);
     }
 
     $t->assign('possibleOpponents', $fixedRows);

@@ -31,12 +31,7 @@ define('SOFTWARE_DEVELOPER_TABLE',         $table_prefix.'softwareDeveloper');
 define('SOFTWARE_LANGUAGES_TABLE',         $table_prefix.'softwareLanguages');
 define('LANGUAGES_TABLE',                  $table_prefix.'languages');
 
-
-
-/***********************************************************************************/
-/* Table Column names                                                              */
-/***********************************************************************************/
-define('USER_NAME_COLUMN',                 'user_name');
+define('CHALLENGES_TABLE',                 $table_prefix.'challenges');
 
 /***********************************************************************************/
 /* Others                                                                          */

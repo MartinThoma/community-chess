@@ -51,10 +51,12 @@ try {
         exit("ERROR: You've aborted the OpenID login process.");
     } else {
         if ($openid->validate()) {
-            $rows       = array('user_id');
-            $escapedURL = sqlEscape($openid->identity);
-            $cond       = 'WHERE `OpenID` = "'.$escapedURL.'"';
-            $result     = selectFromTable($rows, USERS_OPENID, $cond);
+            $stmt = $conn->prepare("SELECT user_id FROM `".USERS_OPENID."` ".
+                                   "WHERE `OpenID` = ':url' LIMIT 1");
+            $stmt->bindValue(':url', $openid->identity, PDO::PARAM_STR);
+            $stmt->execute();
+
+
             // Is the OpenID already in the database?
             if ($result == false) {
                 $openIDurl = $openid->identity;

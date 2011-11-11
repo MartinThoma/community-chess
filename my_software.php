@@ -52,7 +52,11 @@ if (isset($_GET['deleteLang'])) {
 
     $cond   = "WHERE `softwareID`=$softwareID AND `languageID`=$langID";
     $result = selectFromTable(array('id'), SOFTWARE_LANGUAGES_TABLE, $cond);
-    deleteFromTable(SOFTWARE_LANGUAGES_TABLE, $result['id']);
+
+    $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_LANGUAGES_TABLE."` WHERE `id` = :id LIMIT 1");
+    $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
+    $stmt->execute();
+
     $keyValue = array("used" => "`used`-1");
     updateDataInTable(LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
 }
@@ -67,7 +71,7 @@ if (isset($_GET['addTeammate'])) {
     }
 
     $user_name = sqlEscape($_GET['addTeammate']);
-    $cond      = "WHERE `".USER_NAME_COLUMN."`='$user_name'";
+    $cond      = "WHERE `user_name`='$user_name'";
     $result    = selectFromTable(array('user_id'), USERS_TABLE, $cond);
     if ($result !== false) {
         $task = sqlEscape($_GET['task']);
@@ -96,7 +100,11 @@ if (isset($_GET['deleteTeammate'])) {
     $cond   = "WHERE `user_id` = $teammateID AND `softwareID` = $softwareID ";
     $cond  .= "AND `task` != 'Admin'";
     $result = selectFromTable(array('id'), SOFTWARE_DEVELOPER_TABLE, $cond);
-    deleteFromTable(SOFTWARE_DEVELOPER_TABLE, $result['id']);
+
+    $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_DEVELOPER_TABLE."` WHERE `id` = :id LIMIT 1");
+    $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
+    $stmt->execute();
+
 }
 
 if (isset($_GET['setCurrent'])) {
@@ -160,12 +168,12 @@ if (count($softwareIds) > 0) {
         $players = array();
         foreach ($userIDs as $uID) {
             $cond   = 'WHERE `user_id`='.$uID['user_id'];
-            $player = selectFromTable(array('user_id', USER_NAME_COLUMN), 
+            $player = selectFromTable(array('user_id', 'user_name'), 
                                          USERS_TABLE, $cond);
             // Quick'n dirt fix: 
             // The template tries to acces $possibleOpponents[$i]['user_name']:
             $fixedPlayer = array('user_id'=>$player['user_id'], 
-                                   'user_name'=>$player[USER_NAME_COLUMN]);
+                                   'user_name'=>$player['user_name']);
             $players[]   = array_merge($fixedPlayer, array('task'=>$uID['task']));
         }
         // Languages
