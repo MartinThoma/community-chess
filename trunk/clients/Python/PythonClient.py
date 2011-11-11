@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from ChessPieces import *
-import urllib, re, time, sys
+import urllib, time, sys
 
 class ChessClient(object):
     """ This is a Community Chess Client Class """
@@ -99,7 +99,7 @@ class ChessClient(object):
         url = self.baseUrl + '?gameID=' + self.currentGameID + '&action=getBoard'
         u = urllib.URLopener();u.addheader('Cookie',self.cookie);x = u.open(url)
         content = x.read()
-        board =[[None for j in xrange(0,8)] for i in xrange(0,8)]
+        board = [[None for j in xrange(0,8)] for i in xrange(0,8)]
         for y in xrange(0, 8):
             for x in xrange(0, 8):
                 pos = x + y*8
@@ -180,7 +180,7 @@ class ChessClient(object):
 
     def gameLoop(self):
         while True:
-            while self.myTurn == False:
+            while not self.myTurn:
                 print("Not your turn. Wait a second")
                 time.sleep(1)
                 self.colorsTurn = self.whoseTurnIsIt()
