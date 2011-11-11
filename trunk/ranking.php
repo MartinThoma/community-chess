@@ -33,14 +33,15 @@ $t->assign('nrOfUsers', $usercount);
 
 // Get users with ranks
 $query  = 'SELECT  `rank` , '.USERS_TABLE.'.`user_id` ,  `pageRank` ,  ';
-$query .= '`'.USER_NAME_COLUMN.'` AS ';
 $query .= '`user_name` ';
 $query .= 'FROM  `'.USER_INFO_TABLE.'` AS b,  `'.USERS_TABLE.'`';
 $query .= 'WHERE b.`user_id` = '.USERS_TABLE.'.`user_id` ';
 $query .= EXCLUDE_USERS_SQL;
 $query .= ' ORDER BY  `rank` ';
 $query .= 'LIMIT 100';
-$result = selectDirect($query);
+$sth = $conn->query($query);
+$result = $sth->fetchAll(PDO::FETCH_ASSOC);
+
 $t->assign('ranking', $result);
 
 echo $t->output('ranking.html');

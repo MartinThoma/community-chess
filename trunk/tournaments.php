@@ -50,7 +50,7 @@ if (isset($_GET['challengeUserID'])) {
 
     $user_id        = (int) $_GET['challengeUserID'];
     $cond           = 'WHERE `user_id` = '.$user_id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array(USER_NAME_COLUMN), USERS_TABLE, $cond);
+    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
     $challengedUser = $row['user_name'];
     if ($row !== false) {
         $cond  = "WHERE ((`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";
@@ -139,7 +139,11 @@ if (isset($_GET['deleteParticipation'])) {
     if (strtotime($result['closingDate']) > time()) {
         $cond   = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
         $result = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
-        deleteFromTable(TOURNAMENT_PLAYERS_TABLE, $result['id']);
+
+        $stmt = $conn->prepare("DELETE FROM `".TOURNAMENT_PLAYERS_TABLE."` WHERE `id` = :id LIMIT 1");
+        $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
+        $stmt->execute();
+
     } else {
         $t->assign('cantExitStartedAlready', true);
     }

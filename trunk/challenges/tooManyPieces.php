@@ -12,8 +12,6 @@
  * @link     http://code.google.com/p/community-chess/
  */
 
-define('PHPBB_ROOT_PATH', '../forum/');
-
 require_once '../wrapper.inc.php';
 require_once '../additional.inc.php';
 require_once '../i18n.inc.php';
