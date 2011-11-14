@@ -1,10 +1,12 @@
 #summary Which errors might occur while using xhrframework.php?
 
-|| *Error*                                  ||
-|| ERROR:You have to provide a valid gameID ||
-|| ERROR: Your from-coordinates were wrong. ||
-|| ERROR: Your to-coordinates were wrong.   ||
-|| ERROR: You have to move.                 ||
+|| *Error*                                    ||
+|| ERROR: You are not logged in.              ||
+|| ERROR: You have to provide a valid gameID. ||
+|| ERROR:You have to provide a valid gameID   ||
+|| ERROR: Your from-coordinates were wrong.   ||
+|| ERROR: Your to-coordinates were wrong.     ||
+|| ERROR: You have to move.                   ||
 || ERROR: You've already moved your King or your rook ||
 || ERROR: $piece is between your King and your rook. Castling is not possible. ||
 || ERROR: You may only use castling if you are not in check or moving through check. ||
