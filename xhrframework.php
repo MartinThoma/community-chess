@@ -25,7 +25,7 @@ if(!isset($_SESSION)) session_start();
 require_once 'wrapper.inc.php';
 require_once 'chess.inc.php';
 require_once 'additional.inc.php';
-$t = new vemplator(); //required for some challengeUser and ChessMain
+$t = new vemplator(); //required for challengeUser() and ChessMain()
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'login') {
