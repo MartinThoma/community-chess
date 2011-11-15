@@ -57,14 +57,12 @@ if (isset($_GET['deleteLang'])) {
     $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
     $stmt->execute();*/
 
-$stmt = $conn->prepare("DELETE FROM `:table` WHERE `id` = :id LIMIT 1");
+    $stmt = $conn->prepare("DELETE FROM `:table` WHERE `id` = :id LIMIT 1");
 
-$stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
-$stmt->bindValue(':table', SOFTWARE_LANGUAGES_TABLE);
-$stmt->execute();
-print_r($conn->errorInfo());
-var_dump($stmt);
-$stmt->debugDumpParams();
+    $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
+    //$stmt->bindValue(':table', SOFTWARE_LANGUAGES_TABLE);
+    $stmt->execute();
+    $stmt->debugDumpParams();
 
     $keyValue = array("used" => "`used`-1");
     updateDataInTable(LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
