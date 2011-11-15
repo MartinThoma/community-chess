@@ -53,16 +53,12 @@ if (isset($_GET['deleteLang'])) {
     $cond   = "WHERE `softwareID`=$softwareID AND `languageID`=$langID";
     $result = selectFromTable(array('id'), SOFTWARE_LANGUAGES_TABLE, $cond);
 
-    /*$stmt = $conn->prepare("DELETE FROM `".SOFTWARE_LANGUAGES_TABLE."` WHERE `id` = :id LIMIT 1");
-    $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
-    $stmt->execute();*/
-
-    $stmt = $conn->prepare("DELETE FROM `:table` WHERE `id` = :id LIMIT 1");
+    $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_LANGUAGES_TABLE."` ".
+                           "WHERE `id` = :id LIMIT 1");
 
     $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
     //$stmt->bindValue(':table', SOFTWARE_LANGUAGES_TABLE);
     $stmt->execute();
-    $stmt->debugDumpParams();
 
     $keyValue = array("used" => "`used`-1");
     updateDataInTable(LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
