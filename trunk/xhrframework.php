@@ -25,24 +25,25 @@ if(!isset($_SESSION)) session_start();
 require_once 'wrapper.inc.php';
 require_once 'chess.inc.php';
 require_once 'additional.inc.php';
-$t = new vemplator(); //required for some functions
+$t = new vemplator(); //required for some challengeUser and ChessMain
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'login') {
         exit(login($_GET['username'], $_GET['password'], false));
     }
 }
-if (USER_ID === false) exit("ERROR:You are not logged in.");
+if (USER_ID === false) exit("ERROR: You are not logged in.");
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'getLastMoveTime') {
         if (isset($_GET['gameID'])) {
-            $gameID = (int) $_GET['gameID'];
-            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
-            $cond  .= " OR `blackUserID` = ".USER_ID.")";
-            $result = selectFromTable(array('lastMove'), 
-                            GAMES_TABLE, 
-                            $cond, 1);
+            $stmt = $conn->prepare("SELECT `lastMove` FROM ".GAMES_TABLE.
+                            " WHERE `id`=:gameID AND (`whiteUserID` = :uid".
+                            " OR `blackUserID` = :uid) LIMIT 1");
+            $stmt->bindValue(':gameID', $_GET['gameID'], PDO::PARAM_INT);
+            $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
             exit($result['lastMove']);
         } else {
             exit("ERROR:You have to provide a valid gameID");
@@ -56,65 +57,65 @@ if (isset($_GET['action'])) {
         }
     } else if ($_GET['action'] == 'whoseTurnIsIt') {
         if (isset($_GET['gameID'])) {
-            $gameID = (int) $_GET['gameID'];
-            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
-            $cond  .= " OR `blackUserID` = ".USER_ID.")";
-            $result = selectFromTable(array('whoseTurnIsIt'), 
-                            GAMES_TABLE, 
-                            $cond, 1);
+            $stmt = $conn->prepare("SELECT `whoseTurnIsIt` FROM ".GAMES_TABLE.
+                            " WHERE `id`=:gameID AND (`whiteUserID` = :uid".
+                            " OR `blackUserID` = :uid) LIMIT 1");
+            $stmt->bindValue(':gameID', $_GET['gameID'], PDO::PARAM_INT);
+            $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $search  = array(0, 1);
             $replace = array('white', 'black');
             exit(str_replace($search, $replace, $result['whoseTurnIsIt']));
         } else {
-            exit("ERROR:You have to provide a valid gameID");
+            exit("ERROR: You have to provide a valid gameID.");
         }
     } else if ($_GET['action'] == 'getPlayerIDs') {
-        $cond = "WHERE `user_id` != ".USER_ID;
-        $rows = selectFromTable(array('user_id'), USERS_TABLE, $cond, 100);
-        $IDs  = array();
-        foreach ($rows as $row) {
-            $IDs[] = $row['user_id'];
-        }
-        exit(implode('::', $IDs));
+        $stmt = $conn->prepare("SELECT `user_id` FROM ".USERS_TABLE.
+                        " WHERE `user_id` != :uid LIMIT 100");
+        $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+        $stmt->execute();
+
+        exit(implode('::', $stmt->fetchAll(PDO::FETCH_COLUMN)));
     } else if ($_GET['action'] == 'listCurrentGames') {
-        $con  = "WHERE (`whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID.") ";
-        $con .= " AND `outcome` = -1";
-        $rows = selectFromTable(array('id'), GAMES_TABLE, $con, 100);
-        $IDs  = array();
-        foreach ($rows as $row) {
-            $IDs[] = $row['id'];
-        }
-        exit(implode('::', $IDs));
+        $stmt = $conn->prepare("SELECT `id` FROM ".GAMES_TABLE." ".
+         "WHERE (`whiteUserID`=:uid OR `blackUserID`=:uid) AND `outcome` = -1");
+        $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+        $stmt->execute();
+
+        exit(implode('::', $stmt->fetchAll(PDO::FETCH_COLUMN)));
     } else if ($_GET['action'] == 'listPastGames') {
-        $con  = "WHERE `whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID;
-        $con .= " AND `outcome` > -1";
-        $rows = selectFromTable(array('id'), GAMES_TABLE, $con, 100);
-        $IDs  = array();
-        foreach ($rows as $row) {
-            $IDs[] = $row['id'];
-        }
-        exit(implode('::', $IDs));
+        $stmt = $conn->prepare("SELECT `id` FROM ".GAMES_TABLE.
+                " WHERE (`whiteUserID`=:uid OR `blackUserID`=:uid)".
+                " AND `outcome` > -1 LIMIT 100");
+        $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+        $stmt->execute();
+
+        exit(implode('::', $stmt->fetchAll(PDO::FETCH_COLUMN)));
     } else if ($_GET['action'] == 'getBoard') {
         if (isset($_GET['gameID'])) {
-            $gameID = (int) $_GET['gameID'];
-            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
-            $cond  .= " OR `blackUserID` = ".USER_ID.")";
-            $result = selectFromTable(array('currentBoard'), 
-                            GAMES_TABLE, 
-                            $cond, 1);
+            $stmt = $conn->prepare("SELECT `currentBoard` FROM ".GAMES_TABLE.
+                " WHERE `id`=:gameID AND (`whiteUserID` = :uid".
+                " OR `blackUserID` = :uid)");
+            $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(':gameID', $_GET['gameID'], PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
             exit($result['currentBoard']);
         } else {
-            exit("ERROR:You have to provide a valid gameID");
+            exit("ERROR: You have to provide a valid gameID.");
         }
     } else if ($_GET['action'] == 'whoAmI') {
         if (isset($_GET['gameID'])) {
-            $gameID = (int) $_GET['gameID'];
-            $cond   = "WHERE `id`=$gameID AND (`whiteUserID` = ".USER_ID;
-            $cond  .= " OR `blackUserID` = ".USER_ID.")";
-            $result = selectFromTable(array('whiteUserID', 'blackUserID'), 
-                            GAMES_TABLE, 
-                            $cond, 1);
+            $stmt = $conn->prepare("SELECT `whiteUserID`, `blackUserID` FROM ".
+                GAMES_TABLE." WHERE `id`=:gameID AND (`whiteUserID` = :uid".
+                " OR `blackUserID` = :uid) LIMIT 1");
+            $stmt->bindValue(':uid', USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(':gameID', $_GET['gameID'], PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
             if ($result['whiteUserID'] == USER_ID) {
                 $whoAmI = 'white';
             } else if ($result['blackUserID'] == USER_ID) {
@@ -124,7 +125,7 @@ if (isset($_GET['action'])) {
             }
             exit($whoAmI);
         } else {
-            exit("ERROR:You have to provide a valid gameID");
+            exit("ERROR: You have to provide a valid gameID.");
         }
     }
 }
