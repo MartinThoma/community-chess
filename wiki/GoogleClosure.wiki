@@ -29,6 +29,9 @@ git clone https://code.google.com/p/closure-stylesheets/
 cd closure-stylesheets
 ant
 ant test
+// Test closure stylesheets:
+cd build
+java -jar closure-stylesheets.jar --help
 }}}
 
 = Small script size =
@@ -53,3 +56,8 @@ python ../closure-library/closure/bin/calcdeps.py \
 }}}
 
 You can specify any language you want. See [http://code.google.com/p/closure-library/source/browse/trunk/closure/goog/base.js?r=2 base.js] (goog.LOCALE) for more information.
+
+Compile CSS while beeing in the project:
+{{{
+java -jar /var/www/closure/closure-stylesheets/build/closure-stylesheets.jar --output-file styling/default-compiled.css styling/default.gss
+}}}
