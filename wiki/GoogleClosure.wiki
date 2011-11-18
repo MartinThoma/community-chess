@@ -61,3 +61,6 @@ Compile CSS while beeing in the project:
 {{{
 java -jar /var/www/closure/closure-stylesheets/build/closure-stylesheets.jar --output-file styling/default-compiled.css styling/default.gss
 }}}
+
+= More Information =
+  * [http://code.google.com/p/closure-stylesheets/ closure stylesheets]
