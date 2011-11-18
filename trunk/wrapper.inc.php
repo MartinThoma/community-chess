@@ -30,7 +30,10 @@ $dsn = 'mysql:dbname='.DB_DATABASE.';charset=UTF-8;host='.DB_HOST;
 try {
     $conn = new PDO($dsn, DB_USER, DB_PASS);
 } catch (PDOException $e) {
-    echo 'Connection failed: ' . $e->getMessage();
+    echo 'Could not connect to the database. ';
+    echo 'Did you adjust the login credentials?<br/><br/>';
+    echo 'Error-Message: <br/>'. $e->getMessage();
+    exit();
 }
 
 define("USER_ID", getUserID());

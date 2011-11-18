@@ -1,0 +1,123 @@
+@def BG1_COLOR              #ffd273;
+@def BG2_COLOR              #C3FDB8;
+@def COLOR3                 #ffce9e;
+@def COLOR4                 #d18b47;
+@def COLOR5                 #ababab;
+@def COLOR6                 #a67000;
+@def COLOR7                 #FFC140;
+@def COLOR8                 #efefef;
+@def COLOR9                 #ffffee;
+@def COLOR10                #ffeeff;
+@def COLOR11                #D8D6FF;
+@def COLOR12                #BCD2E6;
+@def COLOR_STRESSED         red;
+@def CHESSFIELDSIZE         50px;
+
+body {
+    margin:0;
+    padding:0;
+}
+#content {
+    background-color: BG1_COLOR;
+    padding         : 21px;
+    margin-left     : 180px;
+}
+#tabs1 {
+    background-color: #FFF !important;
+}
+.current, .highlightField {
+    background-color: BG2_COLOR;
+}
+.whiteField {
+    background-color: COLOR3;
+	width: 50px;
+	height: 50px;
+}
+
+.blackField {
+    background-color: COLOR4;
+	width: CHESSFIELDSIZE;
+	height: CHESSFIELDSIZE;
+}
+
+.stressed {
+    color: COLOR_STRESSED;
+    font-weight:bold;
+    font-size:+4;
+}
+
+.odd {
+    background-color: COLOR5;
+}
+/***********************************************************************************/
+/* Navigation                                                                      */
+/***********************************************************************************/
+#leftBar {
+    width: 160px;
+    float: left;
+}
+
+#leftBar ul {
+    border: 2px solid COLOR6;
+    list-style: none;
+    margin:0;
+    margin-bottom: 2px;
+    padding:0;
+    background-color: #ffd273;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-left: 2px;
+}
+
+#leftBar ul li {
+    height: 20px;
+}
+
+#leftBar ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #a67000;
+    display: block;
+}
+
+#activetab {
+    background-color: COLOR7;
+}
+
+#leftBar ul li:hover {
+    background-color: COLOR7;
+}
+
+/***********************************************************************************/
+/* HTML-Tags                                                                       */
+/***********************************************************************************/
+html {
+    background-color: COLOR7;
+}
+
+fieldset {
+    background-color: COLOR8;
+}
+
+table {
+    background-color: COLOR9;
+}
+
+th {
+    background-color: COLOR10;
+}
+
+label {
+    width           : 150px;
+    display         : inline-block;
+}
+
+legend {
+    background-color: COLOR11;
+    padding         : 3px;
+    border          : 1px solid COLOR12;
+}
+
+input, textarea, select {
+    border          : 1px solid COLOR12;
+}
