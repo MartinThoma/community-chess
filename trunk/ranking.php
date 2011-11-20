@@ -35,11 +35,11 @@ $t->assign('nrOfUsers', $usercount);
 $query  = 'SELECT  `rank` , '.USERS_TABLE.'.`user_id` ,  `pageRank` ,  ';
 $query .= '`user_name` ';
 $query .= 'FROM  `'.USER_INFO_TABLE.'` AS b,  `'.USERS_TABLE.'`';
-$query .= 'WHERE b.`user_id` = '.USERS_TABLE.'.`user_id` ';
+$query .= 'WHERE b.`user_id` = '.USERS_TABLE.'.`user_id` AND b.`rank` > 0 ';
 $query .= EXCLUDE_USERS_SQL;
 $query .= ' ORDER BY  `rank` ';
 $query .= 'LIMIT 100';
-$sth = $conn->query($query);
+$sth    = $conn->query($query);
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);
 
 $t->assign('ranking', $result);

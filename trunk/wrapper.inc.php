@@ -58,7 +58,7 @@ function getUserID()
     $row       = selectFromTable(array('user_id'), USERS_TABLE, $condition);
 
     if ($row['user_id'] === $_SESSION['user_id'] AND $row['user_id'] > 0) {
-        return $row['user_id'];
+        return (int) $row['user_id'];
     } else {
         return false;
     }
@@ -67,22 +67,22 @@ function getUserID()
 
 /** Escape string used in sql query
  *
- * @param string $sql the string which should be escaped
+ * @param string $string the sql string which should be escaped
  *
  * @return string
  */
 function sqlEscape($string)
 {
     /* Begin of code which can be replaced by your code */
-    // Source: http://www.php.net/manual/de/function.mysql-real-escape-string.php#101248
+    // Source: 
+    // http://www.php.net/manual/de/function.mysql-real-escape-string.php#101248
     if(is_array($string)) 
         return array_map(__METHOD__, $string); 
 
-    if(!empty($string) && is_string($string)) { 
-        return str_replace(
-            array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), 
-            array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), 
-            $string); 
+    if (!empty($string) && is_string($string)) {
+        return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), 
+                           array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), 
+                           $string); 
     } 
 
     return $string; 
@@ -124,7 +124,7 @@ function selectFromTable($rows, $table, $condition = '', $limit = 1)
 
 /** This function returns the name of the row which is id of table
  *
- * @param string  $table
+ * @param string $table the name of the Database table
  *
  * @return string id row
  */
@@ -176,11 +176,12 @@ function insertIntoTable($keyValuePairs, $table)
     $query .= "VALUES (";
     $query .= "'".implode("','", array_values($keyValuePairs))."'";
     $query .= ");";
-    $sth = $conn->query($query);
+    $sth    = $conn->query($query);
 
     $condition = '';
+
     $i = 0;
-    foreach($keyValuePairs as $key=>$val) {
+    foreach ($keyValuePairs as $key=>$val) {
         if ($i > 0) {
             $condition .= ' AND ';
         } else {
@@ -190,8 +191,8 @@ function insertIntoTable($keyValuePairs, $table)
     }
 
     $query = "SELECT ".getIdRow($table)." FROM $table WHERE $condition";
-    $sth = $conn->query($query);
-    $row = $sth->fetch(PDO::FETCH_ASSOC);
+    $sth   = $conn->query($query);
+    $row   = $sth->fetch(PDO::FETCH_ASSOC);
 
     return $row[getIdRow($table)];
     /* End of code which can be replaced by your code */
