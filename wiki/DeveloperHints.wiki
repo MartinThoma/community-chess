@@ -21,3 +21,12 @@ This will come soon. You might want to take a look at:
   * [http://en.wikipedia.org/wiki/GNU_gettext GNU gettext]
 
 The translations are located at community-chess/i18n.
+
+= PDO =
+You can debug PDO problems with:
+
+{{{
+print_r($conn->errorInfo());
+var_dump($stmt);
+$stmt->debugDumpParams();
+}}}
