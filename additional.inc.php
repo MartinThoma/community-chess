@@ -20,8 +20,13 @@
  */
 function getUserSoftwareID($user_id)
 {
-    $c   = "WHERE `user_id`='$user_id'";
-    $row = selectFromTable(array('software_id'), USER_INFO_TABLE, $c);
+    global $conn;
+    $stmt = $conn->prepare('SELECT `software_id` FROM '.USER_INFO_TABLE.' '.
+                           'WHERE `user_id`=:uid LIMIT 1');
+    $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
     return $row['software_id'];
 }
 
@@ -29,17 +34,19 @@ function getUserSoftwareID($user_id)
  *
  * @param int $user_id the id of the user who gets the table check
  *
- * @return int always 0
+ * @return void
  */
 function checkSoftwareTableEntry($user_id)
 {
-    $cond = 'WHERE `user_id` = '.$user_id;
-    $row  = selectFromTable(array('software_id'), USER_INFO_TABLE, $cond);
+    global $conn;
+    $row = getUserSoftwareID($user_id);
+
     if ($row == false) {
-        $keyValuePairs                = array();
-        $keyValuePairs['user_id']     = $user_id;
-        $keyValuePairs['software_id'] = 0;
-        insertIntoTable($keyValuePairs, USER_INFO_TABLE);
+        $stmt = $conn->prepare('INSERT INTO `'.USER_INFO_TABLE.'` '.
+            '(`user_id`, `software_id`) VALUES (:uid, :software_id)');
+        $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
+        $stmt->bindValue(":software_id", 0, PDO::PARAM_INT);
+        $stmt->execute();
     }
 }
 
@@ -52,14 +59,26 @@ function checkSoftwareTableEntry($user_id)
  */
 function challengeUser($user_id, $t)
 {
-    $id             = (int) $user_id;
-    $cond           = 'WHERE `user_id` = '.$id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
+    $user_id = (int) $user_id;
+
+    global $conn;
+    $stmt = $conn->prepare('SELECT `user_name` FROM '.USERS_TABLE.' '.
+                           'WHERE `user_id` = :uid '.
+                            'AND `user_id` != '.USER_ID.' LIMIT 1');
+    $stmt->bindValue(":uid", (int) $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
     $challengedUser = $row['user_name'];
     if ($row !== false and $row !== null) {
-        $cond  = 'WHERE `whiteUserID` = '.USER_ID." AND `blackUserID`=$id ";
-        $cond .= 'AND `outcome` = -1';
-        $row   = selectFromTable(array('id'), GAMES_TABLE, $cond);
+        $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' '.
+                               'WHERE `whiteUserID` = '.USER_ID.' '.
+                               'AND `blackUserID` :uid '.
+                               'AND `outcome` = -1 LIMIT 1');
+        $stmt->bindValue(":uid", (int) $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if ($row !== false and $row !== null) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
@@ -68,11 +87,16 @@ function challengeUser($user_id, $t)
         } else {
             // Maybe one of the rows doesn't exist?
             checkSoftwareTableEntry(USER_ID);
-            checkSoftwareTableEntry($id);
-
-            $cond   = "WHERE `user_id` = ".USER_ID." OR `user_id`=$id";      
-            $rows   = array('user_id', 'software_id');  
-            $result = selectFromTable($rows, USER_INFO_TABLE, $cond, 2);
+            checkSoftwareTableEntry($user_id);
+  
+            $stmt = $conn->prepare('SELECT `user_id`, `software_id` FROM '.
+                                    USER_INFO_TABLE.' '.'WHERE '.
+                                    '`user_id` = :uid1 OR `user_id`=:uid2 '.
+                                    'LIMIT 2');
+            $stmt->bindValue(":uid1", (int) USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(":uid2", (int) $user_id, PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if ($result[0]['user_id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];
@@ -82,14 +106,32 @@ function challengeUser($user_id, $t)
                 $whitePlayerSoftwareID = $result[1]['software_id'];
             }
             $keyValuePairs = array('whiteUserID'=>USER_ID, 
-                               'blackUserID'=>$id,
+                               'blackUserID'=>$user_id,
                                'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
                                'blackPlayerSoftwareID'=>$blackPlayerSoftwareID,
                                'moveList'=>'');
 
-            $gameID = insertIntoTable($keyValuePairs, GAMES_TABLE);
+            $stmt = $conn->prepare('INSERT INTO `'.GAMES_TABLE.'` '.
+                '(`whiteUserID`, `blackUserID`, `whitePlayerSoftwareID`, '.
+                '`blackPlayerSoftwareID`, `moveList`) VALUES '.
+                '(:uid1, :uid2, :usid1, :usid2, "")');
+            $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(":uid2", $user_id, PDO::PARAM_INT);
+            $stmt->bindValue(":usid1", $whitePlayerSoftwareID);
+            $stmt->bindValue(":usid2", $blackPlayerSoftwareID);
+            $stmt->execute();
 
-            $t->assign('startedGamePlayerID', $id);
+            $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' WHERE '.
+                '`startedGamePlayerID` = :uid AND `startedGamePlayerUsername` '.
+                '= :user_name AND `startedGameID` = :game_id LIMIT 1');
+            $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
+            $stmt->bindValue(":user_name", $challengedUser, PDO::PARAM_INT);
+            $stmt->bindValue(":game_id", $gameID, PDO::PARAM_INT);
+            $stmt->execute();
+            $row    = $stmt->fetch(PDO::FETCH_ASSOC);
+            $gameID = $row['id'];
+
+            $t->assign('startedGamePlayerID', $user_id);
             $t->assign('startedGamePlayerUsername', $challengedUser);
             $t->assign('startedGameID', $gameID);
             return $gameID;
@@ -156,24 +198,25 @@ function triggerPageRank($tournamentID = 0)
 {
     $rows = array('whiteUserID', 'blackUserID', 'outcome');
 
+    // TODO: Get this into the prepared statement
     if ($tournamentID == 0) {
         $cond = '';
     } else {
-        $cond    = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
+        $cond = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
     }
 
     // get all UserIDs:
-    // TODO: This might soon get you into truble. Find a better solution for
-    //       selectFromTable!
-    $result  = selectFromTable(array('user_id'), USERS_TABLE, '', 1000);
-    $userIDs = array();
-    foreach ($result as $row) {
-        $userIDs[] = $row['user_id'];
-    }
+    global $conn;
 
-    // TODO: This might soon get you into truble. Find a better solution for
-    //       selectFromTable!
-    $games   = selectFromTable($rows, GAMES_TABLE, $cond, 1000);
+    $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE);
+    $stmt->execute();
+    $userIDs = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+    $stmt = $conn->prepare('SELECT `whiteUserID`, `blackUserID`, `outcome` '.
+                           'FROM '.GAMES_TABLE.' '.$cond);
+    $stmt->execute();
+    $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     $winners = array();
     $losers  = array();
     foreach ($userIDs as $userID) {
@@ -213,16 +256,21 @@ function triggerPageRank($tournamentID = 0)
     }
 
     // Write the PageRank into the database
-    // TODO: This should be done in one query
+    // TODO: This should be done in one query - perhaps with a transaction?
+    //$conn->beginTransaction();
+    $stmt = $conn->prepare('UPDATE `'.USER_INFO_TABLE.'` SET '.
+                           'pageRank = :pageRank, '.
+                           'rank = :rank '.
+                           'WHERE `user_id` = :uid LIMIT 1');
     foreach ($pageRank as $userID=>$rank) {
-        $keyValue             = array();
-        $keyValue['pageRank'] = $rank;
-        $keyValue['rank']     = array_search($rank, $rankTopageRank);
-        updateDataInTable(USER_INFO_TABLE, $keyValue, "WHERE `user_id` = $userID");
+        $stmt->bindValue(":pageRank", $rank, PDO::PARAM_INT);
+        $stmt->bindValue(":rank", array_search($rank, $rankTopageRank), 
+                                  PDO::PARAM_INT);
+        $stmt->bindValue(":uid", $userID, PDO::PARAM_INT);
+        $stmt->execute();
     }
+    //$conn->commit();
 
-
-    
     return true;
 }
 

@@ -104,7 +104,8 @@ if (isset($_GET['deleteTeammate'])) {
     $cond  .= "AND `task` != 'Admin'";
     $result = selectFromTable(array('id'), SOFTWARE_DEVELOPER_TABLE, $cond);
 
-    $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_DEVELOPER_TABLE."` WHERE `id` = :id LIMIT 1");
+    $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_DEVELOPER_TABLE." ".
+                           "` WHERE `id` = :id LIMIT 1");
     $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
     $stmt->execute();
 
