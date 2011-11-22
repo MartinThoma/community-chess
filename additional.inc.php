@@ -93,11 +93,13 @@ function challengeUser($user_id, $t)
             $stmt->execute();
 
             $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' WHERE '.
-                '`startedGamePlayerID` = :uid AND `startedGamePlayerUsername` '.
-                '= :user_name AND `startedGameID` = :game_id LIMIT 1');
-            $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
-            $stmt->bindValue(":user_name", $challengedUser, PDO::PARAM_INT);
-            $stmt->bindValue(":game_id", $gameID, PDO::PARAM_INT);
+                '`whiteUserID` = :uid1 AND `blackUserID` = :uid2 AND '.
+                '`whitePlayerSoftwareID` = :usid1 AND '.
+                '`blackPlayerSoftwareID` = :usid2 AND `moveList` = "" LIMIT 1');
+            $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(":uid2", $user_id, PDO::PARAM_INT);
+            $stmt->bindValue(":usid1", $whitePlayerSoftwareID);
+            $stmt->bindValue(":usid2", $blackPlayerSoftwareID);
             $stmt->execute();
             $row    = $stmt->fetch(PDO::FETCH_ASSOC);
             $gameID = $row['id'];
