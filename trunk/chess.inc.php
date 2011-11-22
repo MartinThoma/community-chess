@@ -46,12 +46,16 @@ function chessMain($t)
      * Get CURRENT_GAME_ID and some game-relevant variables                   *  
      **************************************************************************/
     if (isset($_GET['gameID'])) {
-        $gameID = (int) $_GET['gameID'];
-        $row    = array('currentBoard','whoseTurnIsIt', 'whiteUserID', 
-                       'blackUserID', 'moveList', 'noCaptureAndPawnMoves', 'id');
-        $cond   = 'WHERE (`whiteUserID` = '.USER_ID.' OR `blackUserID` = ';
-        $cond  .= USER_ID.') AND `id` = '.$gameID;
-        $result = selectFromTable($row, GAMES_TABLE, $cond);
+        global $conn;
+        $stmt = $conn->prepare('SELECT `currentBoard`, `whoseTurnIsIt`, '.
+                '`whiteUserID`, `blackUserID`, `moveList`, '.
+                '`noCaptureAndPawnMoves`, `id` FROM '.GAMES_TABLE.' '.
+                'WHERE (`whiteUserID` = :uid OR `blackUserID` = :uid) '.
+                'AND `id` = :gid LIMIT 1');
+        $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+        $stmt->bindValue(":gid", (int) $_GET['gameID'], PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($result !== false) {
             $currentBoard          = $result['currentBoard'];
@@ -155,14 +159,17 @@ function chessMain($t)
     }
 
     if (isset($_GET['claimThreefoldRepetition'])) {
-        $cond   = 'WHERE `id` = '.CURRENT_GAME_ID;
-        $rows   = array('currentBoard',
-                       'moveList',
-                       'whiteCastlingKingsidePossible',
-                       'whiteCastlingQueensidePossible',
-                       'blackCastlingKingsidePossible',
-                       'blackCastlingQueensidePossible');
-        $result = selectFromTable($rows, GAMES_TABLE, $cond);
+        global $conn;
+        $stmt = $conn->prepare('SELECT `currentBoard`, `moveList`, '.
+                '`whiteCastlingKingsidePossible`, '.
+                '`whiteCastlingQueensidePossible`, '.
+                '`blackCastlingKingsidePossible`, '.
+                '`blackCastlingQueensidePossible` FROM '.GAMES_TABLE.' '.
+                'WHERE `id` = '.CURRENT_GAME_ID.' LIMIT 1');
+        $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+        $stmt->bindValue(":gid", (int) $_GET['gameID'], PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         /* is en passant possible now? */
         $moveList = explode("\n", trim($result['moveList']));
@@ -189,6 +196,7 @@ function chessMain($t)
             }
             if ($to_coord[0] + 1 <= 8) {
                 $indexRight = getIndex($lastToX+1, $lastToY);
+                // TODO: Check indexLeft
                 $pieceRight = getPieceByIndex($currentBoard, $indexLeft);
                 if ($pieceRight== 'p' and $yourColor == 'white') {
                     $isOpponentNext = true;
@@ -205,20 +213,31 @@ function chessMain($t)
         }
         /* end en passant */
 
-        $cond   = 'WHERE `gameID` = '.CURRENT_GAME_ID.' ';
-        $cond  .= 'AND `board` = '.$result['currentBoard'];
-        $cond  .= 'AND `whiteCastlingKingsidePossible` = ';
-        $cond  .= $result['whiteCastlingKingsidePossible'];
-        $cond  .= 'AND `whiteCastlingQueensidePossible`= ';
-        $cond  .= $result['whiteCastlingQueensidePossible'];
-        $cond  .= 'AND `blackCastlingKingsidePossible` = ';
-        $cond  .= $result['blackCastlingKingsidePossible'];
-        $cond  .= 'AND `blackCastlingQueensidePossible`= ';
-        $cond  .= $result['blackCastlingQueensidePossible'];
-        $cond  .= 'AND `enPassantPossible` = '.$enPassant;
-        $result = selectFromTable(array('id'), 
-                                    GAMES_THREEFOLD_REPETITION_TABLE, 
-                                    $cond, 4);
+        $stmt = $conn->prepare('SELECT `id` FROM '.
+                GAMES_THREEFOLD_REPETITION_TABLE.' '.
+                'WHERE `gameID` = :gid '.
+                'AND `board` = :board'.
+                'AND `whiteCastlingKingsidePossible` = :wckingside '.
+                'AND `whiteCastlingQueensidePossible`= :wcqueenside '.
+                'AND `blackCastlingKingsidePossible` = :bckingside '.
+                'AND `blackCastlingQueensidePossible`= :bcqueenside '.
+                'AND `enPassantPossible` = :enpassant '.
+                'LIMIT 4');
+        $stmt->bindValue(":gid", CURRENT_GAME_ID, PDO::PARAM_INT);
+        $stmt->bindValue(":board", $result['currentBoard']);
+        $stmt->bindValue(":wcqueenside", 
+                    $result['whiteCastlingQueensidePossible'], PDO::PARAM_INT);
+        $stmt->bindValue(":wckingside", 
+                    $result['whiteCastlingKingsidePossible'], PDO::PARAM_INT);
+        $stmt->bindValue(":bcqueenside", 
+                    $result['blackCastlingQueensidePossible'], PDO::PARAM_INT);
+        $stmt->bindValue(":bckingside", 
+                    $result['blackCastlingKingsidePossible'], PDO::PARAM_INT);
+        // TODO: Check if en passant gets defined
+        $stmt->bindValue(":enpassant", $enPassant, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         if (count($result) >= 3) {
             // draw, as threefold repetition was claimed
             finishGame(2);
