@@ -3,20 +3,39 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Erstellungszeit: 11. Oktober 2011 um 08:58
--- Server Version: 5.1.41
--- PHP-Version: 5.3.2-1ubuntu4.9
+-- Generation Time: Nov 22, 2011 at 06:31 AM
+-- Server version: 5.1.41
+-- PHP Version: 5.3.2-1ubuntu4.10
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
 --
--- Datenbank: `chess`
+-- Database: `chess`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_games`
+-- Table structure for table `chess_challenges`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_challenges` (
+  `challenge_id` int(11) NOT NULL AUTO_INCREMENT,
+  `challenge_name` varchar(255) NOT NULL,
+  `challenge_points` int(11) NOT NULL,
+  `path` varchar(255) NOT NULL,
+  PRIMARY KEY (`challenge_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `chess_challenges`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chess_games`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_games` (
@@ -42,14 +61,14 @@ CREATE TABLE IF NOT EXISTS `chess_games` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_games`
+-- Dumping data for table `chess_games`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_gamesThreefoldRepetition`
+-- Table structure for table `chess_gamesThreefoldRepetition`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_gamesThreefoldRepetition` (
@@ -65,14 +84,14 @@ CREATE TABLE IF NOT EXISTS `chess_gamesThreefoldRepetition` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_gamesThreefoldRepetition`
+-- Dumping data for table `chess_gamesThreefoldRepetition`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_languages`
+-- Table structure for table `chess_languages`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_languages` (
@@ -84,7 +103,7 @@ CREATE TABLE IF NOT EXISTS `chess_languages` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
 
 --
--- Daten für Tabelle `chess_languages`
+-- Dumping data for table `chess_languages`
 --
 
 INSERT INTO `chess_languages` (`id`, `name`, `used`) VALUES
@@ -103,7 +122,7 @@ INSERT INTO `chess_languages` (`id`, `name`, `used`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_software`
+-- Table structure for table `chess_software`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_software` (
@@ -119,14 +138,14 @@ CREATE TABLE IF NOT EXISTS `chess_software` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_software`
+-- Dumping data for table `chess_software`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_softwareDeveloper`
+-- Table structure for table `chess_softwareDeveloper`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
@@ -138,14 +157,14 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_softwareDeveloper`
+-- Dumping data for table `chess_softwareDeveloper`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_softwareLanguages`
+-- Table structure for table `chess_softwareLanguages`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
@@ -156,14 +175,14 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_softwareLanguages`
+-- Dumping data for table `chess_softwareLanguages`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_tournamentPlayers`
+-- Table structure for table `chess_tournamentPlayers`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
@@ -180,14 +199,14 @@ CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_tournamentPlayers`
+-- Dumping data for table `chess_tournamentPlayers`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_tournaments`
+-- Table structure for table `chess_tournaments`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_tournaments` (
@@ -202,33 +221,14 @@ CREATE TABLE IF NOT EXISTS `chess_tournaments` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_tournaments`
+-- Dumping data for table `chess_tournaments`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_userAdditionalInformation`
---
-
-CREATE TABLE IF NOT EXISTS `chess_userAdditionalInformation` (
-  `user_id` int(11) NOT NULL,
-  `rank` int(11) NOT NULL DEFAULT '-1',
-  `pageRank` double NOT NULL DEFAULT '0.15',
-  `software_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
---
--- Daten für Tabelle `chess_userAdditionalInformation`
---
-
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `chess_userOpenID`
+-- Table structure for table `chess_userOpenID`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
@@ -239,36 +239,31 @@ CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 --
--- Daten für Tabelle `chess_userOpenID`
+-- Dumping data for table `chess_userOpenID`
 --
 
 
 -- --------------------------------------------------------
 
 --
--- Tabellenstruktur für Tabelle `chess_users`
+-- Table structure for table `chess_users`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(255) NOT NULL,
   `user_password` varchar(32) NOT NULL,
+  `rank` int(11) NOT NULL DEFAULT '-1',
+  `pageRank` double NOT NULL DEFAULT '0.15',
+  `software_id` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
--- Daten für Tabelle `chess_users`
+-- Dumping data for table `chess_users`
 --
 
-INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`) VALUES
-(1, 'abc', '900150983cd24fb0d6963f7d28e17f72'),
-(2, 'test', '098f6bcd4621d373cade4e832627b4f6');
+INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `rank`, `pageRank`, `software_id`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', -1, 0.15, 0),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6', -1, 0.15, 0);
 
-
-CREATE TABLE IF NOT EXISTS `chess_challenges` (
-  `challenge_id` int(11) NOT NULL AUTO_INCREMENT,
-  `challenge_name` varchar(255) NOT NULL,
-  `challenge_points` int(11) NOT NULL,
-  `path` varchar(255) NOT NULL,
-  PRIMARY KEY (`challenge_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;

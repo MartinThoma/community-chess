@@ -17,7 +17,6 @@
 /***********************************************************************************/
 $table_prefix = 'chess_';
 define('USERS_TABLE',                     $table_prefix.'users');
-define('USER_INFO_TABLE',                 $table_prefix.'userAdditionalInformation');
 define('USERS_OPENID',                    $table_prefix.'userOpenID');
 
 define('GAMES_TABLE',                      $table_prefix.'games');

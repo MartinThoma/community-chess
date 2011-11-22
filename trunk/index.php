@@ -19,7 +19,6 @@ require_once 'i18n.inc.php';
 if (USER_ID === false) exit(_("Please <a href='login.wrapper.php'>login</a>"));
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
-checkSoftwareTableEntry(USER_ID);
 
 /* Assign variables for i18n with gettext ******************************************/
 $t->assign('title', _('About Community Chess'));

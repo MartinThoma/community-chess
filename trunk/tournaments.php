@@ -79,13 +79,9 @@ if (isset($_GET['challengeUserID'])) {
                 exit("You have lost at least one game.");
             }
 
-            // Maybe one of the rows doesn't exist?
-            checkSoftwareTableEntry(USER_ID);
-            checkSoftwareTableEntry($id);
-
             $condition = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
             $rows      = array('user_id', 'software_id');  
-            $result    = selectFromTable($rows, USER_INFO_TABLE, $condition, 2);
+            $result    = selectFromTable($rows, USERS_TABLE, $condition, 2);
 
             if ($result[0]['id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];
