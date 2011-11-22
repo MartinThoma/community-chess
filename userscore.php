@@ -28,7 +28,7 @@ if (isset($_GET['username']) and isset($_GET['authkey'])) {
         } else {
             $condition = "WHERE `user_id` = '".$result['user_id']."'";
             $result    = selectFromTable(array('rank', 'pageRank'), 
-                                         USER_INFO_TABLE, $condition);
+                                         USERS_TABLE, $condition);
             $rank      = $result['rank'];
             $pageRank  = $result['pageRank'];
 

@@ -21,33 +21,13 @@
 function getUserSoftwareID($user_id)
 {
     global $conn;
-    $stmt = $conn->prepare('SELECT `software_id` FROM '.USER_INFO_TABLE.' '.
+    $stmt = $conn->prepare('SELECT `software_id` FROM '.USERS_TABLE.' '.
                            'WHERE `user_id`=:uid LIMIT 1');
     $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     return $row['software_id'];
-}
-
-/** This function checks if a row for the user in USER_INFO_TABLE does exist
- *
- * @param int $user_id the id of the user who gets the table check
- *
- * @return void
- */
-function checkSoftwareTableEntry($user_id)
-{
-    global $conn;
-    $row = getUserSoftwareID($user_id);
-
-    if ($row == false) {
-        $stmt = $conn->prepare('INSERT INTO `'.USER_INFO_TABLE.'` '.
-            '(`user_id`, `software_id`) VALUES (:uid, :software_id)');
-        $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
-        $stmt->bindValue(":software_id", 0, PDO::PARAM_INT);
-        $stmt->execute();
-    }
 }
 
 /** This function makes user-challenges
@@ -85,12 +65,8 @@ function challengeUser($user_id, $t)
             return "ERROR:You have already challenged this player. ".
                    "This Game has the gameID ".$row['id'].".";
         } else {
-            // Maybe one of the rows doesn't exist?
-            checkSoftwareTableEntry(USER_ID);
-            checkSoftwareTableEntry($user_id);
-  
             $stmt = $conn->prepare('SELECT `user_id`, `software_id` FROM '.
-                                    USER_INFO_TABLE.' '.'WHERE '.
+                                    USERS_TABLE.' '.'WHERE '.
                                     '`user_id` = :uid1 OR `user_id`=:uid2 '.
                                     'LIMIT 2');
             $stmt->bindValue(":uid1", (int) USER_ID, PDO::PARAM_INT);
@@ -105,11 +81,6 @@ function challengeUser($user_id, $t)
                 $blackPlayerSoftwareID = $result[0]['software_id'];
                 $whitePlayerSoftwareID = $result[1]['software_id'];
             }
-            $keyValuePairs = array('whiteUserID'=>USER_ID, 
-                               'blackUserID'=>$user_id,
-                               'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
-                               'blackPlayerSoftwareID'=>$blackPlayerSoftwareID,
-                               'moveList'=>'');
 
             $stmt = $conn->prepare('INSERT INTO `'.GAMES_TABLE.'` '.
                 '(`whiteUserID`, `blackUserID`, `whitePlayerSoftwareID`, '.
@@ -244,7 +215,7 @@ function triggerPageRank($tournamentID = 0)
     // Now calculate the PageRank array($userID=>$rank)
     $pageRank = pageRank($winners, $losers);
 
-    // Recalculate `rank` in USER_INFO_TABLE
+    // Recalculate `rank` in USERS_TABLE
     $pageRanks      = array_unique(array_values($pageRank));
     $rankTopageRank = array();
     $rank           = 1;
@@ -258,7 +229,7 @@ function triggerPageRank($tournamentID = 0)
     // Write the PageRank into the database
     // TODO: This should be done in one query - perhaps with a transaction?
     //$conn->beginTransaction();
-    $stmt = $conn->prepare('UPDATE `'.USER_INFO_TABLE.'` SET '.
+    $stmt = $conn->prepare('UPDATE `'.USERS_TABLE.'` SET '.
                            'pageRank = :pageRank, '.
                            'rank = :rank '.
                            'WHERE `user_id` = :uid LIMIT 1');

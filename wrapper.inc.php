@@ -134,8 +134,6 @@ function getIdRow($table)
         $row = 'challenge_id';
     } else if ($table == USERS_TABLE) {
         $row = 'user_id';
-    } else if ($table == USER_INFO_TABLE) {
-        $row = 'user_id';
     } else if ($table == USERS_OPENID) {
         $row = 'userOpenID_id';
     } else if ($table == TOURNAMENTS_TABLE) {
