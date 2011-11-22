@@ -17,12 +17,15 @@
 require_once 'wrapper.inc.php';
 
 if (isset($_GET['username']) and isset($_GET['email']) and isset($_GET['authkey'])) {
-    $username = sqlEscape($_GET['username']);
-    $email    = sqlEscape($_GET['email']);
-    $authkey  = sqlEscape($_GET['authkey']);
-    if ($authkey == WECHALL_AUTH_KEY) {
-        $condition = "WHERE `user_name` = '$username' AND `user_email` = '$email'";
-        $result    = selectFromTable(array('user_id'), USERS_TABLE, $condition);
+    if ($_GET['authkey'] == WECHALL_AUTH_KEY) {
+        $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' '.
+                'WHERE `user_name` = :username AND `user_email` = :email '.
+                'LIMIT 1');
+        $stmt->bindValue(":username", $_GET['username']);
+        $stmt->bindValue(":email", $_GET['email']);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
         if ($result == false) {
             echo '0';
         } else {

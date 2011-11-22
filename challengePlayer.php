@@ -24,10 +24,13 @@ if (isset($_GET['user_id'])) {
     challengeUser($_GET['user_id'], $t);
 } else {
     // look at the fix if you change something here!
-    $rows  = array('user_id', 'user_name'); 
-    $cond  = "WHERE `user_id` != ".USER_ID;
-    $cond .= EXCLUDE_USERS_SQL;
-    $rows  = selectFromTable($rows, USERS_TABLE, $cond, 10);
+    $stmt = $conn->prepare('SELECT `user_id`, `user_name` FROM '.USERS_TABLE.' '.
+            'WHERE `user_id` != :uid '.
+            'LIMIT 10');
+    $stmt->bindValue(":uid", USER_ID);
+    $stmt->execute();
+    $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     // Quick'n dirt fix: 
     // The template tries to acces $possibleOpponents[$i]['user_name']:
     $fixedRows = array();
