@@ -173,7 +173,7 @@ function triggerPageRank($tournamentID = 0)
 
     // TODO: Get this into the prepared statement
     if ($tournamentID == 0) {
-        $cond = '';
+        $cond = 'WHERE `outcome` >= 0';
     } else {
         $cond = 'WHERE `tournamentID` = '.$tournamentID." `outcome` >= 0";
     }

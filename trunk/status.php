@@ -17,15 +17,21 @@ if (USER_ID === false) exit("Please <a href='login.wrapper.php'>login</a>");
 $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
-$condition = "WHERE (`whiteUserID`=".USER_ID." OR `blackUserID`=".USER_ID.") ";
-$conAppend = "AND `outcome` = -1";
-
-$rows = selectFromTable(array('id'), GAMES_TABLE, $condition.$conAppend, 100);
+$stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' WHERE '.
+                       '(`whiteUserID`=:uid OR `blackUserID`=:uid) '.
+                       'AND `outcome` = -1 LIMIT 100');
+$stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $t->assign('currentGames', $rows);
 
-$conAppend = "AND `outcome` > -1";
 
-$rows = selectFromTable(array('id'), GAMES_TABLE, $condition.$conAppend, 100);
+$stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' WHERE '.
+                       '(`whiteUserID`=:uid OR `blackUserID`=:uid) '.
+                       'AND `outcome` > -1 LIMIT 100');
+$stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+$stmt->execute();
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $t->assign('pastGames', $rows);
 
 echo $t->output('status.html');
