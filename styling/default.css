@@ -3,9 +3,9 @@ body {
     padding:0;
 }
 #content {
-    background-color: #F4F7FB;
+    background-color: #ffd273;
     padding         : 21px;
-    border          : 1px solid #BCD2E6;
+    margin-left     : 180px;
 }
 #tabs1 {
     background-color: #FFF !important;
@@ -15,10 +15,14 @@ body {
 }
 .whiteField {
     background-color: #ffce9e;
+	width: 50px;
+	height: 50px;
 }
 
 .blackField {
     background-color: #d18b47;
+	width: 50px;
+	height: 50px;
 }
 
 .stressed {
@@ -30,10 +34,52 @@ body {
 .odd {
     background-color: #ababab;
 }
+/***********************************************************************************/
+/* Navigation                                                                      */
+/***********************************************************************************/
+#leftBar {
+    width: 160px;
+    float: left;
+}
+
+#leftBar ul {
+    border: 2px solid #a67000;
+    list-style: none;
+    margin:0;
+    margin-bottom: 2px;
+    padding:0;
+    background-color: #ffd273;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-left: 2px;
+}
+
+#leftBar ul li {
+    height: 20px;
+}
+
+#leftBar ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #a67000;
+    display: block;
+}
+
+#activetab {
+    background-color: #FFC140;
+}
+
+#leftBar ul li:hover {
+    background-color: #FFC140;
+}
 
 /***********************************************************************************/
 /* HTML-Tags                                                                       */
 /***********************************************************************************/
+html {
+    background-color: #ffc140;
+}
+
 fieldset {
     background-color: #efefef;
 }
@@ -44,11 +90,6 @@ table {
 
 th {
     background-color: #ffeeff;
-}
-body {
-    width           : 800px;
-    margin-left     : auto;
-    margin-right    : auto;
 }
 
 label {
