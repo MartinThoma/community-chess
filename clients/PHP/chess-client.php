@@ -7,9 +7,9 @@
             /******************************************************************
              * Adjust                                                         * 
              ******************************************************************/
-            $server="http://127.0.0.1/chess";
-            $PHPSESSID="ighv1l2am2j0glgeajbhvnb8l5";
-            $gameID=2;
+            $server     = "http://community-chess.com";
+            $PHPSESSID  = "56b04d5a7efe54b8baf57cc39992e6f6";
+            $gameID     = 1;
             /******************************************************************
              * Functions                                                      *
              ******************************************************************/
@@ -44,7 +44,7 @@
                                           )
                                   )
                             );
-                $fp = fopen("$server/playChess.php?gameID=$gameID".
+                $fp = fopen("$server/xhrframework.php?gameID=$gameID".
                             "&iccfalpha=$from$to$promotion", 'r', false, $context);
                 $data=stream_get_contents($fp);
                 fclose($fp);
@@ -63,7 +63,7 @@
                                       )
                               )
                         );
-            $fp = fopen("$server/playChess.php?gameID=$gameID", 'r', false, $context);
+            $fp = fopen("$server/xhrframework.php?gameID=$gameID&action=getBoard", 'r', false, $context);
             $data=stream_get_contents($fp);
             fclose($fp);
             if ($data == 'Please <a href="login.wrapper.php">login</a>'){
@@ -71,7 +71,14 @@
                      "If you use Chrome, you can find the PHPSESSID in your ".
                      '<a href="chrome://settings/cookies">cookies</a>.');
             }
-            $data_array = explode("<br/>", $data);
+            $data_array[0] = substr($data, 0, 8);
+            $data_array[1] = substr($data, 8, 8);
+            $data_array[2] = substr($data, 16, 8);
+            $data_array[3] = substr($data, 24, 8);
+            $data_array[4] = substr($data, 32, 8);
+            $data_array[5] = substr($data, 40, 8);
+            $data_array[6] = substr($data, 48, 8);
+            $data_array[7] = substr($data, 56, 8);
 
             
             /******************************************************************
@@ -85,7 +92,7 @@
             for($y=8;$y>=1;$y--){
                 echo "<tr><th>$y</th>";
                 for($x=1;$x<=8;$x++){
-                    $figure = substr($data_array[9-$y], $x-1, 1);
+                    $figure = substr($data_array[8-$y], $x-1, 1);
                     displayField($figure, $x, $y);
                 }
                 echo "<th>$y</th></tr>\r\n";

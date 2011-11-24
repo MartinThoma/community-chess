@@ -18,8 +18,11 @@ $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
 // Get number of users
-$row       = 'COUNT(  `user_id` ) AS  `usercount`';
-$result    = selectFromTable($row, USERS_TABLE);
+// global $conn;
+$stmt = $conn->prepare('SELECT COUNT(`user_id`) AS `usercount` FROM '.
+                        USERS_TABLE.' LIMIT 1');
+$stmt->execute();
+$result = $stmt->fetch(PDO::FETCH_ASSOC);
 $usercount = $result['usercount'];
 
 $currentPage = 1;
