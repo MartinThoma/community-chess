@@ -20,48 +20,65 @@ $t->assign('USER_ID', USER_ID);
 $msg = array();
 
 if (isset($_GET['addLanguage'])) {
+    $stmt = $conn->prepare('SELECT `id`, `used` FROM '.LANGUAGES_TABLE.' WHERE '.
+        '`name` = :langName LIMIT 1');
+    $stmt->bindValue(":langName", $_GET['addLanguage']);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     $langName   = sqlEscape($_GET['addLanguage']);
     $softwareID = (int) $_GET['softwareID'];
-    $cond       = "WHERE `name`='".$langName."'";
-    $result     = selectFromTable(array('id', 'used'), LANGUAGES_TABLE, $cond);
+
     if ($result === false) {
-        $keyValue         = array();
-        $keyValue["name"] = $langName;
-        $keyValue["used"] = 1;
-        $langID           = insertIntoTable($keyValue, LANGUAGES_TABLE);
+        $stmt = $conn->prepare('INSERT INTO `'.LANGUAGES_TABLE.'` '.
+            '(`name`, `used`) VALUES (:name, 1)');
+        $stmt->bindValue(":name", $_GET['addLanguage']);
+        $stmt->execute();
+
+        $stmt = $conn->prepare('SELECT `id` FROM '.LANGUAGES_TABLE.' WHERE '.
+            '`name` = :langName LIMIT 1');
+        $stmt->bindValue(":langName", $_GET['addLanguage']);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        $langID = $result['id'];
     } else {
-        $langID   = $result['id'];
-        $keyValue = array("used" => $result['used']+1);
-        updateDataInTable(LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
+        $stmt = $conn->prepare('UPDATE `'.LANGUAGES_TABLE.'` SET '.
+                               'used = `used` + 1 '.
+                               'WHERE `id` = :id LIMIT 1');
+        $stmt->bindValue(":id", $result['id'], PDO::PARAM_INT);
+        $stmt->execute();
     }
-    $keyValuePairs               = array();
-    $keyValuePairs['softwareID'] = $softwareID;
-    $keyValuePairs['languageID'] = $langID;
-    insertIntoTable($keyValuePairs, SOFTWARE_LANGUAGES_TABLE);
+
+    $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_LANGUAGES_TABLE.'` '.
+        '(`softwareID`, `languageID`) VALUES (:softwareID, :languageID)');
+    $stmt->bindValue(':softwareID', (int) $_GET['softwareID'], PDO::PARAM_INT);
+    $stmt->bindValue(':languageID', (int) $result['id'], PDO::PARAM_INT);
+    $stmt->execute();
 } 
 if (isset($_GET['deleteLang'])) {
     $langID     = (int) $_GET['deleteLang'];
     $softwareID = (int) $_GET['softwareID'];
 
-    // Is player admin of this software?
-    $cond   = "WHERE `adminUserID` = ".USER_ID." AND `id` = ".$softwareID;
-    $result = selectFromTable(array('id'), SOFTWARE_TABLE, $cond);
-    if ($result['id'] != $softwareID) {
-        exit("You are not admin of this software!");
-    }
-
-    $cond   = "WHERE `softwareID`=$softwareID AND `languageID`=$langID";
-    $result = selectFromTable(array('id'), SOFTWARE_LANGUAGES_TABLE, $cond);
-
-    $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_LANGUAGES_TABLE."` ".
-                           "WHERE `id` = :id LIMIT 1");
-
-    $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
-    //$stmt->bindValue(':table', SOFTWARE_LANGUAGES_TABLE);
+    // Check if the executing player is the admin.
+    $stmt = $conn->prepare('SELECT `adminUserID` FROM '.SOFTWARE_TABLE.' WHERE '.
+        '`id` = :softwareID LIMIT 1');
+    $stmt->bindValue(":softwareID", (int) $_GET['softwareID'], PDO::PARAM_INT);
     $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($result['adminUserID'] == USER_ID) {
+        // Delete the language from the software 
+        $stmt = $conn->prepare('DELETE FROM `'.SOFTWARE_LANGUAGES_TABLE.'` '.
+            'WHERE `id` = :id LIMIT 1');
 
-    $keyValue = array("used" => "`used`-1");
-    updateDataInTable(LANGUAGES_TABLE, $keyValue, "WHERE `id`=$langID");
+        $stmt->bindValue(':id', (int) $_GET['softwareID'], PDO::PARAM_INT);
+        $stmt->execute();
+
+        // Set the used software languages back.
+        $stmt = $conn->prepare('UPDATE `'.LANGUAGES_TABLE.'` SET '.
+                               'used = (`used` - 1) WHERE `id` = :id LIMIT 1');
+        $stmt->bindValue(":id", (int) $_GET['deleteLang'], PDO::PARAM_INT);
+        $stmt->execute();
+    }
 }
 
 if (isset($_GET['addTeammate'])) {
@@ -77,13 +94,14 @@ if (isset($_GET['addTeammate'])) {
     $cond      = "WHERE `user_name`='$user_name'";
     $result    = selectFromTable(array('user_id'), USERS_TABLE, $cond);
     if ($result !== false) {
-        $task = sqlEscape($_GET['task']);
+        $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_DEVELOPER_TABLE.'` '.
+            '(`user_id`, `softwareID`, `task`) VALUES '.
+            '(:uid, :softwareID, :task)');
+        $stmt->bindValue(":uid", (int) $result['user_id'], PDO::PARAM_INT);
+        $stmt->bindValue(":softwareID", $softwareID, PDO::PARAM_INT);
+        $stmt->bindValue(":task", $_GET['task']);
+        $stmt->execute();
 
-        $keyValuePairs               = array();
-        $keyValuePairs['user_id']    = $result['user_id'];
-        $keyValuePairs['softwareID'] = $softwareID;
-        $keyValuePairs['task']       = $task;
-        insertIntoTable($keyValuePairs, SOFTWARE_DEVELOPER_TABLE);
         $msg[] = "Added '$user_name' as a '$task'.";
     } else {
         $msg[] = "The username '$user_name' was not in the database.";

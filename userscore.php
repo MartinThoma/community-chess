@@ -17,24 +17,26 @@
 require_once 'wrapper.inc.php';
 
 if (isset($_GET['username']) and isset($_GET['authkey'])) {
-    $username = sqlEscape($_GET['username']);
-    $authkey  = sqlEscape($_GET['authkey']);
-    if ($authkey == WECHALL_AUTH_KEY) {
+    if ($_GET['authkey'] == WECHALL_AUTH_KEY) {
         // Get all user information
-        $condition = "WHERE `user_name` = '$username'";
-        $result    = selectFromTable(array('user_id'), USERS_TABLE, $condition);
+        $stmt = $conn->prepare('SELECT `user_id`, `user_name`, `rank`, `pageRank` '.
+                'FROM '.USERS_TABLE.' '.
+                'WHERE `user_name` != :uname LIMIT 1');
+        $stmt->bindValue(":uname", $_GET['username']);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($result == false) {
-            echo 'ERROR:Username not found';
+            exit('ERROR:Username not found');
         } else {
-            $condition = "WHERE `user_id` = '".$result['user_id']."'";
-            $result    = selectFromTable(array('rank', 'pageRank'), 
-                                         USERS_TABLE, $condition);
+            $username  = $result['username'];
             $rank      = $result['rank'];
             $pageRank  = $result['pageRank'];
 
             // Get number of users
-            $row       = 'COUNT(  `user_id` ) AS  `usercount`';
-            $result    = selectFromTable($row, USERS_TABLE);
+            $stmt = $conn->prepare('SELECT COUNT( `user_id` ) AS `usercount` '.
+                    'FROM '.USERS_TABLE.' LIMIT 1';
+            $stmt->execute();
+            $result    = $stmt->fetch(PDO::FETCH_ASSOC);
             $usercount = $result['usercount'];
 
             // Make the WeChall output
@@ -46,10 +48,10 @@ if (isset($_GET['username']) and isset($_GET['authkey'])) {
             echo "$challssolved:$challcount:$usercount";
         }
     } else {
-        echo 'ERROR: Your authkey was not correct.';
+        exit('ERROR: Your authkey was not correct.');
     }
 } else {
-    echo 'ERROR: You did not send "username" and "authkey" via GET.';
+    exit('ERROR: You did not send "username" and "authkey" via GET.');
 }
 
 ?>

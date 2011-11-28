@@ -463,7 +463,6 @@ function getValidMoveQuery($move)
  */
 function getValidMoveQueryFromICCFalpha($move)
 {
-    $move    = sqlEscape($move);
     $search  = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h');
     $replace = array(1,2,3,4,5,6,7,8);
     $move    = str_replace($search, $replace, $move);
