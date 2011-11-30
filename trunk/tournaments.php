@@ -136,7 +136,8 @@ if (isset($_GET['deleteParticipation'])) {
         $cond   = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
         $result = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
 
-        $stmt = $conn->prepare("DELETE FROM `".TOURNAMENT_PLAYERS_TABLE."` WHERE `id` = :id LIMIT 1");
+        $stmt = $conn->prepare("DELETE FROM `".TOURNAMENT_PLAYERS_TABLE.
+                               "` WHERE `id` = :id LIMIT 1");
         $stmt->bindValue(':id', $result['id'], PDO::PARAM_INT);
         $stmt->execute();
 

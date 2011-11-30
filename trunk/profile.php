@@ -20,20 +20,24 @@ $t->assign('USER_ID', USER_ID);
 if (isset($_GET['username'])) {
     $t->assign('username', $_GET['username']);
 } else if (USER_ID !== false) {
-    $cond   = "WHERE `user_id` = ".USER_ID;
-    $result = selectFromTable(array('user_name'), USERS_TABLE, $cond);
-    $t->assign('username', $result['user_name']);
+    $stmt = $conn->prepare('SELECT `user_name` FROM '.USERS_TABLE.' '.
+            'WHERE `user_id` != :uid LIMIT 1');
+    $stmt->bindValue(":uid", USER_ID);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $t->assign('username', $row['user_name']);
 } else {
     exit('ERROR: No username given per GET and not logged in.');
 }
 
-$cond   = "WHERE `outcome` > 0 AND `whiteUserID` = ".USER_ID." OR `blackUserID`";
-$cond  .= "= ".USER_ID;
-$rows   = array('id', 'tournamentID', 'outcome');
-$result = selectFromTable($rows, GAMES_TABLE, $cond, 10);
+$stmt = $conn->prepare('SELECT `id`, `tournamentID`, `outcome` FROM '.
+        USERS_TABLE.' WHERE `outcome` > 0 AND '.
+        '`whiteUserID` = :uid OR `blackUserID` = :uid LIMIT 10');
+$stmt->bindValue(":uid", USER_ID);
+$stmt->execute();
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $t->assign('games', $result);
-
-
 
 echo $t->output('profile.html');
 ?>

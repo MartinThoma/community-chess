@@ -20,6 +20,10 @@ make:
 	rm -rf  *.class
 	rm -rf  *.o
 
+	# check source
+	for i in *.php;do php -l $$i; done;
+	for i in *.php;do phpcs -w --standard=PEAR --report=full $$i; done;
+
 clean:
 	rm -rf  *.class
 	rm -rf  *.o

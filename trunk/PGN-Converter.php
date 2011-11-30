@@ -63,25 +63,25 @@ Qf2+ Kc1
 Kf6 d4
 g7 1-0";
 $subjects = explode("\n", $subjects);
-$pattern = "/^";
-$pattern.= "(";
-    $pattern.= "(";                  // Match whole line
-    $pattern.= "([KQRBN]?)";         // which figur is moved
+$pattern  = "/^";
+$pattern .= "(";
+    $pattern .= "(";                  // Match whole line
+    $pattern .= "([KQRBN]?)";         // which figur is moved
                                      // - if it'ss empty, it's a pawn
-    $pattern.= "([a-h])?";           // if a pawn makes a capture move: where
+    $pattern .= "([a-h])?";           // if a pawn makes a capture move: where
                                      // did he come from?
-    $pattern.= "(x?)";               // x means capture
-    $pattern.= "([a-h]{1}[1-8]{1})"; // to-field
-    $pattern.= "([+]{0,2})";         // + means this move sets the opponent check
+    $pattern .= "(x?)";               // x means capture
+    $pattern .= "([a-h]{1}[1-8]{1})"; // to-field
+    $pattern .= "([+]{0,2})";         // + means this move sets the opponent check
                                      // ++means this move sets the opponent 
                                      // checkmate
-    $pattern.= ")";
-$pattern.= "|";
-    $pattern.= "0?(-0){0,2}";        // Castling: 0-0 is kingside and 
+    $pattern .= ")";
+$pattern .= "|";
+    $pattern .= "0?(-0){0,2}";        // Castling: 0-0 is kingside and 
                                      //           0-0-0 is queenside
-$pattern.= ")";
-$pattern.= "$/";
-foreach($subjects as $subject){
+$pattern .= ")";
+$pattern .= "$/";
+foreach ($subjects as $subject) {
     $array = explode(" ", $subject);
     preg_match($pattern, $array[0], $matches);
     echo $array[0];

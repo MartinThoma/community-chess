@@ -28,13 +28,13 @@ if (isset($_GET['username']) and isset($_GET['authkey'])) {
         if ($result == false) {
             exit('ERROR:Username not found');
         } else {
-            $username  = $result['username'];
-            $rank      = $result['rank'];
-            $pageRank  = $result['pageRank'];
+            $username = $result['username'];
+            $rank     = $result['rank'];
+            $pageRank = $result['pageRank'];
 
             // Get number of users
             $stmt = $conn->prepare('SELECT COUNT( `user_id` ) AS `usercount` '.
-                    'FROM '.USERS_TABLE.' LIMIT 1';
+                    'FROM '.USERS_TABLE.' LIMIT 1');
             $stmt->execute();
             $result    = $stmt->fetch(PDO::FETCH_ASSOC);
             $usercount = $result['usercount'];
