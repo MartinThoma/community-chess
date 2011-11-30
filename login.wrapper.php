@@ -65,18 +65,34 @@ try {
                 $attributes = $openid->getAttributes();
                 $password   = getRandomString();
 
-                $keyValuePairs                  = array();
-                $keyValuePairs['user_name']     = getRandomString();
-                $keyValuePairs['user_password'] = md5($password);
-                $keyValuePairs['user_email']    = $attributes['contact/email'];
+                $stmt = $conn->prepare('INSERT INTO `'.USERS_TABLE.'` '.
+                    '(`user_name`, `user_password`, `user_email`) VALUES '.
+                    '(:uname, :upass, :uemail)');
+                $stmt->bindValue(":uname", getRandomString());
+                $stmt->bindValue(":upass", md5($password));
+                $stmt->bindValue(":uemail", $attributes['contact/email']);
+                $stmt->execute();
 
-                $id = insertIntoTable($keyValuePairs, USERS_TABLE);
+                // get ID
+                $stmt = $conn->prepare("SELECT `user_id` ".
+                        "FROM `".USERS_TABLE."` ".
+                        "WHERE `user_name` = ':uname' AND ".
+                        "`user_password` = :upass AND `user_email` = :uemail ".
+                        "LIMIT 1");
+                $stmt->bindValue(":uname", getRandomString());
+                $stmt->bindValue(":upass", md5($password));
+                $stmt->bindValue(":uemail", $attributes['contact/email']);
+                $stmt->execute();
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                $id     = $result['user_id'];
 
                 // set his OpenID
-                $keyValuePairs            = array();
-                $keyValuePairs['user_id'] = $id;
-                $keyValuePairs['OpenID']  = $openIDurl;
-                insertIntoTable($keyValuePairs, USERS_OPENID);
+                $stmt = $conn->prepare('INSERT INTO `'.USERS_OPENID.'` '.
+                    '(`user_id`, `user_password`, `user_email`) VALUES '.
+                    '(:uid, :openid)');
+                $stmt->bindValue(":uid", $id);
+                $stmt->bindValue(":openid", $openIDurl);
+                $stmt->execute();
 
                 // log the user in
                 $_SESSION['user_id'] = ''.$id;

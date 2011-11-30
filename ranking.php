@@ -22,7 +22,7 @@ $t->assign('USER_ID', USER_ID);
 $stmt = $conn->prepare('SELECT COUNT(`user_id`) AS `usercount` FROM '.
                         USERS_TABLE.' LIMIT 1');
 $stmt->execute();
-$result = $stmt->fetch(PDO::FETCH_ASSOC);
+$result    = $stmt->fetch(PDO::FETCH_ASSOC);
 $usercount = $result['usercount'];
 
 $currentPage = 1;
@@ -37,8 +37,7 @@ $t->assign('nrOfUsers', $usercount);
 // Get users with ranks
 $query  = 'SELECT  `rank` , `user_id` ,  `pageRank` ,  `user_name` ';
 $query .= 'FROM `'.USERS_TABLE.'` WHERE `rank` > 0 ';
-$query .= EXCLUDE_USERS_SQL;
-$query .= ' ORDER BY  `rank` ';
+$query .= 'ORDER BY  `rank` ';
 $query .= 'LIMIT 100';
 $sth    = $conn->query($query);
 $result = $sth->fetchAll(PDO::FETCH_ASSOC);

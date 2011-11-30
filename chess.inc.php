@@ -250,11 +250,14 @@ function chessMain($t)
         }
     }
 
-    $row    = array('currentBoard','whoseTurnIsIt', 'whiteUserID', 
-                   'blackUserID');
-    $cond   = 'WHERE (`whiteUserID` = '.USER_ID.' OR `blackUserID` = ';
-    $cond  .= USER_ID.') AND `id` = '.CURRENT_GAME_ID;
-    $result = selectFromTable($row, GAMES_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `currentBoard`, `whoseTurnIsIt`, '.
+            '`whiteUserID`, `blackUserID` FROM '.GAMES_TABLE.' '.
+            'WHERE (`whiteUserID` = :uid OR `blackUserID` = :uid) '.
+            'AND `id` = :game_id');
+    $stmt->bindValue(":uid", USER_ID);
+    $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($result !== false) {
         $currentBoard  = $result['currentBoard'];
@@ -723,6 +726,8 @@ function getAllDiagonalFields($board, $x, $y)
  */
 function finishGame($outcome)
 {
+    global $conn;
+
     $rows      = array('moveList', 'whiteUserID', 'blackUserID', 
                        'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
                        'whoseTurnIsIt', 'startTime', 'lastMove');
@@ -734,9 +739,13 @@ function finishGame($outcome)
     updateDataInTable(GAMES_TABLE, $keyValue, $condition);
 
     // Was this game a tournament game?
-    $cond   = 'WHERE `id` = '.CURRENT_GAME_ID;
-    $rows   = array('tournamentID', 'whiteUserID', 'blackUserID');
-    $result = selectFromTable($rows, GAMES_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `tournamentID`, `whiteUserID`, '.
+            '`blackUserID` FROM '.USERS_TABLE.' '.
+            'WHERE `id` != :game_id LIMIT 1');
+    $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     if ($result['tournamentID'] != 0) {
         if (($outcome == 0 and $result['whiteUserID'] == USER_ID) or 
             ($outcome == 1 and $result['blackUserID'] == USER_ID)) {
@@ -1128,12 +1137,14 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCol
         // The Player wants to do castling. Is this valid?
         if ( ($yourColor == 'white' and $from_x ==  4) or
             ($yourColor == 'black' and $from_x == 60)    ) {
-            $rows   = array('whiteCastlingKingsidePossible', 
-                           'whiteCastlingQueensidePossible',
-                           'blackCastlingKingsidePossible',
-                           'blackCastlingQueensidePossible');
-            $cond   = 'WHERE `id` = '.CURRENT_GAME_ID;
-            $result = selectFromTable($rows, GAMES_TABLE, $cond);
+            $stmt = $conn->prepare('SELECT `whiteCastlingKingsidePossible`, ', 
+                    '`whiteCastlingQueensidePossible`, '.
+                    '`blackCastlingKingsidePossible`, '.
+                    '`blackCastlingQueensidePossible` FROM '.GAMES_TABLE.' '.
+                    'WHERE `id` != :game_id LIMIT 1');
+            $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             $c1 = ($to_x == 2) and ($result['whiteCastlingQueensidePossible']==0);
             $c2 = ($to_x == 6) and ($result['whiteCastlingKingsidePossible'] ==0);
@@ -1578,16 +1589,23 @@ function isQueenMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCo
 function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor, 
                   $en_passant) 
 {
+    global $conn;
+
     $piece         = getPieceByIndex($currentBoard, $from_index);
     $capturedPiece = getPieceByIndex($currentBoard, $to_index);
     $to_coord      = getCoordinates($to_index);
     $from_coord    = getCoordinates($from_index);
-    $cond          = 'WHERE  '.GAMES_TABLE.'.`id` ='.CURRENT_GAME_ID;
 
     $submissionTime = time();
-    $rows           = array('timeLimit', 'lastMove');
-    $result         = selectFromTable($rows, GAMES_TABLE, $cond);
-    $timeNeeded     = $submissionTime - $result['lastMove'];
+
+    $stmt = $conn->prepare('SELECT `timeLimit`, `lastMove` '.
+            'FROM '.GAMES_TABLE.' '.
+            'WHERE  `id` =:game_id');
+    $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $timeNeeded = $submissionTime - $result['lastMove'];
     if ($timeNeeded > $result['timeLimit'] and $result['timeLimit'] != 0) {
         if ($yourColor == 'white') {
             // The current player needed too much time for his move, so he lost
@@ -1734,11 +1752,15 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
 
     /* Get all data for the threefold repetition table*/
     /* Castling? */
-    $rows   = array('whiteCastlingKingsidePossible',
-                    'whiteCastlingQueensidePossible',
-                    'blackCastlingKingsidePossible',
-                    'blackCastlingQueensidePossible');
-    $result = selectFromTable($rows, GAMES_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `whiteCastlingKingsidePossible`, '.
+            '`whiteCastlingQueensidePossible`, '.
+            '`blackCastlingKingsidePossible`, '.
+            '`blackCastlingQueensidePossible` FROM '.GAMES_TABLE.' '.
+            'WHERE `id` != :game_id LIMIT 1');
+    $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
     /* Is en passant possible? */
     /* was last move a pawn-2move? */
     if ($pawnMoved and abs($from_coord[1]-$to_coord[1]) == 2) {
@@ -1767,19 +1789,19 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     else                                   $enPassant = '0';
 
     /* Insert the new situation into GAMES_THREEFOLD_REPETITION_TABLE */
-    $keyValuePairs                                   = array();
-    $keyValuePairs['gameID']                         = CURRENT_GAME_ID;
-    $keyValuePairs['board']                          = $currentBoard;
-    $keyValuePairs['whiteCastlingKingsidePossible']  = 
-                                       $result['whiteCastlingKingsidePossible'];
-    $keyValuePairs['whiteCastlingQueensidePossible'] = 
-                                      $result['whiteCastlingQueensidePossible'];
-    $keyValuePairs['blackCastlingKingsidePossible']  = 
-                                       $result['blackCastlingKingsidePossible'];
-    $keyValuePairs['blackCastlingQueensidePossible'] = 
-                                      $result['blackCastlingQueensidePossible'];
-    $keyValuePairs['enPassantPossible']              = $enPassant;
-    insertIntoTable($keyValuePairs, GAMES_THREEFOLD_REPETITION_TABLE);
+    $stmt = $conn->prepare('INSERT INTO `'.GAMES_THREEFOLD_REPETITION_TABLE.'` '.
+        '(`gameID`, `board`, `whiteCastlingKingsidePossible`, '.
+        '`whiteCastlingQueensidePossible`, `blackCastlingKingsidePossible`, '.
+        '`blackCastlingQueensidePossible`, `enPassantPossible`) VALUES '.
+        '(:gameid, :board, :wckp, :wcqp, :bckp, :bcqp, :enpassant)');
+    $stmt->bindValue(":gameid", CURRENT_GAME_ID);
+    $stmt->bindValue(":board", $currentBoard);
+    $stmt->bindValue(":wckp", $result['whiteCastlingKingsidePossible']);
+    $stmt->bindValue(":wcqp", $result['whiteCastlingQueensidePossible']);
+    $stmt->bindValue(":bckp", $result['blackCastlingKingsidePossible']);
+    $stmt->bindValue(":bcqp", $result['blackCastlingQueensidePossible']);
+    $stmt->bindValue(":enpassant", $result['enPassantPossible']);
+    $stmt->execute();
 
     return $currentBoard;
 }
