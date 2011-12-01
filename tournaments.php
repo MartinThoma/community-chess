@@ -38,34 +38,54 @@ if (isset($_POST['tournamentName'])) {
 }
 
 if (isset($_GET['challengeUserID'])) {
+    $stmt = $conn->prepare('SELECT `closingDate` FROM '.TOURNAMENTS_TABLE.' '.
+                           'WHERE `id`=:tid LIMIT 1');
+    $stmt->bindValue(":uid", (int) $_GET['tournamentID'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     $tournamentID = (int) $_GET['tournamentID'];
-    $rows         = array('closingDate');
-    $cond         = "WHERE `id`=$tournamentID";
-    $result       = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
     if (strtotime($result['closingDate']) > time()) {
         // Tournament didn't begin. Don't try hacking it.
         exit();
     }
 
 
-    $user_id        = (int) $_GET['challengeUserID'];
-    $cond           = 'WHERE `user_id` = '.$user_id.' AND `user_id` != '.USER_ID;
-    $row            = selectFromTable(array('user_name'), USERS_TABLE, $cond);
-    $challengedUser = $row['user_name'];
+    $stmt = $conn->prepare('SELECT `user_name` FROM '.USERS_TABLE.' '.
+                           'WHERE `user_id` !=:uid1 AND 
+							`user_id` = :uid2 LIMIT 1');
+    $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
+    $stmt->bindValue(":uid2", (int) $_GET['challengeUserID'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $challengedUser = $result['user_name'];
     if ($row !== false) {
-        $cond  = "WHERE ((`whiteUserID` = ".USER_ID." AND `blackUserID`=$user_id)";
-        $cond .= " OR (`whiteUserID` = $user_id AND `blackUserID`=".USER_ID.")) ";
-        $cond .= "AND `tournamentID`=$tournamentID AND `outcome` = -1";
-        $row   = selectFromTable(array('id'), GAMES_TABLE, $cond);
-        if ($row !== false) {
+        $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' '.
+                    'WHERE ((`whiteUserID` = :uid1 AND `blackUserID`=:uid2) '.
+                    'OR (`whiteUserID` = :uid2 AND `blackUserID`=:uid1)) '.
+                    'AND `tournamentID`= :tid AND `outcome` = -1');
+        $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
+        $stmt->bindValue(":uid2", (int) $_GET['challengeUserID'], PDO::PARAM_INT);
+        $stmt->bindValue(":tid", (int) $_GET['tournamentID'], PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($result !== false) {
             $t->assign('alreadyChallengedPlayer', $challengedUser);
             $t->assign('alreadyChallengedGameID', $row['id']);
         } else {
             // Do both players participate in tournament?
-            $rows    = array('user_id', 'gamesWon', 'gamesPlayed');
-            $cond    = "WHERE tournamentID=$tournamentID AND (user_id=".USER_ID;
-            $cond   .= " OR `user_id`=".$user_id.")";
-            $results =selectFromTable($rows, TOURNAMENT_PLAYERS_TABLE, $cond, 2);
+            $stmt = $conn->prepare('SELECT `user_id`, `gamesWon`, `gamesPlayed` '.
+                        'FROM '.TOURNAMENT_PLAYERS_TABLE.' '.
+                        'WHERE tournamentID=:tid AND (user_id= :uid1 OR '.
+                        '`user_id`= :uid2) LIMIT 2');
+            $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(":uid2", (int) $_GET['challengeUserID']);
+            $stmt->bindValue(":tid", (int) $_GET['tournamentID']);
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
             if (count($results)<2) {
                 exit("Either you or your opponent is not part of the tournament.");
             }
@@ -79,9 +99,13 @@ if (isset($_GET['challengeUserID'])) {
                 exit("You have lost at least one game.");
             }
 
-            $condition = "WHERE `user_id` = ".USER_ID." OR `user_id`=$user_id";      
-            $rows      = array('user_id', 'software_id');  
-            $result    = selectFromTable($rows, USERS_TABLE, $condition, 2);
+            $stmt = $conn->prepare('SELECT `user_id`, `software_id` '.
+                        'FROM '.USERS_TABLE.' '.
+                        'WHERE user_id= :uid1 OR `user_id`= :uid2 LIMIT 2');
+            $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(":uid2", (int) $_GET['challengeUserID']);
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if ($result[0]['id'] == USER_ID) {
                 $whitePlayerSoftwareID = $result[0]['software_id'];
@@ -111,9 +135,13 @@ if (isset($_GET['enterID'])) {
     } else {
         $pass = md5('');
     }
-    $cond   = "WHERE id=$tournamentID AND password='".$pass."' ";
-    $cond  .= "AND closingDate > NOW()";
-    $result = selectFromTable(array('id'), TOURNAMENTS_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `id` FROM '.TOURNAMENTS_TABLE.' '.
+                'WHERE `id`=:tid AND `password`=:pass AND closingDate > NOW()');
+    $stmt->bindValue(":tid", (int) $_GET['enterID'], PDO::PARAM_INT);
+    $stmt->bindValue(":pass", $pass);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($result['id'] != $tournamentID)
         exit("Wrong password or tournament is already closed.");
 
@@ -129,12 +157,18 @@ if (isset($_GET['enterID'])) {
 if (isset($_GET['deleteParticipation'])) {
     $tournamentID = (int) $_GET['deleteParticipation'];
     // participants may only exit if the tournament hasn't started jet
-    $rows   = array('closingDate');
-    $cond   = "WHERE `id`=$tournamentID";
-    $result = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `closingDate` FROM '.TOURNAMENTS_TABLE.' '.
+                'WHERE `id`=:tid');
+    $stmt->bindValue(":tid", (int) $_GET['deleteParticipation'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
     if (strtotime($result['closingDate']) > time()) {
-        $cond   = "WHERE tournamentID=$tournamentID AND `user_id`=".USER_ID;
-        $result = selectFromTable(array('id'), TOURNAMENT_PLAYERS_TABLE, $cond);
+        $stmt = $conn->prepare('SELECT `id` FROM '.TOURNAMENT_PLAYERS_TABLE.' '.
+                    'WHERE `tournamentID`=:tid AND `user_id` = :uid LIMIT 1');
+        $stmt->bindValue(":tid", (int) $_GET['deleteParticipation']);
+        $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
         $stmt = $conn->prepare("DELETE FROM `".TOURNAMENT_PLAYERS_TABLE.
                                "` WHERE `id` = :id LIMIT 1");
@@ -146,9 +180,11 @@ if (isset($_GET['deleteParticipation'])) {
     }
 }
 
-$cond   = "WHERE `user_id`=".USER_ID;
-$result = selectFromTable(array('tournamentID'), 
-                          TOURNAMENT_PLAYERS_TABLE, $cond, 100);
+$stmt = $conn->prepare('SELECT `tournamentID` FROM '.TOURNAMENT_PLAYERS_TABLE.' '.
+            'WHERE `user_id`=:uid LIMIT 100');
+$stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+$stmt->execute();
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $myParticipations = array();
 foreach ($result as $row) {
@@ -159,24 +195,24 @@ if (isset($_GET['getDetails'])) {
     $id = (int) $_GET['getDetails'];
     $t->assign('detailsTournamentID', $id);
 
+    $stmt = $conn->prepare('SELECT `closingDate` FROM '.TOURNAMENTS_TABLE.' '.
+                'WHERE `id`=:id LIMIT 100');
+    $stmt->bindValue(":id", (int) $_GET['getDetails'], PDO::PARAM_INT);
+    $stmt->execute();
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $rows   = array('closingDate');
-    $cond   = "WHERE `id`=$id";
-    $result = selectFromTable($rows, TOURNAMENTS_TABLE, $cond);
     if (strtotime($result['closingDate']) > time()) {
         $t->assign('tournamentDidntBeginn', true);
     }
 
-    $rows    = array();
-    $rows[]  = 'id';
-    $rows[]  = 'user_id';
-    $rows[]  = 'tournamentNumber';
-    $rows[]  = 'joinedDate';
-    $rows[]  = 'gamesWon';
-    $rows[]  = 'gamesPlayed';
-    $rows[]  = 'pageRank';
-    $cond    = "WHERE tournamentID=$id";
-    $results = selectFromTable($rows, TOURNAMENT_PLAYERS_TABLE, $cond, 100);
+    $stmt = $conn->prepare('SELECT `id`, `user_id`, `tournamentNumber`, '.
+            '`joinedDate`, `gamesWon`, `gamesPlayed`, `pageRank` '.
+            'FROM '.TOURNAMENT_PLAYERS_TABLE.' '.
+            'WHERE tournamentID=:tid LIMIT 100');
+    $stmt->bindValue(":tid", (int) $_GET['getDetails']);
+    $stmt->execute();
+    $results = $stmt->fetch(PDO::FETCH_ASSOC);
+
     $t->assign('detailsPlayers', $results);
 }
 
@@ -197,12 +233,14 @@ $time = time() + 2*31*24*60*60;
 $t->assign('finishedDateMax', date("Y-m-d\TH:i\Z", $time));
 
 
-$rows    = array('id','name','password','description','initiationDate');
-$rows[]  = 'closingDate';
-$rows[]  = 'finishedDate';
-$cond    = "ORDER BY `initiationDate` DESC";
-$results = selectFromTable($rows, TOURNAMENTS_TABLE, $cond, 100);
-$rows    = count($results);
+$stmt = $conn->prepare('SELECT `id`, `name`, `password`, `description`, '.
+        '`initiationDate`, `closingDate`, `finishedDate` '.
+        'FROM '.TOURNAMENTS_TABLE.' '.
+        'ORDER BY `initiationDate` DESC LIMIT 100');
+$stmt->execute();
+$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$rows = count($results);
 for ($i=0; $i<$rows; $i++) {
     if (strtotime($results[$i]['finishedDate']) < time()) {
         $status = 'Finished';

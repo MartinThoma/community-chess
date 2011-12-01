@@ -740,11 +740,11 @@ function finishGame($outcome)
 
     // Was this game a tournament game?
     $stmt = $conn->prepare('SELECT `tournamentID`, `whiteUserID`, '.
-            '`blackUserID` FROM '.USERS_TABLE.' '.
+            '`blackUserID` FROM '.GAMES_TABLE.' '.
             'WHERE `id` != :game_id LIMIT 1');
     $stmt->bindValue(":game_id", CURRENT_GAME_ID);
     $stmt->execute();
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($result['tournamentID'] != 0) {
         if (($outcome == 0 and $result['whiteUserID'] == USER_ID) or 
@@ -1137,14 +1137,14 @@ function isKingMoveValid($from_x, $from_y, $to_x, $to_y, $currentBoard, $yourCol
         // The Player wants to do castling. Is this valid?
         if ( ($yourColor == 'white' and $from_x ==  4) or
             ($yourColor == 'black' and $from_x == 60)    ) {
-            $stmt = $conn->prepare('SELECT `whiteCastlingKingsidePossible`, ', 
+            $stmt = $conn->prepare('SELECT `whiteCastlingKingsidePossible`, '.
                     '`whiteCastlingQueensidePossible`, '.
                     '`blackCastlingKingsidePossible`, '.
                     '`blackCastlingQueensidePossible` FROM '.GAMES_TABLE.' '.
-                    'WHERE `id` != :game_id LIMIT 1');
+                    'WHERE `id` = :game_id LIMIT 1');
             $stmt->bindValue(":game_id", CURRENT_GAME_ID);
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             $c1 = ($to_x == 2) and ($result['whiteCastlingQueensidePossible']==0);
             $c2 = ($to_x == 6) and ($result['whiteCastlingKingsidePossible'] ==0);
@@ -1600,10 +1600,10 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
 
     $stmt = $conn->prepare('SELECT `timeLimit`, `lastMove` '.
             'FROM '.GAMES_TABLE.' '.
-            'WHERE  `id` =:game_id');
+            'WHERE  `id` =:game_id LIMIT 1');
     $stmt->bindValue(":game_id", CURRENT_GAME_ID);
     $stmt->execute();
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $timeNeeded = $submissionTime - $result['lastMove'];
     if ($timeNeeded > $result['timeLimit'] and $result['timeLimit'] != 0) {
@@ -1759,7 +1759,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
             'WHERE `id` != :game_id LIMIT 1');
     $stmt->bindValue(":game_id", CURRENT_GAME_ID);
     $stmt->execute();
-    $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     /* Is en passant possible? */
     /* was last move a pawn-2move? */
