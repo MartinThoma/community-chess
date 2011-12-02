@@ -84,15 +84,25 @@ if (isset($_GET['deleteLang'])) {
 if (isset($_GET['addTeammate'])) {
     $softwareID = (int) $_GET['softwareID'];
     // Is player admin of this software?
-    $cond   = "WHERE `adminUserID` = ".USER_ID." AND `id` = ".$softwareID;
-    $result = selectFromTable(array('id'), SOFTWARE_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `id` FROM '.SOFTWARE_TABLE.' WHERE '.
+        '`adminUserID` = :uid AND `id` = :sid LIMIT 1');
+    $stmt->bindValue(":uid", USER_ID);
+    $stmt->bindValue(":sid", $softwareID);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($result['id'] != $softwareID) {
         exit('You are not admin of this software!');
     }
 
     $user_name = sqlEscape($_GET['addTeammate']);
-    $cond      = "WHERE `user_name`='$user_name'";
-    $result    = selectFromTable(array('user_id'), USERS_TABLE, $cond);
+
+    $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' WHERE '.
+        '`user_name` = :uname LIMIT 1');
+    $stmt->bindValue(":uname", $user_name);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($result !== false) {
         $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_DEVELOPER_TABLE.'` '.
             '(`user_id`, `softwareID`, `task`) VALUES '.
@@ -112,15 +122,23 @@ if (isset($_GET['deleteTeammate'])) {
     $softwareID = (int) $_GET['softwareID'];
 
     // Is player admin of this software?
-    $cond   = "WHERE `adminUserID` = ".USER_ID." AND `id` = ".$softwareID;
-    $result = selectFromTable(array('id'), SOFTWARE_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `id` FROM '.SOFTWARE_TABLE.' WHERE '.
+        '`adminUserID` = :uid AND `id` = :sid LIMIT 1');
+    $stmt->bindValue(":uid", USER_ID);
+    $stmt->bindValue(":sid", $softwareID);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($result['id'] != $softwareID) {
         exit("You are not admin of this software!");
     }
 
-    $cond   = "WHERE `user_id` = $teammateID AND `softwareID` = $softwareID ";
-    $cond  .= "AND `task` != 'Admin'";
-    $result = selectFromTable(array('id'), SOFTWARE_DEVELOPER_TABLE, $cond);
+    $stmt = $conn->prepare('SELECT `id` FROM '.SOFTWARE_DEVELOPER_TABLE.' WHERE '.
+        '`user_id` = :uid AND `softwareID` = :sid AND `task` != "Admin" LIMIT 1');
+    $stmt->bindValue(":uid", $teammateID);
+    $stmt->bindValue(":sid", $softwareID);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
     $stmt = $conn->prepare("DELETE FROM `".SOFTWARE_DEVELOPER_TABLE." ".
                            "` WHERE `id` = :id LIMIT 1");
@@ -165,43 +183,61 @@ if (isset($_POST['newSoftwareName'])) {
 $currentSoftwareID = getUserSoftwareID(USER_ID);
 $t->assign('currentSoftwareID', $currentSoftwareID);
 
-$cond      = "ORDER BY  ".LANGUAGES_TABLE.".`name` ASC";
-$languages = selectFromTable(array('id', 'name'), LANGUAGES_TABLE, $cond, 100);
+$stmt = $conn->prepare('SELECT `id`, `name` FROM '.LANGUAGES_TABLE.' '.
+                       'ORDER BY  `name` ASC LIMIT 100');
+$stmt->bindValue(":uid", $teammateID);
+$stmt->bindValue(":sid", $softwareID);
+$stmt->execute();
+$languages = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 $langIndex = array();
 foreach ($languages as $lang) {
     $langIndex[$lang['id']] = $lang['name'];
 }
 
-$cond        = "WHERE `user_id`=".USER_ID;
-$row         = array('softwareID');
-$softwareIds = selectFromTable($row, SOFTWARE_DEVELOPER_TABLE, $cond, 10);
+$stmt = $conn->prepare('SELECT `softwareID` FROM '.SOFTWARE_DEVELOPER_TABLE.' '.
+                       'WHERE `user_id`=:uid LIMIT 10');
+$stmt->bindValue(":uid", USER_ID);
+$stmt->execute();
+$softwareIds = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if (count($softwareIds) > 0) {
     $softwareArray = array();
     $rows          = array('id', 'name', 'version');
     foreach ($softwareIds as $id) {
-        $id               = $id['softwareID'];
-        $cond             = "WHERE `id` = $id";
-        $basicInformation = selectFromTable($rows, SOFTWARE_TABLE, $cond);
+        $id   = $id['softwareID'];
+        $stmt = $conn->prepare('SELECT `id`, `name`, `version` '.
+                'FROM '.SOFTWARE_TABLE.' WHERE `id`=:id LIMIT 1');
+        $stmt->bindValue(":id", $id);
+        $stmt->execute();
+        $basicInformation = $stmt->fetch(PDO::FETCH_ASSOC);
+
         // List of teammates
-        $cond    = "WHERE `softwareID`=$id";
-        $row     = array('user_id', 'task');
-        $userIDs = selectFromTable($row, SOFTWARE_DEVELOPER_TABLE, $cond, 100);
+        $stmt = $conn->prepare('SELECT `user_id`, `task` '.
+                'FROM '.SOFTWARE_DEVELOPER_TABLE.' '.
+                'WHERE `softwareID`=:id LIMIT 100');
+        $stmt->bindValue(":id", $id);
+        $stmt->execute();
+        $userIDs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         $players = array();
         foreach ($userIDs as $uID) {
-            $cond   = 'WHERE `user_id`='.$uID['user_id'];
-            $player = selectFromTable(array('user_id', 'user_name'), 
-                                         USERS_TABLE, $cond);
-            // Quick'n dirt fix: 
-            // The template tries to acces $possibleOpponents[$i]['user_name']:
-            $fixedPlayer = array('user_id'=>$player['user_id'], 
-                                   'user_name'=>$player['user_name']);
-            $players[]   = array_merge($fixedPlayer, array('task'=>$uID['task']));
+            $stmt = $conn->prepare('SELECT `user_id`, `user_name` '.
+                    'FROM '.USERS_TABLE.' '.
+                    'WHERE `user_id`=:uid LIMIT 1');
+            $stmt->bindValue(":uid", $uID['user_id']);
+            $stmt->execute();
+            $player    = $stmt->fetch(PDO::FETCH_ASSOC);
+            $players[] = array_merge($player, array('task'=>$uID['task']));
         }
         // Languages
-        $cond      = "WHERE `softwareID`=$id";
-        $results   = selectFromTable(array("languageID"), 
-                                     SOFTWARE_LANGUAGES_TABLE, $cond, 10);
+        $stmt = $conn->prepare('SELECT `languageID` '.
+                'FROM '.SOFTWARE_DEVELOPER_TABLE.' '.
+                'WHERE `softwareID`=:sid LIMIT 10');
+        $stmt->bindValue(":sid", $id);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         $languages = array();
         foreach ($results as $langID) {
             $languages[] = array('id'=>$langID['languageID'], 

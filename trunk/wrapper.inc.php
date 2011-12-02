@@ -49,13 +49,16 @@ define("USER_ID", getUserID());
 function getUserID()
 {
     /* Begin of code which can be replaced by your code */
+    global $conn;
     if (!isset($_SESSION['user_id'])) {
         return false;
     };
 
-    $user_id   = sqlEscape($_SESSION['user_id']);
-    $condition = "WHERE `user_id`='$user_id' ";
-    $row       = selectFromTable(array('user_id'), USERS_TABLE, $condition);
+    $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' '.
+            'WHERE `user_id`=:uid LIMIT 1');
+    $stmt->bindValue(":uid", $_SESSION['user_id']);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($row['user_id'] === $_SESSION['user_id'] AND $row['user_id'] > 0) {
         return (int) $row['user_id'];
@@ -243,9 +246,14 @@ function updateDataInTable($table, $keyValue, $condition)
  */
 function login($user_name, $user_password, $redirect = true)
 {
-    $condition  = 'WHERE `user_name`="'.sqlEscape($user_name);
-    $condition .= '" AND user_password="'.md5($user_password).'"';
-    $row        = selectFromTable(array('user_id'), USERS_TABLE, $condition);
+    global $conn;
+    $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' '.
+            'WHERE `user_name`= :uname AND user_password= :upass');
+    $stmt->bindValue(":uname", $user_name);
+    $stmt->bindValue(":upass", md5($user_password));
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
     if ($row !== false) {
         $_SESSION['user_id'] = $row['user_id'];
         if ($redirect) {
