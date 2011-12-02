@@ -192,6 +192,7 @@ foreach ($result as $row) {
 }
 
 if (isset($_GET['getDetails'])) {
+    // TODO: Something is wrong here since r185. Fix it
     $id = (int) $_GET['getDetails'];
     $t->assign('detailsTournamentID', $id);
 
