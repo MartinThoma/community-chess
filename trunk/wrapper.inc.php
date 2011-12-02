@@ -92,39 +92,6 @@ function sqlEscape($string)
     /* End of code which can be replaced by your code */
 }
 
-/** This function selects some rows from the specified table and returns
- *  the associative array
- *
- * @param array  $rows      all rows which should be selected. I never use "*"
- * @param string $table     the table from which the rows should be selected
- * @param string $condition the condition which rows should be selected
-                            might also have "ORDER BY"
- * @param int    $limit     how many rows get selected at maximum
- *
- * @return array
- */
-function selectFromTable($rows, $table, $condition = '', $limit = 1)
-{
-    /* Begin of code which can be replaced by your code */
-    if (is_array($rows)) {
-        $row   = implode("`,`", $rows);
-        $query = "SELECT `$row` FROM `$table` $condition LIMIT $limit";
-    } else {
-        $query = "SELECT $rows FROM `$table` $condition LIMIT $limit";
-    }
-
-    global $conn;
-    $sth = $conn->query($query);
-
-    if ($limit == 1) {
-        $row = $sth->fetch(PDO::FETCH_ASSOC);
-    } else {
-        $row = $sth->fetchAll(PDO::FETCH_ASSOC);
-    }
-    return $row;
-    /* End of code which can be replaced by your code */
-}
-
 /** This function returns the name of the row which is id of table
  *
  * @param string $table the name of the Database table
