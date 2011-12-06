@@ -26,7 +26,6 @@ if (isset($_GET['addLanguage'])) {
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $langName   = sqlEscape($_GET['addLanguage']);
     $softwareID = (int) $_GET['softwareID'];
 
     if ($result === false) {
@@ -95,11 +94,9 @@ if (isset($_GET['addTeammate'])) {
         exit('You are not admin of this software!');
     }
 
-    $user_name = sqlEscape($_GET['addTeammate']);
-
     $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' WHERE '.
         '`user_name` = :uname LIMIT 1');
-    $stmt->bindValue(":uname", $user_name);
+    $stmt->bindValue(":uname", $_GET['addTeammate']);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -112,9 +109,9 @@ if (isset($_GET['addTeammate'])) {
         $stmt->bindValue(":task", $_GET['task']);
         $stmt->execute();
 
-        $msg[] = "Added '$user_name' as a '$task'.";
+        $msg[] = "Added '".$_GET['addTeammate']."' as a '$task'.";
     } else {
-        $msg[] = "The username '$user_name' was not in the database.";
+        $msg[] = "The user '".$_GET['addTeammate']."' is not in the database.";
     }
 }
 if (isset($_GET['deleteTeammate'])) {
@@ -153,31 +150,28 @@ if (isset($_GET['setCurrent'])) {
     updateDataInTable(USERS_TABLE, $keyValue, $cond);
 }
 if (isset($_POST['newSoftwareName'])) {
-    $name      = sqlEscape($_POST['newSoftwareName']);
-    $version   = sqlEscape($_POST['version']);
-    $changelog = sqlEscape($_POST['changelog']);
     if (isset($_POST['lastVersionID'])) {
         $lastVersionID = (int) $_POST['lastVersionID'];
     } else {
         $lastVersionID = 0;
     }
 
-    $keyValuePairs                  = array();
-    $keyValuePairs['name']          = $name;
-    $keyValuePairs['adminUserID']   = USER_ID;
-    $keyValuePairs['version']       = $version;
-    $keyValuePairs['lastVersionID'] = $lastVersionID;
-    $keyValuePairs['changelog']     = $changelog;
+    $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_TABLE.'` '.
+        '(`name`, `adminUserID`, `version`, `lastVersionID`, `changelog`) '.
+        'VALUES (:name, :admin_id, :version, :lv_id, :changelog)');
+    $stmt->bindValue(":name", $_POST['newSoftwareName']);
+    $stmt->bindValue(":admin_id", USER_ID, PDO::PARAM_INT);
+    $stmt->bindValue(":version", $_POST['version']);
+    $stmt->bindValue(":lv_id", $lastVersionID);
+    $stmt->bindValue(":changelog", $_POST['changelog']);
+    $stmt->execute();
 
-    $softwareID = insertIntoTable($keyValuePairs, SOFTWARE_TABLE);
-
-
-    $keyValuePairs               = array();
-    $keyValuePairs['user_id']    = USER_ID;
-    $keyValuePairs['softwareID'] = $softwareID;
-    $keyValuePairs['task']       = 'Admin';
-
-    insertIntoTable($keyValuePairs, SOFTWARE_DEVELOPER_TABLE);
+    $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_DEVELOPER_TABLE.'` '.
+        '(`user_id`, `softwareID`, `task`) VALUES (:uid, :sid, :task)');
+    $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+    $stmt->bindValue(":sid", $softwareID, PDO::PARAM_INT);
+    $stmt->bindValue(":task", 'Admin');
+    $stmt->execute();
 }
 
 $currentSoftwareID = getUserSoftwareID(USER_ID);
