@@ -18,22 +18,20 @@ $t = new vemplator();
 $t->assign('USER_ID', USER_ID);
 
 if (isset($_POST['tournamentName'])) {
-    $tournamentName = sqlEscape($_POST['tournamentName']);
-    $description    = sqlEscape($_POST['description']);
-    $password       = md5($_POST['password']);
-    $closingDate    = sqlEscape($_POST['closingDate']);
-    $finishedDate   = sqlEscape($_POST['finishedDate']);
-
-    if ($tournamentName == '') {
+    if ($_POST['tournamentName'] == '') {
         $t->assign('noTournamentName', true);
     } else {
-        $keyValue                 = array();
-        $keyValue['name']         = $tournamentName;
-        $keyValue['description']  = $description;
-        $keyValue['password']     = $password;
-        $keyValue['closingDate']  = date('Y-m-d H:i:s', strtotime($closingDate));
-        $keyValue['finishedDate'] = date('Y-m-d H:i:s', strtotime($finishedDate));
-        insertIntoTable($keyValue, TOURNAMENTS_TABLE);
+        $stmt = $conn->prepare('INSERT INTO `'.TOURNAMENTS_TABLE.'` '.
+            '(`name`, `description`, `password`, `closingDate`, `finishedDate`) '.
+            'VALUES (:name, :description, :password, :closingDate, :finishedDate)');
+        $stmt->bindValue(":name", $_POST['tournamentName']);
+        $stmt->bindValue(":description", $_POST['description']);
+        $stmt->bindValue(":password", md5($_POST['password']));
+        $stmt->bindValue(":closingDate", 
+                        date('Y-m-d H:i:s', strtotime($_POST['closingDate'])));
+        $stmt->bindValue(":finishedDate", 
+                        date('Y-m-d H:i:s', strtotime($_POST['finishedDate'])));
+        $stmt->execute();
     }
 }
 
@@ -114,11 +112,16 @@ if (isset($_GET['challengeUserID'])) {
                 $blackPlayerSoftwareID = $result[0]['software_id'];
                 $whitePlayerSoftwareID = $result[1]['software_id'];
             }
-            $keyValuePairs = array('whiteUserID'=>USER_ID, 
-                               'blackUserID'=>$user_id,
-                               'whitePlayerSoftwareID'=>$whitePlayerSoftwareID,
-                               'blackPlayerSoftwareID'=>$blackPlayerSoftwareID);
-            insertIntoTable($keyValuePairs, GAMES_TABLE);
+
+            $stmt = $conn->prepare('INSERT INTO `'.GAMES_TABLE.'` '.
+                '(`whiteUserID`, `blackUserID`, `whitePlayerSoftwareID`, '.
+                '`blackPlayerSoftwareID`) '.
+                'VALUES (:wid, :bid, :w_sid, :b_sid)');
+            $stmt->bindValue(":wid", USER_ID, PDO::PARAM_INT);
+            $stmt->bindValue(":bid", $user_id, PDO::PARAM_INT);
+            $stmt->bindValue(":w_sid", $whitePlayerSoftwareID, PDO::PARAM_INT);
+            $stmt->bindValue(":b_sid", $blackPlayerSoftwareID, PDO::PARAM_INT);
+            $stmt->execute();
 
             $t->assign('startedGameUserID', $user_id);
             $t->assign('startedGamePlayerUsername', $challengedUser);
@@ -145,8 +148,12 @@ if (isset($_GET['enterID'])) {
     if ($result['id'] != $tournamentID)
         exit("Wrong password or tournament is already closed.");
 
-    $keyValue = array('tournamentID'=>$tournamentID, 'user_id'=>USER_ID);
-    $id       = insertIntoTable($keyValue, TOURNAMENT_PLAYERS_TABLE);
+    $stmt = $conn->prepare('INSERT INTO `'.TOURNAMENT_PLAYERS_TABLE.'` '.
+        '(`tournamentID`, `user_id`) VALUES (:tid, :uid)');
+    $stmt->bindValue(":tid", $tournamentID, PDO::PARAM_INT);
+    $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+    $stmt->execute();
+
     if ($id > 0) {
         $t->assign('joinedTournamentID', $tournamentID);
     } else {

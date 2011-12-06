@@ -48,7 +48,6 @@ define("USER_ID", getUserID());
  */
 function getUserID()
 {
-    /* Begin of code which can be replaced by your code */
     global $conn;
     if (!isset($_SESSION['user_id'])) {
         return false;
@@ -65,31 +64,6 @@ function getUserID()
     } else {
         return false;
     }
-    /* End of code which can be replaced by your code */
-}
-
-/** Escape string used in sql query
- *
- * @param string $string the sql string which should be escaped
- *
- * @return string
- */
-function sqlEscape($string)
-{
-    /* Begin of code which can be replaced by your code */
-    // Source: 
-    // http://www.php.net/manual/de/function.mysql-real-escape-string.php#101248
-    if(is_array($string)) 
-        return array_map(__METHOD__, $string); 
-
-    if (!empty($string) && is_string($string)) {
-        return str_replace(array('\\', "\0", "\n", "\r", "'", '"', "\x1a"), 
-                           array('\\\\', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z'), 
-                           $string); 
-    } 
-
-    return $string; 
-    /* End of code which can be replaced by your code */
 }
 
 /** This function returns the name of the row which is id of table
@@ -126,46 +100,6 @@ function getIdRow($table)
     return $row;
 }
 
-/** This function inserts something into a table
- *
- * @param array  $keyValuePairs all key=>values
- * @param string $table         the table in which the row should be inserted
- *
- * @return int the id of the last inserted item
- */
-function insertIntoTable($keyValuePairs, $table)
-{
-    /* Begin of code which can be replaced by your code */
-    global $conn;
-
-    $query  = "INSERT INTO  $table (";
-    $query .= implode(",", array_keys($keyValuePairs));
-    $query .= ") ";
-    $query .= "VALUES (";
-    $query .= "'".implode("','", array_values($keyValuePairs))."'";
-    $query .= ");";
-    $sth    = $conn->query($query);
-
-    $condition = '';
-
-    $i = 0;
-    foreach ($keyValuePairs as $key=>$val) {
-        if ($i > 0) {
-            $condition .= ' AND ';
-        } else {
-            $i++;
-        }
-        $condition .= "$key = '$val'";
-    }
-
-    $query = "SELECT ".getIdRow($table)." FROM $table WHERE $condition";
-    $sth   = $conn->query($query);
-    $row   = $sth->fetch(PDO::FETCH_ASSOC);
-
-    return $row[getIdRow($table)];
-    /* End of code which can be replaced by your code */
-}
-
 /** This function uptates some rows in a table
  *  $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
  *                         VALUES ('value1', 'value2');
@@ -178,8 +112,6 @@ function insertIntoTable($keyValuePairs, $table)
  */
 function updateDataInTable($table, $keyValue, $condition)
 {
-
-    /* Begin of code which can be replaced by your code */
     global $conn;
 
     $query  = "UPDATE  `$table` SET  ";
@@ -200,7 +132,6 @@ function updateDataInTable($table, $keyValue, $condition)
     $conn->query($query);
 
     return 0;
-    /* End of code which can be replaced by your code */
 }
 
 /** This function logs the user in. The session variables get stored.
