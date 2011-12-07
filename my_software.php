@@ -145,9 +145,12 @@ if (isset($_GET['deleteTeammate'])) {
 }
 
 if (isset($_GET['setCurrent'])) {
-    $cond     = "WHERE  `user_id` =".USER_ID;
-    $keyValue = array('software_id'=>(int) $_GET['setCurrent']);
-    updateDataInTable(USERS_TABLE, $keyValue, $cond);
+    $stmt = $conn->prepare('UPDATE `'.USERS_TABLE.'` SET '.
+                           'software_id = :sid '.
+                           'WHERE `user_id` = :uid LIMIT 1');
+    $stmt->bindValue(":sid", (int) $_GET['setCurrent'], PDO::PARAM_INT);
+    $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+    $stmt->execute();
 }
 if (isset($_POST['newSoftwareName'])) {
     if (isset($_POST['lastVersionID'])) {

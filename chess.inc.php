@@ -727,16 +727,13 @@ function getAllDiagonalFields($board, $x, $y)
 function finishGame($outcome)
 {
     global $conn;
-
-    $rows      = array('moveList', 'whiteUserID', 'blackUserID', 
-                       'whitePlayerSoftwareID', 'blackPlayerSoftwareID', 
-                       'whoseTurnIsIt', 'startTime', 'lastMove');
-    $condition = 'WHERE `id` = '.CURRENT_GAME_ID;
-
-    $keyValue['outcome']  = $outcome;
-    $keyValue['lastMove'] = date('Y-m-d H:i:s');
-
-    updateDataInTable(GAMES_TABLE, $keyValue, $condition);
+    $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                           'outcome = :outcome, lastMove = :last_move '.
+                           'WHERE `id` = :gid LIMIT 1');
+    $stmt->bindValue(":outcome", $outcome, PDO::PARAM_INT);
+    $stmt->bindValue(":last_move", date('Y-m-d H:i:s'));
+    $stmt->bindValue(":gid", CURRENT_GAME_ID, PDO::PARAM_INT);
+    $stmt->execute();
 
     // Was this game a tournament game?
     $stmt = $conn->prepare('SELECT `tournamentID`, `whiteUserID`, '.
@@ -750,30 +747,29 @@ function finishGame($outcome)
         if (($outcome == 0 and $result['whiteUserID'] == USER_ID) or 
             ($outcome == 1 and $result['blackUserID'] == USER_ID)) {
             // The player won
-            $keyValue                = array();
-            $keyValue['gamesWon']    = "`gamesWon` + 1";
-            $keyValue['gamesPlayed'] = "`gamesPlayed` + 1";
-
-            $condition  = "WHERE `tournamentID` = ".$result['tournamentID']." ";
-            $condition .= "AND `user_id` = ".USER_ID;
-            updateDataInTable(TOURNAMENT_PLAYERS_TABLE, $keyValue, $condition);
+            $stmt = $conn->prepare('UPDATE `'.TOURNAMENT_PLAYERS_TABLE.'` SET '.
+                  'gamesWon = `gamesWon` + 1, gamesPlayed = `gamesPlayed` + 1 '.
+                  'WHERE `tournamentID` = :tid AND `user_id` = :uid LIMIT 1');
+            $stmt->bindValue(":tid", $result['tournamentID'], PDO::PARAM_INT);
+            $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+            $stmt->execute();
         } else if (($outcome == 1 and $result['whiteUserID'] == USER_ID) or 
                    ($outcome == 0 and $result['blackUserID'] == USER_ID)) {
             // The player lost
-            $keyValue                = array();
-            $keyValue['gamesPlayed'] = "`gamesPlayed` + 1";
-
-            $condition  = "WHERE `tournamentID` = ".$result['tournamentID']." ";
-            $condition .= "AND `user_id` = ".USER_ID;
-            updateDataInTable(TOURNAMENT_PLAYERS_TABLE, $keyValue, $condition);
+            $stmt = $conn->prepare('UPDATE `'.TOURNAMENT_PLAYERS_TABLE.'` SET '.
+                  'gamesPlayed = `gamesPlayed` + 1 '.
+                  'WHERE `tournamentID` = :tid AND `user_id` = :uid LIMIT 1');
+            $stmt->bindValue(":tid", $result['tournamentID'], PDO::PARAM_INT);
+            $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+            $stmt->execute();
         } else if ($outcome == 2) {
             // Draw
-            $keyValue                = array();
-            $keyValue['gamesPlayed'] = "`gamesPlayed` + 1";
-
-            $condition  = "WHERE `tournamentID` = ".$result['tournamentID']." ";
-            $condition .= "AND `user_id` = ".USER_ID;
-            updateDataInTable(TOURNAMENT_PLAYERS_TABLE, $keyValue, $condition);
+            $stmt = $conn->prepare('UPDATE `'.TOURNAMENT_PLAYERS_TABLE.'` SET '.
+                  'gamesPlayed = `gamesPlayed` + 1 '.
+                  'WHERE `tournamentID` = :tid AND `user_id` = :uid LIMIT 1');
+            $stmt->bindValue(":tid", $result['tournamentID'], PDO::PARAM_INT);
+            $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
+            $stmt->execute();
         } else {
             exit('You had an $outcome of '.$outcome.'. '.
                  'Please ask info@martin-thoma.de '.
@@ -1679,34 +1675,54 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
                                           .substr($currentBoard, $to_index+1);
             }
         }
-        $keyValue                  = array();
-        $keyValue['currentBoard']  = $currentBoard;
-        $keyValue['moveList']      = "CONCAT(`moveList`,'$move\n')";
-        $keyValue['whoseTurnIsIt'] = '((`whoseTurnIsIt` + 1)%2)';
-        $keyValue['lastMove']      = 'CURRENT_TIMESTAMP';
-        updateDataInTable(GAMES_TABLE, $keyValue, $cond);
+        $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                               'currentBoard = :current_board, '.
+                               'moveList = CONCAT(`moveList`,:move), '.
+                               'whoseTurnIsIt = ((`whoseTurnIsIt` + 1)%2), '.
+                               'lastMove = CURRENT_TIMESTAMP '.
+                               'WHERE  `id` =:game_id LIMIT 1');
+        $stmt->bindValue(":currentBoard", $currentBoard);
+        $stmt->bindValue(":moveList", $move."\n");
+        $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+        $stmt->execute();
     }
 
     // Is this piece relevant for castling?
     // White - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 7)) {
-        $keyValue = array('whiteCastlingKingsidePossible' => 0);
-        updateDataInTable(GAMES_TABLE, $keyValue, $cond);
+        $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                               'whiteCastlingKingsidePossible = :boolean '.
+                               'WHERE  `id` =:game_id LIMIT 1');
+        $stmt->bindValue(":boolean", 0);
+        $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+        $stmt->execute();
     }
     // White - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 0)) {
-        $keyValue = array('whiteCastlingQueensidePossible' => 0);
-        updateDataInTable(GAMES_TABLE, $keyValue, $cond);
+        $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                               'whiteCastlingQueensidePossible = :boolean '.
+                               'WHERE  `id` =:game_id LIMIT 1');
+        $stmt->bindValue(":boolean", 0);
+        $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+        $stmt->execute();
     }
     // Black - Kingside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 63)) {
-        $keyValue = array('blackCastlingKingsidePossible' => 0);
-        updateDataInTable(GAMES_TABLE, $keyValue, $cond);
+        $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                               'blackCastlingKingsidePossible = :boolean '.
+                               'WHERE  `id` =:game_id LIMIT 1');
+        $stmt->bindValue(":boolean", 0);
+        $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+        $stmt->execute();
     }
     // Black - Queenside Castling
     if ($piece == 'K' or ($piece == 'R' and $from_index == 56)) {
-        $keyValue = array('blackCastlingQueensidePossible' => 0);
-        updateDataInTable(GAMES_TABLE, $keyValue, $cond);
+        $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                               'blackCastlingQueensidePossible = :boolean '.
+                               'WHERE  `id` =:game_id LIMIT 1');
+        $stmt->bindValue(":boolean", 0);
+        $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+        $stmt->execute();
     }
 
     /* Promotion */
@@ -1733,14 +1749,10 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     }
 
     /* Now update the database with move */
-    $currentBoard              = substr($currentBoard, 0, $from_index).'0'
+    $currentBoard = substr($currentBoard, 0, $from_index).'0'
                                           .substr($currentBoard, $from_index+1);
-    $currentBoard              = substr($currentBoard, 0, $to_index).$piece
+    $currentBoard = substr($currentBoard, 0, $to_index).$piece
                                           .substr($currentBoard, $to_index+1);
-    $keyValue['currentBoard']  = $currentBoard;
-    $keyValue['moveList']      = "CONCAT(`moveList`,'$move\n')";
-    $keyValue['whoseTurnIsIt'] = '((`whoseTurnIsIt` + 1)%2)';
-    $keyValue['lastMove']      = 'CURRENT_TIMESTAMP';
 
     if ($pawnMoved == false and $captureMade == false) {    
         $keyValue['noCaptureAndPawnMoves'] = '`noCaptureAndPawnMoves` + 1 ';
@@ -1748,7 +1760,16 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
         $keyValue['noCaptureAndPawnMoves'] = '0';
     }
 
-    updateDataInTable(GAMES_TABLE, $keyValue, $cond);
+    $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
+                           'currentBoard = :current_board, '.
+                           'moveList = CONCAT(`moveList`,:move), '.
+                           'whoseTurnIsIt = ((`whoseTurnIsIt` + 1)%2), '.
+                           'lastMove = CURRENT_TIMESTAMP '.
+                           'WHERE  `id` =:game_id LIMIT 1');
+    $stmt->bindValue(":currentBoard", $currentBoard);
+    $stmt->bindValue(":moveList", $move."\n");
+    $stmt->bindValue(":game_id", CURRENT_GAME_ID);
+    $stmt->execute();
 
     /* Get all data for the threefold repetition table*/
     /* Castling? */
