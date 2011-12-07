@@ -100,40 +100,6 @@ function getIdRow($table)
     return $row;
 }
 
-/** This function uptates some rows in a table
- *  $query = INSERT INTO `$table` (`key1` ,`key2`, ...) 
- *                         VALUES ('value1', 'value2');
- *
- * @param string $table     the table from which the rows should be updated
- * @param array  $keyValue  all key=>values
- * @param string $condition the condition which rows should be updated
- *
- * @return int always 0
- */
-function updateDataInTable($table, $keyValue, $condition)
-{
-    global $conn;
-
-    $query  = "UPDATE  `$table` SET  ";
-    $values = "";
-    foreach ($keyValue as $key=>$value) {
-        if ($value == 'CURRENT_TIMESTAMP' or 
-           substr($value, 0, 6) == 'CONCAT' or
-           substr($value, 0, 1) == '(' or
-           substr($value, 0, 1) == '`') {
-            $values .= ", `$key` = $value";
-        } else {
-            $values .= ", `$key` = '$value'";
-        }
-    }
-    // remove first ","
-    $query .= substr($values, 2);
-    $query .= " ".$condition;
-    $conn->query($query);
-
-    return 0;
-}
-
 /** This function logs the user in. The session variables get stored.
  * 
  * @param string  $user_name     the username

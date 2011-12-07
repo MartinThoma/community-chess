@@ -1,6 +1,19 @@
 <?php
+/**
+ * The PGN Converter should convert the PGN notation to my notation. Doesn't
+ * work at the moment.
+ *
+ * PHP Version 5
+ *
+ * @category Web_Services
+ * @package  Community-chess
+ * @author   Martin Thoma <info@martin-thoma.de>
+ * @license  http://www.opensource.org/licenses/mit-license.php  MIT License
+ * @version  SVN: <svn_id>
+ * @link     http://code.google.com/p/community-chess/
+ */
 
-$subjects = "e4 c5
+$subjects     = "e4 c5
 Nf3 d6
 Bb5+ Bd7
 Bxd7+ Qxd7
@@ -62,9 +75,9 @@ Qg1+ Kb2
 Qf2+ Kc1
 Kf6 d4
 g7 1-0";
-$subjects = explode("\n", $subjects);
-$pattern  = "/^";
-$pattern .= "(";
+$subjects     = explode("\n", $subjects);
+$pattern      = "/^";
+$pattern     .= "(";
     $pattern .= "(";                  // Match whole line
     $pattern .= "([KQRBN]?)";         // which figur is moved
                                      // - if it'ss empty, it's a pawn
@@ -76,7 +89,7 @@ $pattern .= "(";
                                      // ++means this move sets the opponent 
                                      // checkmate
     $pattern .= ")";
-$pattern .= "|";
+$pattern     .= "|";
     $pattern .= "0?(-0){0,2}";        // Castling: 0-0 is kingside and 
                                      //           0-0-0 is queenside
 $pattern .= ")";
