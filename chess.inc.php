@@ -1761,8 +1761,8 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     }
 
     $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
-                           'currentBoard = :current_board, '.
-                           'moveList = CONCAT(`moveList`,:move), '.
+                           'currentBoard = :currentBoard, '.
+                           'moveList = CONCAT(`moveList`,:moveList), '.
                            'whoseTurnIsIt = ((`whoseTurnIsIt` + 1)%2), '.
                            'lastMove = CURRENT_TIMESTAMP, '.
                            'noCaptureAndPawnMoves = '.$pawn.' '.

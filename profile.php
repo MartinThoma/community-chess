@@ -21,7 +21,7 @@ if (isset($_GET['username'])) {
     $t->assign('username', $_GET['username']);
 } else if (USER_ID !== false) {
     $stmt = $conn->prepare('SELECT `user_name` FROM '.USERS_TABLE.' '.
-            'WHERE `user_id` != :uid LIMIT 1');
+            'WHERE `user_id` = :uid LIMIT 1');
     $stmt->bindValue(":uid", USER_ID);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);

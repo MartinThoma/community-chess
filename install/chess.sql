@@ -253,6 +253,7 @@ CREATE TABLE IF NOT EXISTS `chess_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_name` varchar(255) NOT NULL,
   `user_password` varchar(32) NOT NULL,
+  `user_email` varchar(255) NOT NULL,
   `rank` int(11) NOT NULL DEFAULT '-1',
   `pageRank` double NOT NULL DEFAULT '0.15',
   `software_id` int(11) NOT NULL DEFAULT '0',
@@ -263,7 +264,7 @@ CREATE TABLE IF NOT EXISTS `chess_users` (
 -- Dumping data for table `chess_users`
 --
 
-INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `rank`, `pageRank`, `software_id`) VALUES
-(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', -1, 0.15, 0),
-(2, 'test', '098f6bcd4621d373cade4e832627b4f6', -1, 0.15, 0);
+INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `user_email`, `rank`, `pageRank`, `software_id`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 'abc@martin-thoma.de', -1, 0.15, 0),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 'test@martin-thoma.de', -1, 0.15, 0);
 
