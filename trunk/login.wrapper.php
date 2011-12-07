@@ -52,10 +52,10 @@ try {
     } else {
         if ($openid->validate()) {
             $stmt = $conn->prepare("SELECT user_id FROM `".USERS_OPENID."` ".
-                                   "WHERE `OpenID` = ':url' LIMIT 1");
+                                   "WHERE `OpenID` = :url LIMIT 1");
             $stmt->bindValue(':url', $openid->identity, PDO::PARAM_STR);
             $stmt->execute();
-
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Is the OpenID already in the database?
             if ($result == false) {
@@ -65,21 +65,22 @@ try {
                 $attributes = $openid->getAttributes();
                 $password   = getRandomString();
 
-                $stmt = $conn->prepare('INSERT INTO `'.USERS_TABLE.'` '.
+                $stmt  = $conn->prepare('INSERT INTO `'.USERS_TABLE.'` '.
                     '(`user_name`, `user_password`, `user_email`) VALUES '.
                     '(:uname, :upass, :uemail)');
-                $stmt->bindValue(":uname", getRandomString());
+                $uname = getRandomString();
+                $stmt->bindValue(":uname", $uname);
                 $stmt->bindValue(":upass", md5($password));
                 $stmt->bindValue(":uemail", $attributes['contact/email']);
                 $stmt->execute();
 
                 // get ID
-                $stmt = $conn->prepare("SELECT `user_id` ".
-                        "FROM `".USERS_TABLE."` ".
-                        "WHERE `user_name` = ':uname' AND ".
-                        "`user_password` = :upass AND `user_email` = :uemail ".
-                        "LIMIT 1");
-                $stmt->bindValue(":uname", getRandomString());
+                $stmt = $conn->prepare('SELECT `user_id` '.
+                        'FROM `'.USERS_TABLE.'` '.
+                        'WHERE `user_name` = :uname AND '.
+                        '`user_password` = :upass AND `user_email` = :uemail '.
+                        'LIMIT 1');
+                $stmt->bindValue(":uname", $uname);
                 $stmt->bindValue(":upass", md5($password));
                 $stmt->bindValue(":uemail", $attributes['contact/email']);
                 $stmt->execute();
@@ -88,7 +89,7 @@ try {
 
                 // set his OpenID
                 $stmt = $conn->prepare('INSERT INTO `'.USERS_OPENID.'` '.
-                    '(`user_id`, `user_password`, `user_email`) VALUES '.
+                    '(`user_id`, `OpenID`) VALUES '.
                     '(:uid, :openid)');
                 $stmt->bindValue(":uid", $id);
                 $stmt->bindValue(":openid", $openIDurl);

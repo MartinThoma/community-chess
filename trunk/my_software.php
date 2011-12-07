@@ -24,7 +24,8 @@ if (isset($_GET['addLanguage'])) {
         '`name` = :langName LIMIT 1');
     $stmt->bindValue(":langName", $_GET['addLanguage']);
     $stmt->execute();
-    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    $result     = $stmt->fetch(PDO::FETCH_ASSOC);
+    $languageID = $result['id'];
 
     $softwareID = (int) $_GET['softwareID'];
 
@@ -51,7 +52,7 @@ if (isset($_GET['addLanguage'])) {
     $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_LANGUAGES_TABLE.'` '.
         '(`softwareID`, `languageID`) VALUES (:softwareID, :languageID)');
     $stmt->bindValue(':softwareID', (int) $_GET['softwareID'], PDO::PARAM_INT);
-    $stmt->bindValue(':languageID', (int) $result['id'], PDO::PARAM_INT);
+    $stmt->bindValue(':languageID', (int) $languageID, PDO::PARAM_INT);
     $stmt->execute();
 } 
 if (isset($_GET['deleteLang'])) {
@@ -169,10 +170,21 @@ if (isset($_POST['newSoftwareName'])) {
     $stmt->bindValue(":changelog", $_POST['changelog']);
     $stmt->execute();
 
+    $stmt = $conn->prepare('SELECT `id` FROM '.SOFTWARE_TABLE.' WHERE '.
+        '`name` = :name AND `adminUserID` = :admin_id AND `version` = :version '.
+        'AND `lastVersionID` = :lv_id AND `changelog` = :changelog LIMIT 1');
+    $stmt->bindValue(":name", $_POST['newSoftwareName']);
+    $stmt->bindValue(":admin_id", USER_ID, PDO::PARAM_INT);
+    $stmt->bindValue(":version", $_POST['version']);
+    $stmt->bindValue(":lv_id", $lastVersionID);
+    $stmt->bindValue(":changelog", $_POST['changelog']);
+    $stmt->execute();
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
     $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_DEVELOPER_TABLE.'` '.
         '(`user_id`, `softwareID`, `task`) VALUES (:uid, :sid, :task)');
     $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
-    $stmt->bindValue(":sid", $softwareID, PDO::PARAM_INT);
+    $stmt->bindValue(":sid", $result['id']);
     $stmt->bindValue(":task", 'Admin');
     $stmt->execute();
 }

@@ -19,6 +19,7 @@ make:
 
     # I don't want to override my database settings
 	rm ../chess/wrapper.inc.php
+	rm ../chess/constants.inc.php
 
 	rm ../chess/styling/default.gss
 	rm -rf  *.class
