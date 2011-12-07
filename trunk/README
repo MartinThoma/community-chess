@@ -8,8 +8,8 @@ You have downloaded version 0.1.0. This is NOT a stable version.
 ################################################################################
 # Requirements                                                                 #
 ################################################################################
-  * MySQL
-  * PHP
+  * MySQL or any other database supported by PDO
+  * PHP with PDO support
 
 ################################################################################
 # Installation                                                                 #
