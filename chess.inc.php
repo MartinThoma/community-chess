@@ -1755,16 +1755,17 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
                                           .substr($currentBoard, $to_index+1);
 
     if ($pawnMoved == false and $captureMade == false) {    
-        $keyValue['noCaptureAndPawnMoves'] = '`noCaptureAndPawnMoves` + 1 ';
+        $pawn = '`noCaptureAndPawnMoves` + 1 ';
     } else {
-        $keyValue['noCaptureAndPawnMoves'] = '0';
+        $pawn = '0';
     }
 
     $stmt = $conn->prepare('UPDATE `'.GAMES_TABLE.'` SET '.
                            'currentBoard = :current_board, '.
                            'moveList = CONCAT(`moveList`,:move), '.
                            'whoseTurnIsIt = ((`whoseTurnIsIt` + 1)%2), '.
-                           'lastMove = CURRENT_TIMESTAMP '.
+                           'lastMove = CURRENT_TIMESTAMP, '.
+                           'noCaptureAndPawnMoves = '.$pawn.' '
                            'WHERE  `id` =:game_id LIMIT 1');
     $stmt->bindValue(":currentBoard", $currentBoard);
     $stmt->bindValue(":moveList", $move."\n");
