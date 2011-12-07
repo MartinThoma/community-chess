@@ -1,8 +1,9 @@
 All scripts in this directory were not written for this project.
 
 Projects (Name Version, Licence, Website):
- * Vemplator 0.6.1              MIT                 http://www.greaterscope.net/projects/Vemplator
- * lightOpenID                  MIT                 http://code.google.com/p/lightopenid/
- * jquery-toastmessage-plugin   Apache License 2.0  http://akquinet.github.com/jquery-toastmessage-plugin/demo/demo.html
- * navigation                   free                http://www.exploding-boy.com/2005/12/21/more-free-css-navigation-menu-designs
- * openid-selector              New BSD             http://code.google.com/p/openid-selector/
+ * Vemplator                  0.6.1 MIT                 http://www.greaterscope.net/projects/Vemplator
+ * lightOpenID                0.6   MIT                 http://code.google.com/p/lightopenid/
+ * jquery-toastmessage-plugin       Apache License 2.0  http://akquinet.github.com/jquery-toastmessage-plugin/demo/demo.html
+ * openid-selector            1.3   New BSD             http://code.google.com/p/openid-selector/
+    Adjust openid-jquery.js:
+        l. 19: img_path : 'external/openid-selector/images/',
