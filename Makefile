@@ -16,6 +16,10 @@ make:
 	rm -rf ../chess/design
 	rm ../chess/Makefile
 	rm ../chess/*README
+
+    # I don't want to override my database settings
+	rm ../chess/wrapper.inc.php
+
 	rm ../chess/styling/default.gss
 	rm -rf  *.class
 	rm -rf  *.o
