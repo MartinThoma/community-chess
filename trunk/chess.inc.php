@@ -1765,7 +1765,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
                            'moveList = CONCAT(`moveList`,:move), '.
                            'whoseTurnIsIt = ((`whoseTurnIsIt` + 1)%2), '.
                            'lastMove = CURRENT_TIMESTAMP, '.
-                           'noCaptureAndPawnMoves = '.$pawn.' '
+                           'noCaptureAndPawnMoves = '.$pawn.' '.
                            'WHERE  `id` =:game_id LIMIT 1');
     $stmt->bindValue(":currentBoard", $currentBoard);
     $stmt->bindValue(":moveList", $move."\n");
