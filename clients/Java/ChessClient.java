@@ -11,6 +11,8 @@ import java.net.URLConnection;
 public class ChessClient {
     /** A chess board has 64 fields. */
     private static final int BOARD_SIZE = 64;
+    /** Board-width. */
+    public static final int BOARD_WIDTH = 8;
     /** The url the the server. */
     private static final String BASE_URL =
                     "http://community-chess.com/xhrframework.php";
@@ -26,11 +28,19 @@ public class ChessClient {
     private static ChessPiece[] board = new ChessPiece[BOARD_SIZE];
 
     /**
+     * Utility classes should not have a public or default constructor.
+     */
+    protected ChessClient() {
+        // prevents calls from subclass
+        throw new UnsupportedOperationException();
+    }
+
+    /**
      * Reads a web page into a StringBuilder object.
      * @param  parametersURL The URL you would like to take a look at.
      * @return The Websites content as a String.
      */
-    public static String getWebSite(String parametersURL) {
+    public static String getWebSite(final String parametersURL) {
         String strReturn = "";
 
         try {
@@ -97,12 +107,17 @@ public class ChessClient {
     /** Get the current games board and store it in this.board. */
     public static void setBoard() {
         String currentBoard = getBoard();
+        int x, y;
         for (int i = 0; i < BOARD_SIZE; i++) {
+            x = i % BOARD_WIDTH;
+            y = (i - x) / BOARD_WIDTH;
             if (currentBoard.charAt(i) == 'P')  {
-                board[i] = new Pawn();
+                board[i] = new Pawn(x, y);
                 //board[i].name = "abc";
             } else {
-                board[i] = new ChessPiece();
+                System.out.println("Not implemented yet: "
+                     + currentBoard.charAt(i));
+                board[i] = new EmptyPiece(x, y);
             }
             //System.out.println(currentBoard.charAt(i));
         }
@@ -127,7 +142,7 @@ public class ChessClient {
     /** Challenge a player.
       * @param playerID The ID of the player you want to challenge.
       */
-    public static void challengePlayer(String playerID) {
+    public static void challengePlayer(final String playerID) {
         getWebSite("?action=challengeUser&userID=" + playerID);
     }
 
@@ -135,7 +150,7 @@ public class ChessClient {
       * @param move The move, specified in
       *            http://code.google.com/p/community-chess/wiki/NotationOfMoves
       */
-    public static void submitMove(String move) {
+    public static void submitMove(final String move) {
         getWebSite("?gameID=" + gameID + "&move=" + move);
     }
 
@@ -149,8 +164,10 @@ public class ChessClient {
     }
 
     /* Main *******************************************************************/
-    /** The main method. */
-    public static void main() {
+    /** The main method.
+     * @param args Some String arguments. Isn't used at the moment.
+     */
+    public static void main(final String[] args) {
         System.out.println("Starting Java client.");
 
         if (login()) {
