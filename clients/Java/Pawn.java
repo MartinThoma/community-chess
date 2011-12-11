@@ -2,23 +2,29 @@
 
 public class Pawn extends ChessPiece {
     /** An array of the standard moves of a ChessPiece. */
-    int[][] normalMoves = {{0, 1}, {0, -1}};
+    private int[][] normalMove;
 
     /** Constructor.
      * @param x the x-coordinate of the new piece on the chess board
      * @param y the y-coordinate of the new piece on the chess board
+     * @param isWhite if true, the current piece will be white. else black
      **/
-    public Pawn(final int x, final int y) {
-        super(x, y);
-        this.name = "Pawn";
-        this.position[0] = x;
-        this.position[1] = y;
+    public Pawn(final int x, final int y, final boolean isWhite) {
+        super(x, y, "Pawn");
+        if (isWhite) {
+            int[][] normalMoveTmp = {{0, 1}};
+            this.normalMove = normalMoveTmp;
+        } else {
+            int[][] normalMoveTmp = {{0, -1}};
+            this.normalMove = normalMoveTmp;
+        }
     }
 
     /** Move the chess piece. */
     public final void move() {
-        int x = this.position[0];
-        int y = this.position[1];
+        int[] position = this.getPosition();
+        int x = position[0];
+        int y = position[1];
         int toX;
         int toY;
         for (int[] move : normalMove) {
@@ -30,14 +36,4 @@ public class Pawn extends ChessPiece {
                 + toY);
         }
     }
-
-    //ArrayList<Integer> normalMove = new ArrayList<Integer>();
-    //normalMove.add("1");
-
-    //ArrayList arrayList = new ArrayList();
-    //arrayList<Vector>.add(v);
-
-    //normalMove  = arrayList;
-    //ArrayList<Vector> captureMove = new ArrayList<Vector>();
-    //String color;
 }

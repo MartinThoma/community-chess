@@ -76,7 +76,6 @@ public class ChessClient {
         return strReturn;
     }
 
-    /* Getter *****************************************************************/
     /** Get the current games board.
         @return The String of the current board. */
     public static String getBoard() {
@@ -99,11 +98,10 @@ public class ChessClient {
     /** Display the Chessboard. */
     public static void printBoard() {
         for (ChessPiece piece : board) {
-            System.out.println(piece.name);
+            System.out.println(piece.getName());
         }
     }
 
-    /* Setter *****************************************************************/
     /** Get the current games board and store it in this.board. */
     public static void setBoard() {
         String currentBoard = getBoard();
@@ -111,9 +109,11 @@ public class ChessClient {
         for (int i = 0; i < BOARD_SIZE; i++) {
             x = i % BOARD_WIDTH;
             y = (i - x) / BOARD_WIDTH;
-            if (currentBoard.charAt(i) == 'P')  {
-                board[i] = new Pawn(x, y);
-                //board[i].name = "abc";
+            if (Character.toLowerCase(currentBoard.charAt(i)) == 'p')  {
+                boolean isWhite = Character.isUpperCase(currentBoard.charAt(i));
+                board[i] = new Pawn(x, y, isWhite);
+            } else if (currentBoard.charAt(i) == '0')  {
+                board[i] = new EmptyPiece(x, y);
             } else {
                 System.out.println("Not implemented yet: "
                      + currentBoard.charAt(i));
@@ -122,7 +122,7 @@ public class ChessClient {
             //System.out.println(currentBoard.charAt(i));
         }
     }
-    /* Actions ****************************************************************/
+
     /** Login. Save the PHPSESSID to myCookie.
       * @return Was the login-process sucessful?
       */
@@ -163,7 +163,6 @@ public class ChessClient {
         }
     }
 
-    /* Main *******************************************************************/
     /** The main method.
      * @param args Some String arguments. Isn't used at the moment.
      */

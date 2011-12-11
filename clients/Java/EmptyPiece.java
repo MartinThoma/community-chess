@@ -9,10 +9,7 @@ public class EmptyPiece extends ChessPiece {
      * @param y the y-coordinate of the new piece on the chess board
      **/
     public EmptyPiece(final int x, final int y) {
-        super(x, y);
-        this.name = "Pawn";
-        this.position[0] = x;
-        this.position[1] = y;
+        super(x, y, "Empty");
     }
 
     /** an empty field can't move. */
