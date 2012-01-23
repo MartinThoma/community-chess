@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="description" content="Play a chess match." />
+  <title>Play Chess - Community Chess</title> 
+  <script src="../closure/closure-library/closure/goog/base.js"></script>
+  <link rel="stylesheet" type="text/css" href="styling/default.css" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <script src="./client.js"></script> 
+</head>
+<body>
+    <div id="leftBar">
+      <img src="styling/logo.png" alt="Logo" title="logo"/>
+      <ul>
+        <li>
+            <a href="index.php" title="Home">
+                <img src="styling/house.png" alt="Home" title="Home"/>
+                <span>Home</span>
+            </a>
+        </li>
+        <li>
+            <a href="http://martin-thoma.com/tag/community-chess/" title="News">
+                <img src="styling/newspaper.png" alt="News" title="News"/>
+                <span>News</span>
+            </a>
+        </li>
+        <li>
+            <a href="challenges.php" title="Challenges">
+                <img src="styling/control_play.png" alt="Challenges" title="Challenges"/>
+                <span>Challenges</span>
+            </a>
+        </li>
+        <li>
+            <a href="ranking.php" title="Ranking">
+                <img src="styling/chart_bar.png" alt="Ranking" title="Ranking"/>
+                <span>Ranking</span>
+            </a>
+        </li>
+        <li>
+            <a href="profile.php" title="Profile">
+                <img src="styling/user.png" alt="Profile" title="Profile"/>
+                <span>Profile</span>
+            </a>
+        </li>
+        <li>
+            <a href="forum.php" title="Forum">
+                <img src="styling/group.png" alt="Forum" title="Forum"/>
+                <span>Forum</span>
+            </a>
+        </li>
+      </ul>
+
+
+      <ul>
+        <li>
+            <a href="challengePlayer.php" title="Challenge">
+                <img src="styling/king.png" alt="Challenge" title="Challenge"/>
+                <span>Challenge</span>
+            </a>
+        </li>
+        <li>
+            <a href="status.php" title="My matches" id="activetab">
+                <img src="styling/application_view_list.png" alt="My matches" title="My matches"/>
+                <span>My matches</span>
+            </a>
+        </li>
+        <li>
+            <a href="tournaments.php" title="Tournaments">
+                <img src="styling/sitemap.png" alt="Tournaments" title="Tournaments"/>
+                <span>Tournaments</span>
+            </a>
+        </li>
+      </ul>
+
+
+      <ul>
+        <li>
+            <a href="contact.php" title="Contact">
+                <img src="styling/email.png" alt="Contact" title="Contact"/>
+                <span>Contact</span>
+            </a>
+        </li>
+        <li>
+            <a href="support.php" title="Support us">
+                <img src="styling/heart.png" alt="Support us" title="Support us"/>
+                <span>Support us</span>
+            </a>
+        </li>
+        <li>
+            <a href="logout.php" title="Logout">
+                <img src="styling/sitemap.png" alt="Logout" title="Logout"/>
+                <span>Logout</span>
+            </a>
+        </li>
+      </ul>
+
+    </div>
+    <div>
+        <p style="color:#a67000;font-size:38px;margin:0;padding:0;margin-left:180px">Community Chess</p>
+    </div>
+    <div id="content">
+
+    <div id="chessBoard">&nbsp;</div>
+
+
+    <table>
+    <tr>
+    <td>
+
+    <table style="text-align:center;">
+        <tr><td colspan="10">                                                             (White)</td></tr>
+        <tr><td colspan="10">You (White)</td></tr>
+        <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
+            <tr><th>1</th>
+                     <td class="blackField"><a href="playChess.php?gameID=11&from=11"><img src="figures/R.png" alt="R" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=21"><img src="figures/N.png" alt="N" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=31"><img src="figures/B.png" alt="B" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=41"><img src="figures/Q.png" alt="Q" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=51"><img src="figures/K.png" alt="K" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=61"><img src="figures/B.png" alt="B" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=71"><img src="figures/N.png" alt="N" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=81"><img src="figures/R.png" alt="R" border="0"/></a></td>                <th>1</th></tr>
+            <tr><th>2</th>
+                     <td class="whiteField"><a href="playChess.php?gameID=11&from=12"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=22"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=32"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=42"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=52"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=62"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=72"><img src="figures/P.png" alt="P" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=82"><img src="figures/P.png" alt="P" border="0"/></a></td>                <th>2</th></tr>
+            <tr><th>3</th>
+                     <td class="blackField"><a href="playChess.php?gameID=11&from=13"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=23"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=33"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=43"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=53"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=63"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=73"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=83"><img src="figures/0.png" alt="0" border="0"/></a></td>                <th>3</th></tr>
+            <tr><th>4</th>
+                     <td class="whiteField"><a href="playChess.php?gameID=11&from=14"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=24"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=34"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=44"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=54"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=64"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=74"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=84"><img src="figures/0.png" alt="0" border="0"/></a></td>                <th>4</th></tr>
+            <tr><th>5</th>
+                     <td class="blackField"><a href="playChess.php?gameID=11&from=15"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=25"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=35"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=45"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=55"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=65"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=75"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=85"><img src="figures/0.png" alt="0" border="0"/></a></td>                <th>5</th></tr>
+            <tr><th>6</th>
+                     <td class="whiteField"><a href="playChess.php?gameID=11&from=16"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=26"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=36"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=46"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=56"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=66"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=76"><img src="figures/0.png" alt="0" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=86"><img src="figures/0.png" alt="0" border="0"/></a></td>                <th>6</th></tr>
+            <tr><th>7</th>
+                     <td class="blackField"><a href="playChess.php?gameID=11&from=17"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=27"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=37"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=47"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=57"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=67"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=77"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=87"><img src="figures/pb.png" alt="pb" border="0"/></a></td>                <th>7</th></tr>
+            <tr><th>8</th>
+                     <td class="whiteField"><a href="playChess.php?gameID=11&from=18"><img src="figures/rb.png" alt="rb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=28"><img src="figures/nb.png" alt="nb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=38"><img src="figures/bb.png" alt="bb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=48"><img src="figures/qb.png" alt="qb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=58"><img src="figures/kb.png" alt="kb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=68"><img src="figures/bb.png" alt="bb" border="0"/></a></td>                     <td class="whiteField"><a href="playChess.php?gameID=11&from=78"><img src="figures/nb.png" alt="nb" border="0"/></a></td>                     <td class="blackField"><a href="playChess.php?gameID=11&from=88"><img src="figures/rb.png" alt="rb" border="0"/></a></td>                <th>8</th></tr>
+            <tr><th>&nbsp;</th><th>a</th><th>b</th><th>c</th><th>d</th><th>e</th><th>f</th><th>g</th><th>h</th><th>&nbsp;</th></tr>
+        <tr><td colspan="10">Your opponent (Black)</td></tr>
+        <tr><td colspan="10">                                                             (Black)</td></tr>
+    </table>
+
+    </td>
+    <td>
+                    <p>It's your turn.</p>
+                <p>Game-ID: 11 (<a href="playChess.php?gameID=11">refresh</a>)</p>
+        <br/>
+        <br/>
+        <br/>
+        <br/>
+        <p><a href="playChess.php?gameID=11&giveUp=true">Give up</a></p>
+    </td>
+    </tr>
+    </table>
+    </div>
+
+<script> 
+var client = new chess.client();
+client.createBoard();
+var i = client.getData('xhrframework.php?gameID=1&action=getBoard');
+console.log(client.el);
+console.log(i);
+</script>
+
+</body>
+</html>
+
