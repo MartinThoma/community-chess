@@ -22,6 +22,9 @@ public class ChessClient {
     /** The chess board. */
     private final Board board;
 
+    /** The current player. */
+    private Player currentPlayer;
+
     /**
      * The constructor.
      */
@@ -204,5 +207,14 @@ public class ChessClient {
             }
         }
         return false;
+    }
+
+
+    /**
+     * Getter for currentPlayer.
+     * @return the currentPlayer
+     */
+    protected final Player getCurrentPlayer() {
+        return currentPlayer;
     }
 }
