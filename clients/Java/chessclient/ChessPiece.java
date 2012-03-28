@@ -1,3 +1,4 @@
+package chessclient;
 /**
  *  The class {@code ChessPiece} is the superclass for all chess pieces and
  *  the empty field.
@@ -7,7 +8,7 @@
 public abstract class ChessPiece {
 
     /** The position is represented as two Integers. */
-    private int[] position = new int[2];
+    private final int[] position = new int[2];
 
     /** The color is either 'black' or 'white'. */
     private String color;
@@ -19,7 +20,7 @@ public abstract class ChessPiece {
     private int[][] captureMove;
 
     /** The name is something like 'Pawn' or 'Empty'. */
-    private String name;
+    private final String name;
 
     /** Constructor.
      * @param x the x-coordinate of the new piece on the chess board
@@ -73,6 +74,45 @@ public abstract class ChessPiece {
         return this.name;
     }
 
-    /** Make any move which is possible, no matter which one. */
-    public abstract void move();
+    /**
+     * @return the color
+     */
+    protected final String getColor() {
+        return color;
+    }
+
+    /**
+     * @param c the color to set
+     */
+    protected final void setColor(final String c) {
+        this.color = c;
+    }
+
+    /**
+     * @return the normalMove
+     */
+    protected final int[][] getNormalMove() {
+        return normalMove;
+    }
+
+    /**
+     * @param moves the normalMove to set
+     */
+    protected final void setNormalMove(final int[][] moves) {
+        this.normalMove = moves;
+    }
+
+    /**
+     * @return the captureMove
+     */
+    protected final int[][] getCaptureMove() {
+        return captureMove;
+    }
+
+    /**
+     * @param moves the captureMove to set
+     */
+    protected final void setCaptureMove(final int[][] moves) {
+        this.captureMove = moves;
+    }
 }

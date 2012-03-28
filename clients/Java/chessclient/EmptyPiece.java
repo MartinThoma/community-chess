@@ -1,3 +1,4 @@
+package chessclient;
 /**
  * This is an empty field on a chess board.
  * @author moose
@@ -12,8 +13,4 @@ public class EmptyPiece extends ChessPiece {
     public EmptyPiece(final int x, final int y) {
         super(x, y, "Empty");
     }
-
-    /** an empty field can't move. */
-    @Override
-    public final void move() { }
 }
