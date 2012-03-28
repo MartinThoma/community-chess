@@ -1,11 +1,10 @@
+package chessclient;
+
 /**
  * The {@code Bishop} class represents the bishop chess piece.
  * @author Martin Thoma
  */
 public class Bishop extends ChessPiece {
-    /** An array of the standard moves of a ChessPiece. */
-    private final int[][] normalMove;
-
     /**
      * The constructor for a bishop.
      * @param x the x-coordinate of the new piece on the chess board
@@ -41,25 +40,6 @@ public class Bishop extends ChessPiece {
 
         }
 
-        this.normalMove = normalMoveTmp;
+        setNormalMove(normalMoveTmp);
     }
-
-    /** Make any move which is possible, no matter which one. */
-    @Override
-    public final void move() {
-        int[] position = this.getPosition();
-        int x = position[0];
-        int y = position[1];
-        int toX;
-        int toY;
-        for (int[] move : normalMove) {
-            toX =  x + move[0];
-            toY =  y + move[1];
-            ChessClient.getWebSite("?gameID=1&move="
-                + x + y
-                + toX
-                + toY);
-        }
-    }
-
 }

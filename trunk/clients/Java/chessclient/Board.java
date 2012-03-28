@@ -1,4 +1,6 @@
+package chessclient;
 import java.util.Arrays;
+
 
 /**
  * The {@code Board} class stores the current chess board.
@@ -32,30 +34,38 @@ public class Board {
 
     /**
      * Get the current games board and store it in this.board.
+     * @param currentBoard the current board
      */
-    public final void setBoard() {
-        String currentBoard = ChessClient.getBoard();
-        int x, y;
-        for (int i = 0; i < AREA; i++) {
-            x = i % WIDTH;
-            y = (i - x) / WIDTH;
-            if (Character.toLowerCase(currentBoard.charAt(i)) == 'p') {
-                boolean isWhite = Character.isUpperCase(currentBoard.charAt(i));
-                board[i] = new Pawn(x, y, isWhite);
-            } else if (Character.toLowerCase(currentBoard.charAt(i)) == 'r') {
-                board[i] = new Rook(x, y);
-            } else if (Character.toLowerCase(currentBoard.charAt(i)) == 'k') {
-                board[i] = new King(x, y);
-            } else if (Character.toLowerCase(currentBoard.charAt(i)) == 'n') {
-                board[i] = new Knight(x, y);
-            } else if (currentBoard.charAt(i) == '0') {
-                board[i] = new EmptyPiece(x, y);
-            } else {
-                System.out.println("Not implemented yet: "
-                        + currentBoard.charAt(i));
-                board[i] = new EmptyPiece(x, y);
+    public final void setBoard(final String currentBoard) {
+        if (currentBoard != null) {
+            int x, y;
+            for (int i = 0; i < AREA; i++) {
+                x = i % WIDTH;
+                y = (i - x) / WIDTH;
+                char tmp = Character.toLowerCase(currentBoard.charAt(i));
+                if (tmp == 'p') {
+                    boolean isWhite =
+                        Character.isUpperCase(currentBoard.charAt(i));
+                    board[i] = new Pawn(x, y, isWhite);
+                } else if (tmp == 'r') {
+                    board[i] = new Rook(x, y);
+                } else if (tmp == 'b') {
+                    board[i] = new Bishop(x, y);
+                } else if (tmp == 'q') {
+                    board[i] = new Queen(x, y);
+                } else if (tmp == 'k') {
+                    board[i] = new King(x, y);
+                } else if (tmp == 'n') {
+                    board[i] = new Knight(x, y);
+                } else if (currentBoard.charAt(i) == '0') {
+                    board[i] = new EmptyPiece(x, y);
+                } else {
+                    System.out.println("Not implemented yet: "
+                            + currentBoard.charAt(i));
+                    board[i] = new EmptyPiece(x, y);
+                }
+                // System.out.println(currentBoard.charAt(i));
             }
-            // System.out.println(currentBoard.charAt(i));
         }
     }
 
