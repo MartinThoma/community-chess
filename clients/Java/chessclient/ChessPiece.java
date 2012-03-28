@@ -1,6 +1,6 @@
 package chessclient;
 /**
- *  The class {@code ChessPiece} is the superclass for all chess pieces and
+ *  The {@code ChessPiece} class is the superclass for all chess pieces and
  *  the empty field.
  *  @author Martin Thoma
  */
