@@ -1,31 +1,34 @@
 import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Properties;
 
-/** The ChessClient class should handle the interaction with the server. It also
-  * stores the basic game information.
-  */
+/**
+ * The {@code ChessClient} class handles the interaction with the server.
+ * It also stores the basic game information.
+ *
+ * @author Martin Thoma
+ */
 
 public class ChessClient {
-    /** A chess board has 64 fields. */
-    private static final int BOARD_SIZE = 64;
-    /** Board-width. */
-    public static final int BOARD_WIDTH = 8;
-    /** The url the the server. */
-    private static final String BASE_URL =
-                    "http://community-chess.com/xhrframework.php";
-    /** The username. */
-    private static final String USER_NAME = "abc";
-    /** The password of the username. */
-    private static final String USER_PASSWORD = "abc";
+    /** Load the configuration file. */
+    private static Properties config = new Properties();
+
+    /** The maximum number of fields that are adjacent to one filed.  */
+    public static final int ADJACENT_FIELDS = 8;
+
     /** The cookie. This is a PHPSESSID. */
     private static String myCookie = "";
+
     /** The gameID of the game you would like to play. */
     private static String gameID = "1";
+
     /** The chess board. */
-    private static ChessPiece[] board = new ChessPiece[BOARD_SIZE];
+    public static final Board BOARD = new Board();
 
     /**
      * Utility classes should not have a public or default constructor.
@@ -36,20 +39,40 @@ public class ChessClient {
     }
 
     /**
+     * Load the configuration file.
+     */
+    private static void loadConfig() {
+        config = new Properties();
+        try {
+            config.load(new FileInputStream("config.properties"));
+        } catch (IOException e) {
+            System.err.println("Error reading config.");
+        }
+
+        // Write config file.
+        try {
+            config.store(new FileOutputStream("config.properties"), null);
+        } catch (IOException e) {
+            System.err.println("Error writing config.");
+        }
+    }
+
+    /**
      * Reads a web page into a StringBuilder object.
-     * @param  parametersURL The URL you would like to take a look at.
+     *
+     * @param parametersURL
+     *            The URL you would like to take a look at.
      * @return The Websites content as a String.
      */
     public static String getWebSite(final String parametersURL) {
         String strReturn = "";
 
         try {
-            URL url = new URL(BASE_URL + parametersURL);
+            URL url = new URL(config.getProperty("BASE_URL") + parametersURL);
             URLConnection urlc = url.openConnection();
             urlc.setRequestProperty("Cookie", myCookie);
-            BufferedInputStream buffer = new BufferedInputStream(
-                                            urlc.getInputStream()
-                                            );
+            BufferedInputStream buffer = new BufferedInputStream(urlc
+                    .getInputStream());
             StringBuilder builder = new StringBuilder();
             int byteRead;
             while ((byteRead = buffer.read()) != -1) {
@@ -63,12 +86,12 @@ public class ChessClient {
         } catch (IOException ex) {
             // ex.printStackTrace();
             System.out.println("You've got an IOException. Do you have an "
-                            + "internet connection?");
+                    + "internet connection?");
             System.exit(0);
         } catch (Throwable t) {
             System.out.println("Woooah. I don't know what you've made! Please "
-                            + "try to reproduce this error and report it to "
-                            + "code.google.com/p/community-chess !");
+                    + "try to reproduce this error and report it to "
+                    + "code.google.com/p/community-chess !");
             System.out.println(t.toString());
             System.exit(0);
         }
@@ -76,61 +99,43 @@ public class ChessClient {
         return strReturn;
     }
 
-    /** Get the current games board.
-        @return The String of the current board. */
+    /**
+     * Get the current games board.
+     *
+     * @return The String of the current board.
+     */
     public static String getBoard() {
         return getWebSite("?action=getBoard&gameID=" + gameID);
     }
 
-    /** Get all IDs of the current games.
-        @return String. */
+    /**
+     * Get all IDs of the current games.
+     *
+     * @return String.
+     */
     public static String getCurrentGamesIdList() {
         return getWebSite("?action=listCurrentGames");
     }
 
-    /** Get all IDs of the past games.
-      * @return String.
-      */
+    /**
+     * Get all IDs of the past games.
+     *
+     * @return String.
+     */
     public static String getPastGamesIdList() {
         return getWebSite("?action=listPastGames");
     }
 
-    /** Display the Chessboard. */
-    public static void printBoard() {
-        for (ChessPiece piece : board) {
-            System.out.println(piece.getName());
-        }
-    }
-
-    /** Get the current games board and store it in this.board. */
-    public static void setBoard() {
-        String currentBoard = getBoard();
-        int x, y;
-        for (int i = 0; i < BOARD_SIZE; i++) {
-            x = i % BOARD_WIDTH;
-            y = (i - x) / BOARD_WIDTH;
-            if (Character.toLowerCase(currentBoard.charAt(i)) == 'p')  {
-                boolean isWhite = Character.isUpperCase(currentBoard.charAt(i));
-                board[i] = new Pawn(x, y, isWhite);
-            } else if (currentBoard.charAt(i) == '0')  {
-                board[i] = new EmptyPiece(x, y);
-            } else {
-                System.out.println("Not implemented yet: "
-                     + currentBoard.charAt(i));
-                board[i] = new EmptyPiece(x, y);
-            }
-            //System.out.println(currentBoard.charAt(i));
-        }
-    }
-
-    /** Login. Save the PHPSESSID to myCookie.
-      * @return Was the login-process sucessful?
-      */
+    /**
+     * Login. Save the PHPSESSID to myCookie.
+     *
+     * @return Was the login-process successful?
+     */
     public static boolean login() {
         String returnVal = getWebSite("?action=login&username="
-                                        + USER_NAME
-                                        + "&password="
-                                        + USER_PASSWORD);
+                + config.getProperty("USER_NAME")
+                + "&password="
+                + config.getProperty("USER_PASSWORD"));
         if (returnVal == "ERROR:You are not logged in.") {
             return false;
         } else {
@@ -139,51 +144,69 @@ public class ChessClient {
         }
     }
 
-    /** Challenge a player.
-      * @param playerID The ID of the player you want to challenge.
-      */
+    /**
+     * Challenge a player.
+     *
+     * @param playerID
+     *            The ID of the player you want to challenge.
+     */
     public static void challengePlayer(final String playerID) {
         getWebSite("?action=challengeUser&userID=" + playerID);
     }
 
-    /** Submit a move to the current game.
-      * @param move The move, specified in
-      *            http://code.google.com/p/community-chess/wiki/NotationOfMoves
-      */
+    /**
+     * Submit a move to the current game.
+     *
+     * @param move
+     *            The move, specified in
+     *            http://code.google.com/p/community-chess/wiki/NotationOfMoves
+     */
     public static void submitMove(final String move) {
         getWebSite("?gameID=" + gameID + "&move=" + move);
     }
 
     /** Try to calculate the next move. */
-    public static void makeMove() {
-        for (ChessPiece piece : board) {
+    public static final void makeMove() {
+        for (int pos = 0; pos < Board.AREA; pos++) {
+            ChessPiece piece = BOARD.get(pos);
             if (piece.getName() == "Pawn") {
+                piece.move();
+            } else if (piece.getName() == "Rook") {
+                piece.move();
+            } else if (piece.getName() == "King") {
+                piece.move();
+            } else if (piece.getName() == "Knight") {
                 piece.move();
             }
         }
     }
 
-    /** The main method.
-     * @param args Some String arguments. Isn't used at the moment.
+    /**
+     * The main method.
+     *
+     * @param args
+     *            Some String arguments. Isn't used at the moment.
      */
     public static void main(final String[] args) {
         System.out.println("Starting Java client.");
+        System.out.println("Loading configuration file.");
+        loadConfig();
 
         if (login()) {
             System.out.println("You are logged in.");
 
-            setBoard();
-            System.out.println("Board was set");
+            BOARD.setBoard();
+            System.out.println("Board was set.");
 
             makeMove();
             System.out.println("I moved.");
 
-            //System.out.println(getCurrentGamesIdList());
-            //System.out.println(getPastGamesIdList());
-            //challengePlayer("1");
+            // System.out.println(getCurrentGamesIdList());
+            // System.out.println(getPastGamesIdList());
+            // challengePlayer("1");
             submitMove("1214");
-            //System.out.println(getBoard());
-            //printBoard();
+            // System.out.println(getBoard());
+            // printBoard();
         }
     }
 }

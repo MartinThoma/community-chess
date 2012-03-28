@@ -1,17 +1,24 @@
 /**
- *  The ChessPiece class is the superclass for all chess pieces and
+ *  The class {@code ChessPiece} is the superclass for all chess pieces and
  *  the empty field.
+ *  @author Martin Thoma
  */
+
 public abstract class ChessPiece {
+
     /** The position is represented as two Integers. */
     private int[] position = new int[2];
+
     /** The color is either 'black' or 'white'. */
     private String color;
+
     /** Normal moves. Each move is an array of two Integers. */
     private int[][] normalMove;
+
     /** capture moves. Like normal moves. */
     private int[][] captureMove;
-    /** The name is either 'Pawn' or 'Empty'. */
+
+    /** The name is something like 'Pawn' or 'Empty'. */
     private String name;
 
     /** Constructor.
@@ -25,41 +32,47 @@ public abstract class ChessPiece {
         this.position[1] = y;
     }
 
-    /** Overriding toString.
+    /**
+      * A string representation of the object.
       * @return A String which represents the object
       */
+    @Override
     public final String toString() {
         return "ChessPiece - " + color + " - " + name;
     }
 
-    /** Get the position of the current chess piece.
-     * @return the positon as an int array.
+    /**
+     * Get the position of the current chess piece.
+     * @return the position as an int[2] array.
      */
     public final int[] getPosition() {
         return position;
     }
 
-    /** Get all normal moves of a chess piece.
+    /**
+     * Get all normal moves of a chess piece.
      * @return the normal moves
      */
     public final int[][] getNormalMoves() {
         return normalMove;
     }
 
-    /** Get all capture moves of a chess piece.
+    /**
+     * Get all capture moves of a chess piece.
      * @return the capture moves
      */
     public final int[][] getCaptureMoves() {
         return captureMove;
     }
 
-    /** Get the Name of the Chess Piece, e.g. Pawn or King.
+    /**
+     * Get the Name of the Chess Piece, e.g. Pawn or King.
       * @return The name of the Object.
       */
     public final String getName() {
         return this.name;
     }
 
-    /** Move the chess piece. */
+    /** Make any move which is possible, no matter which one. */
     public abstract void move();
 }

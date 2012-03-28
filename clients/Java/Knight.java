@@ -1,28 +1,29 @@
 /**
- * The {@code Pawn} class represents the pawn chess piece.
+ * The {@code Knight} class represents the knight chess piece.
  * @author Martin Thoma
  */
-
-public class Pawn extends ChessPiece {
+public class Knight extends ChessPiece {
     /** An array of the standard moves of a ChessPiece. */
     private int[][] normalMove;
 
+    /** The long part of a knights move. */
+    private static final int A = 2;
+
+    /** The short part of a knights move. */
+    private static final int B = 1;
+
     /**
-     * The constructor for a pawn.
+     * The constructor for a rook.
      * @param x the x-coordinate of the new piece on the chess board
      * @param y the y-coordinate of the new piece on the chess board
-     * @param isWhite {@code true} if the current piece is white,
-     *        otherwise {code false}
-     **/
-    public Pawn(final int x, final int y, final boolean isWhite) {
-        super(x, y, "Pawn");
-        if (isWhite) {
-            int[][] normalMoveTmp = {{0, 1}};
-            this.normalMove = normalMoveTmp;
-        } else {
-            int[][] normalMoveTmp = {{0, -1}};
-            this.normalMove = normalMoveTmp;
-        }
+     */
+    public Knight(final int x, final int y) {
+        super(x, y, "Knight");
+
+        int[][] normalMoveTmp = {{A, B}, {-A, B}, {A, -B}, {-A, -B},
+                                 {B, A}, {-B, A}, {B, -A}, {-B, -A}};
+
+        this.normalMove = normalMoveTmp;
     }
 
     /** Make any move which is possible, no matter which one. */
@@ -42,4 +43,5 @@ public class Pawn extends ChessPiece {
                 + toY);
         }
     }
+
 }
