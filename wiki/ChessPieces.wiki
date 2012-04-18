@@ -3,7 +3,7 @@
 = Introduction =
 
 Every player has:
-|| *number* || *name*                                                || *White* || *Black* ||    ||
+|| *quantity* || *name*                                                || *White* || *Black* ||    ||
 || 1        || [http://en.wikipedia.org/wiki/King_(chess) king]      || K       || k       || ♔ ||
 || 1        || [http://en.wikipedia.org/wiki/Queen_(chess) queen]    || Q       || q       || ♕ ||
 || 2        || [http://en.wikipedia.org/wiki/Rook_(chess) rooks]     || R       || r       || ♖ ||
