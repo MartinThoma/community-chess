@@ -14,7 +14,7 @@ public class Pawn extends ChessPiece {
      *        otherwise {code false}
      **/
     public Pawn(final int x, final int y, final boolean isWhite) {
-        super(x, y, "Pawn");
+        super(x, y, "Pawn", isWhite);
         if (isWhite) {
             int[][] normalMoveTmp = {{0, 1}};
             setNormalMove(normalMoveTmp);

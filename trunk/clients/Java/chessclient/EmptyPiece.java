@@ -11,6 +11,6 @@ public class EmptyPiece extends ChessPiece {
      * @param y the y-coordinate of the new piece on the chess board
      **/
     public EmptyPiece(final int x, final int y) {
-        super(x, y, "Empty");
+        super(x, y, "Empty", false);
     }
 }

@@ -10,9 +10,10 @@ public class Rook extends ChessPiece {
      * The constructor for a rook.
      * @param x the x-coordinate of the new piece on the chess board
      * @param y the y-coordinate of the new piece on the chess board
+     * @param isWhite is the piece white
      */
-    public Rook(final int x, final int y) {
-        super(x, y, "Rook");
+    public Rook(final int x, final int y, final boolean isWhite) {
+        super(x, y, "Rook", isWhite);
         int[][] normalMoveTmp = new int[Board.STRAIGHT_DIRECTIONS
                                         * (Board.WIDTH - 1)][2];
 

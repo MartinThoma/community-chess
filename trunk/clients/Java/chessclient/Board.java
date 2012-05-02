@@ -43,20 +43,20 @@ public class Board {
                 x = i % WIDTH;
                 y = (i - x) / WIDTH;
                 char tmp = Character.toLowerCase(currentBoard.charAt(i));
+                boolean isWhite =
+                    Character.isUpperCase(currentBoard.charAt(i));
                 if (tmp == 'p') {
-                    boolean isWhite =
-                        Character.isUpperCase(currentBoard.charAt(i));
                     board[i] = new Pawn(x, y, isWhite);
                 } else if (tmp == 'r') {
-                    board[i] = new Rook(x, y);
+                    board[i] = new Rook(x, y, isWhite);
                 } else if (tmp == 'b') {
-                    board[i] = new Bishop(x, y);
+                    board[i] = new Bishop(x, y, isWhite);
                 } else if (tmp == 'q') {
-                    board[i] = new Queen(x, y);
+                    board[i] = new Queen(x, y, isWhite);
                 } else if (tmp == 'k') {
-                    board[i] = new King(x, y);
+                    board[i] = new King(x, y, isWhite);
                 } else if (tmp == 'n') {
-                    board[i] = new Knight(x, y);
+                    board[i] = new Knight(x, y, isWhite);
                 } else if (currentBoard.charAt(i) == '0') {
                     board[i] = new EmptyPiece(x, y);
                 } else {
@@ -67,6 +67,17 @@ public class Board {
                 // System.out.println(currentBoard.charAt(i));
             }
         }
+    }
+
+    /**
+     * Set a piece on (x|y). (0|0) is at the top left, (7|7) at
+     * the bottom right
+     * @param p the figure you want to set
+     * @param x the x-position
+     * @param y the y-position
+     */
+    public final void setPiece(final ChessPiece p, final int x, final int y) {
+        board[y * WIDTH + x] = p;
     }
 
     /**

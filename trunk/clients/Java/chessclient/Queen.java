@@ -8,9 +8,10 @@ public class Queen extends ChessPiece {
      * The constructor for a queen.
      * @param x the x-coordinate of the new piece on the chess board
      * @param y the y-coordinate of the new piece on the chess board
+     * @param isWhite is the piece white
      */
-    public Queen(final int x, final int y) {
-        super(x, y, "Queen");
+    public Queen(final int x, final int y, final boolean isWhite) {
+        super(x, y, "Queen", isWhite);
         int[][] normalMoveTmp = new int[Board.DIAGONAL_DIRECTIONS
                                         * (Board.WIDTH - 1)
                                         + Board.STRAIGHT_DIRECTIONS
