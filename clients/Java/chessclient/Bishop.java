@@ -9,9 +9,10 @@ public class Bishop extends ChessPiece {
      * The constructor for a bishop.
      * @param x the x-coordinate of the new piece on the chess board
      * @param y the y-coordinate of the new piece on the chess board
+     * @param isWhite is the piece white
      */
-    public Bishop(final int x, final int y) {
-        super(x, y, "Bishop");
+    public Bishop(final int x, final int y, final boolean isWhite) {
+        super(x, y, "Bishop", isWhite);
         int[][] normalMoveTmp = new int[Board.DIAGONAL_DIRECTIONS
                                         * (Board.WIDTH - 1)][2];
 
@@ -42,4 +43,6 @@ public class Bishop extends ChessPiece {
 
         setNormalMove(normalMoveTmp);
     }
+
+
 }
