@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 3.3.2deb1
+-- version 3.4.11.1deb1
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Nov 22, 2011 at 06:31 AM
--- Server version: 5.1.41
--- PHP Version: 5.3.2-1ubuntu4.10
+-- Generation Time: Jun 06, 2013 at 11:01 AM
+-- Server version: 5.5.31
+-- PHP Version: 5.4.6-1ubuntu1.2
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
+SET time_zone = "+00:00";
 
 --
 -- Database: `chess`
@@ -25,13 +26,52 @@ CREATE TABLE IF NOT EXISTS `chess_challenges` (
   `challenge_points` int(11) NOT NULL,
   `path` varchar(255) NOT NULL,
   PRIMARY KEY (`challenge_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
 
 --
--- Dumping data for table `chess_challenges`
+-- Table structure for table `chess_users`
 --
 
+CREATE TABLE IF NOT EXISTS `chess_users` (
+  `user_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(255) NOT NULL,
+  `user_password` varchar(32) NOT NULL,
+  `user_email` varchar(255) NOT NULL,
+  `rank` int(11) NOT NULL DEFAULT '-1',
+  `pageRank` double NOT NULL DEFAULT '0.15',
+  `software_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
+--
+-- Dumping data for table `chess_users`
+--
+
+INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `user_email`, `rank`, `pageRank`, `software_id`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 'abc@martin-thoma.de', -1, 0.15, 0),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 'test@martin-thoma.de', -1, 0.15, 0);
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chess_software`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_software` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `adminUserID` int(11) NOT NULL,
+  `version` varchar(20) NOT NULL,
+  `lastVersionID` int(11) COMMENT 'NULL if this is the first version',
+  `changelog` text NOT NULL,
+  `BT2450Rating` int(11) NOT NULL DEFAULT '-1',
+  `EloRating` double NOT NULL DEFAULT '-1',
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`adminUserID`) REFERENCES `chess_users`(`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 -- --------------------------------------------------------
 
 --
@@ -57,13 +97,12 @@ CREATE TABLE IF NOT EXISTS `chess_games` (
   `startTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastMove` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `outcome` tinyint(4) NOT NULL DEFAULT '-1' COMMENT '-1 means the game is still running, 0 means white won, 1 means black won, 2 means draw',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_games`
---
-
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`whiteUserID`) REFERENCES `chess_users`(`user_id`),
+  FOREIGN KEY (`blackUserID`) REFERENCES `chess_users`(`user_id`),
+  FOREIGN KEY (`whitePlayerSoftwareID`) REFERENCES `chess_software`(`id`),
+  FOREIGN KEY (`blackPlayerSoftwareID`) REFERENCES `chess_software`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -80,13 +119,9 @@ CREATE TABLE IF NOT EXISTS `chess_gamesThreefoldRepetition` (
   `blackCastlingKingsidePossible` tinyint(1) NOT NULL,
   `blackCastlingQueensidePossible` tinyint(1) NOT NULL,
   `enPassantPossible` tinyint(1) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_gamesThreefoldRepetition`
---
-
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`gameID`) REFERENCES `chess_games`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -100,7 +135,7 @@ CREATE TABLE IF NOT EXISTS `chess_languages` (
   `used` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
 
 --
 -- Dumping data for table `chess_languages`
@@ -122,29 +157,6 @@ INSERT INTO `chess_languages` (`id`, `name`, `used`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chess_software`
---
-
-CREATE TABLE IF NOT EXISTS `chess_software` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `adminUserID` int(11) NOT NULL,
-  `version` varchar(20) NOT NULL,
-  `lastVersionID` int(11) NOT NULL COMMENT '0 if this is the first version',
-  `changelog` text NOT NULL,
-  `BT2450Rating` int(11) NOT NULL DEFAULT '-1',
-  `EloRating` double NOT NULL DEFAULT '-1',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_software`
---
-
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `chess_softwareDeveloper`
 --
 
@@ -153,13 +165,10 @@ CREATE TABLE IF NOT EXISTS `chess_softwareDeveloper` (
   `user_id` int(11) NOT NULL,
   `softwareID` int(11) NOT NULL,
   `task` varchar(255) NOT NULL DEFAULT 'Admin' COMMENT 'What did this person do? What was his/her job?',
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_softwareDeveloper`
---
-
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`user_id`) REFERENCES `chess_users`(`user_id`),
+  FOREIGN KEY (`softwareID`) REFERENCES `chess_software`(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -172,12 +181,7 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
   `softwareID` int(11) NOT NULL,
   `languageID` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_softwareLanguages`
---
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -196,12 +200,7 @@ CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
   `pageRank` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tournamentID` (`tournamentID`,`user_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_tournamentPlayers`
---
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -218,12 +217,7 @@ CREATE TABLE IF NOT EXISTS `chess_tournaments` (
   `closingDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   `finishedDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_tournaments`
---
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
@@ -236,35 +230,4 @@ CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
   `user_id` int(11) NOT NULL,
   `OpenID` text NOT NULL,
   PRIMARY KEY (`userOpenID_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- Dumping data for table `chess_userOpenID`
---
-
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chess_users`
---
-
-CREATE TABLE IF NOT EXISTS `chess_users` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(255) NOT NULL,
-  `user_password` varchar(32) NOT NULL,
-  `user_email` varchar(255) NOT NULL,
-  `rank` int(11) NOT NULL DEFAULT '-1',
-  `pageRank` double NOT NULL DEFAULT '0.15',
-  `software_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
-
---
--- Dumping data for table `chess_users`
---
-
-INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `user_email`, `rank`, `pageRank`, `software_id`) VALUES
-(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 'abc@martin-thoma.de', -1, 0.15, 0),
-(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 'test@martin-thoma.de', -1, 0.15, 0);
-
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
