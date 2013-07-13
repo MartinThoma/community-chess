@@ -72,6 +72,24 @@ CREATE TABLE IF NOT EXISTS `chess_software` (
   PRIMARY KEY (`id`),
   FOREIGN KEY (`adminUserID`) REFERENCES `chess_users`(`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chess_tournaments`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_tournaments` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `password` varchar(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
+  `description` text NOT NULL,
+  `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `closingDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `finishedDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 -- --------------------------------------------------------
 
 --
@@ -98,6 +116,7 @@ CREATE TABLE IF NOT EXISTS `chess_games` (
   `lastMove` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `outcome` tinyint(4) NOT NULL DEFAULT '-1' COMMENT '-1 means the game is still running, 0 means white won, 1 means black won, 2 means draw',
   PRIMARY KEY (`id`),
+  FOREIGN KEY (`tournamentID`) REFERENCES `chess_tournaments`(`id`),
   FOREIGN KEY (`whiteUserID`) REFERENCES `chess_users`(`user_id`),
   FOREIGN KEY (`blackUserID`) REFERENCES `chess_users`(`user_id`),
   FOREIGN KEY (`whitePlayerSoftwareID`) REFERENCES `chess_software`(`id`),
@@ -180,7 +199,9 @@ CREATE TABLE IF NOT EXISTS `chess_softwareLanguages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `softwareID` int(11) NOT NULL,
   `languageID` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`softwareID`) REFERENCES `chess_software`(`id`),
+  FOREIGN KEY (`languageID`) REFERENCES `chess_languages`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -199,24 +220,9 @@ CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
   `gamesPlayed` int(11) NOT NULL DEFAULT '0',
   `pageRank` double NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `tournamentID` (`tournamentID`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `chess_tournaments`
---
-
-CREATE TABLE IF NOT EXISTS `chess_tournaments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `password` varchar(32) NOT NULL DEFAULT 'd41d8cd98f00b204e9800998ecf8427e' COMMENT 'Default is md5('''')',
-  `description` text NOT NULL,
-  `initiationDate` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `closingDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `finishedDate` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
+  UNIQUE KEY `tournamentID` (`tournamentID`,`user_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `chess_users`(`user_id`),
+  FOREIGN KEY (`tournamentID`) REFERENCES `chess_tournaments`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -229,5 +235,6 @@ CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
   `userOpenID_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `OpenID` text NOT NULL,
-  PRIMARY KEY (`userOpenID_id`)
+  PRIMARY KEY (`userOpenID_id`),
+  FOREIGN KEY (`user_id`) REFERENCES `chess_users`(`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
