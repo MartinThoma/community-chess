@@ -1,0 +1,131 @@
+# Introduction #
+
+The current ([r53](https://code.google.com/p/community-chess/source/detail?r=53)) implementation of the knights part of "hasValidMoves" is quite ugly:
+```
+# Which moves could a knight possibly make?
+if(  isPositionValid($coord[0]+1,$coord[1]+2)  ){
+    $to_index    = getIndex($coord[0]+1, $coord[1]+2);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0'
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]+1,$coord[1]-2)  ){
+    $to_index    = getIndex($coord[0]+1, $coord[1]-2);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0'
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]+2,$coord[1]+1)  ){
+    $to_index    = getIndex($coord[0]+2, $coord[1]+1);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0' 
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]+2,$coord[1]-1)  ){
+    $to_index    = getIndex($coord[0]+2, $coord[1]-1);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0' 
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]-2,$coord[1]-1)  ){
+    $to_index    = getIndex($coord[0]-2, $coord[1]-1);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0'
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]-2,$coord[1]+1)  ){
+    $to_index    = getIndex($coord[0]-2, $coord[1]+1);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0'
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]-1,$coord[1]+2)  ){
+    $to_index    = getIndex($coord[0]-1, $coord[1]+2);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0' 
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+if(  isPositionValid($coord[0]-1,$coord[1]-2)  ){
+    $to_index    = getIndex($coord[0]-1, $coord[1]-2);
+    $targetPiece = getPieceByIndex($board,$to_index);
+    if($targetPiece == '0' 
+       or isOpponentsPiece($targetPiece, $color)  ) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+```
+
+I'm quite sure this can be made simpler
+
+## Example move ##
+Look at the following example:
+
+![http://community-chess.googlecode.com/svn-history/r55/trunk/documentation/knights-moves.png](http://community-chess.googlecode.com/svn-history/r55/trunk/documentation/knights-moves.png)
+
+The position of the knight is f6 which is index (6-1)+8·(6-1)=45=(5|5).
+He can move to:
+  * e4 = (5-1) + 8·(4-1) = 28 = 45 - 17 = (4|3)
+  * g4 = (7-1) + 8·(4-1) = 30 = 45 - 15 = (6|3)
+  * d5 = (4-1) + 8·(5-1) = 35 = 45 - 10 = (3|4)
+  * h5 = (8-1) + 8·(5-1) = 39 = 45 -  6 = (7|4)
+  * d7 = (4-1) + 8·(7-1) = 51 = 45 +  6 = (3|6)
+  * h7 = (8-1) + 8·(7-1) = 55 = 45 + 10 = (7|6)
+  * e8 = (5-1) + 8·(8-1) = 60 = 45 + 15 = (4|7)
+  * g8 = (7-1) + 8·(8-1) = 62 = 45 + 17 = (6|7)
+
+Unfortunately, I can't simply add these numbers, as some of the moves might be invalid.
+
+Just check it for a knight at a1 = 0 = (0|0):
+  * c2 = (3-1) + 8·(2-1) = 10 = (2|1)
+  * b3 = (2-1) + 8·(3-1) = 17 = (1|2)
+
+It easy to say that the moves -17, -15, -10 and -6 are invalid, as all of them would lead to a negative index. But how can I determine that +6 => 6 = (0|6) and +15 => 15 = (7|1) are invalid?
+
+Well, if to from-coordinates are (x0|y0) and the to-coordinates are (x1|y1), then abs(x0-x1) + abs(y0-y1) = 3. These are exactly the possible moves, as the knights moves are every combination of (+/-2 | +/-1) and (+/-1 | +/- 2)
+
+## Shorter code ##
+```
+# Which moves could a knight possibly make?
+$knight_moves = array(-17, -15, -10, -6, 6, 10, 15, 17);
+foreach($knight_moves as $add){
+    $to_index = $from_index + $add;
+    if(0<=$to_index and $to_index <= 63) {
+        $from_coord = getCoordinates($from_index);
+        $to_coord   = getCoordinates($to_index);
+        if( (abs($from_coord[0] - $to_coord[0]) + 
+             abs($from_coord[1] - $to_coord[1])    ) == 3){
+            $targetPiece = getPieceByIndex($board,$to_index);
+            if($targetPiece == '0' or 
+               isOpponentsPiece($targetPiece, $color)  ) {
+                $newBoard = getNewBoard($board, $from_index, 
+                                                     $to_index);
+                if (!isPlayerCheck($newBoard, $color)){
+                    return true;
+                }
+            }
+        }
+    }
+}
+```

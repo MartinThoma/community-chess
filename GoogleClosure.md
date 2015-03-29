@@ -1,0 +1,64 @@
+# Introduction #
+
+If you read the other Wiki-Pages about how to get a small javascript / css size, you have to set up your closure tools. Here is a tutorial.
+
+
+# Closure Environment #
+
+I made this tutorial for Ubuntu-Users.
+
+```
+//you might need to purge openjdk first
+sudo apt-get install ant wget subversion unzip sun-java6-jre sun-java6-jdk sun-java6-source git-core
+
+// Closure JS library
+mkdir /var/www/closure
+cd /var/www/closure
+svn checkout http://closure-library.googlecode.com/svn/trunk/ closure-library
+
+// Closure compiler
+svn checkout http://closure-compiler.googlecode.com/svn/trunk/ closure-compiler
+cd closure compiler
+ant jar
+cd ..
+
+// Closure stylesheets
+git clone https://code.google.com/p/closure-stylesheets/
+cd closure-stylesheets
+ant
+ant test
+// Test closure stylesheets:
+cd build
+java -jar closure-stylesheets.jar --help
+```
+
+# Small script size #
+Go to console and type (explained on [this page](http://code.google.com/intl/de/closure/compiler/docs/gettingstarted_app.html)):
+```
+java -jar compiler.jar \
+--compilation_level ADVANCED_OPTIMIZATIONS \
+--js /var/www/closure-library/closure/goog/projekte/closureDatepicker.js \
+--js_output_file datepickerClosure-compiled.js
+```
+
+or even better if you use the [dependency tree calculation script](http://code.google.com/intl/de-DE/closure/library/docs/calcdeps.html):
+
+```
+python ../closure-library/closure/bin/calcdeps.py \
+-i closureDatepicker.js \
+-p ../closure-library/closure/goog/ \
+-o compiled \
+-c ../closure-compiler/build/compiler.jar \
+-f "--compilation_level=ADVANCED_OPTIMIZATIONS" \
+-f "--define=goog.LOCALE='de'" > closureDatepicker-compiled.js
+```
+
+You can specify any language you want. See [base.js](http://code.google.com/p/closure-library/source/browse/trunk/closure/goog/base.js?r=2) (goog.LOCALE) for more information.
+
+Compile CSS while beeing in the project:
+```
+java -jar /var/www/closure/closure-stylesheets/build/closure-stylesheets.jar --output-file styling/default-compiled.css styling/default.gss
+```
+
+# More Information #
+  * [closure stylesheets](http://code.google.com/p/closure-stylesheets/)

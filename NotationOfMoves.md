@@ -1,0 +1,40 @@
+# Introduction #
+The moves are submitted like simply by giving a gameID-parameter and a move-parameter via GET to playChess.php:
+
+`www.yourserver.com/chess/playChess.php?gameID=1&move=7274`
+
+which is equivalent to:
+
+`www.yourserver.com/chess/playChess.php?gameID=1&iccfalpha=g2g4`
+
+Keep in mind that you have to submit your session variables, too.
+
+
+
+Think of the chess board as fields with coordinates:
+
+| playChess?gameID=1&move=2224 | playChess?gameID=1&iccfalpha=b2b4 |
+|:-----------------------------|:----------------------------------|
+| ![http://community-chess.googlecode.com/svn/trunk/documentation/Chess-ICCF-Notation.png](http://community-chess.googlecode.com/svn/trunk/documentation/Chess-ICCF-Notation.png) | ![http://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SCD_algebraic_notation.svg/200px-SCD_algebraic_notation.svg.png](http://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SCD_algebraic_notation.svg/200px-SCD_algebraic_notation.svg.png) |
+
+You always give two coordinates: from and to. In the example given above, from is 72 and to 74. So if this is your first move, you will move your pawn.
+
+# Promotion #
+If one of your pawns reaches the base line of the opponent, it [promotes](http://en.wikipedia.org/wiki/Promotion_(chess)). You have to submit which chess piece you would like to get (q, r, b, n. Take a look at ChessPieces). Its not case-sensitive. So you submit your move like this:
+`www.yourserver.com/chess/playChess.php?gameID=1&move=8788q`
+
+# Castling #
+If you like to do [castling](http://en.wikipedia.org/wiki/Castling), you submit only the move of your king.
+
+  * You are white
+    * castling kingside: `www.yourserver.com/chess/playChess.php?gameID=1&move=5171`
+    * castling queenside: `www.yourserver.com/chess/playChess.php?gameID=1&move=5131`
+  * You are black
+    * castling kingside: `www.yourserver.com/chess/playChess.php?gameID=1&move=5878`
+    * castling queenside: `www.yourserver.com/chess/playChess.php?gameID=1&move=5838`
+
+# fifty-move rule #
+You can claim draw by the [fifty-move rule](http://en.wikipedia.org/wiki/Fifty-move_rule) if at least 50 moves were made by both players without any capture or pawn move:
+<pre>www.yourserver.com/chess/playChess.php?gameID=1&claim50MoveRule=true</pre>
+
+

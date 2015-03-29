@@ -1,0 +1,40 @@
+# 1. Make a basic chess game possible #
+  * ~~Add [en passant](http://en.wikipedia.org/wiki/En_passant)~~ (done: 2011-07-28)
+  * ~~Add [Fifty-move rule](http://en.wikipedia.org/wiki/Fifty-move_rule)~~ (done: 2011-07-28)
+  * ~~Add [Threefold repetition](http://en.wikipedia.org/wiki/Threefold_repetition)~~ (done: 2011-07-29)
+  * ~~Add [Perpetual check](http://en.wikipedia.org/wiki/Perpetual_check)~~ (done: 2011-07-29 - it's a special case of threefold repetion or fifty-move rule)
+  * ~~Add [Tote Stellung](http://de.wikipedia.org/wiki/Tote_Stellung)~~ (done: 2011-07-29 - it's a special case of threefold repetion or fifty-move rule)
+
+# 2. Interfaces #
+  * ~~Create an interface which allows players to specify the software they use.~~ (done: 2011-08-11)
+  * ~~Add an interface for starting turnaments~~ (done some time ago)
+
+# 3. Frameworks #
+I will not support Frameworks as I thought an own challenge site would be nice.
+  * ~~Make it easy to use it with [GWF 3](http://trac.gwf3.gizmore.org/browser) / [WeChall](http://www.wechall.net/wechall.zip)~~
+  * ~~phpBB~~
+
+# 3.1 Database #
+I am currently thinking about using Adodb:
+  * [Forum](http://phplens.com/lens/lensforum/topics.php?LeNs#LensBM_forumtpc)
+  * [Website](http://adodb.sourceforge.net/)
+  * [Wikipedia](http://en.wikipedia.org/wiki/ADOdb)
+  * Current version: 5.14
+
+# 4. Cleanup #
+At the moment, the code is very ugly. I know it. But it was more important to me to get a working piece of fast code than writing it beautiful.
+
+As soon as all features are implemented, I will clean the code.
+
+# 5. Beta-Testing #
+Set Community Chess online. Make at least five games which should have the following moves:
+  * Castling (Kingsside and Queensside)
+  * Promotion
+  * En passant
+  * Giving up
+
+# 6. Promotion #
+  * Set up a own (challenging) website?
+  * Create banner / images
+  * Integrate into different Challenge Websites
+  * Contact some chess magazines?

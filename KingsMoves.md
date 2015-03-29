@@ -1,0 +1,134 @@
+# Introduction #
+
+The current ([r53](https://code.google.com/p/community-chess/source/detail?r=53)) implementation of the kings part of "hasValidMoves" is quite ugly:
+```
+# Which moves could a king possibly make?
+$tmp_x = $coord[0]+0;
+$tmp_y = $coord[1]+1;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]+1;
+$tmp_y = $coord[1]+1;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]+1;
+$tmp_y = $coord[1]+0;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]+1;
+$tmp_y = $coord[1]-1;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]+0;
+$tmp_y = $coord[1]-1;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]-1;
+$tmp_y = $coord[1]-1;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]-1;
+$tmp_y = $coord[1]-0;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+$tmp_x = $coord[0]-1;
+$tmp_y = $coord[1]+1;
+if(isPositionValid($tmp_x, $tmp_y)){
+    $to_index = getIndex($tmp_x, $tmp_y);
+    $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+    if($piece == '0' or isOpponentsPiece($piece, $color)) {
+        $newBoard = getNewBoard($board, $from_index, $to_index);
+        if (!isPlayerCheck($newBoard, $color)){return true;}
+    }
+}
+```
+
+I'm quite sure this can be made simpler
+
+## Example move ##
+Lets say the position of the king is d5 which is index (4-1)+8·(5-1)=35=(3|4).
+He can move to:
+  * c4 = (3-1) + 8·(4-1) = 26 = 35 -  9 = (2|3)
+  * d4 = (4-1) + 8·(4-1) = 27 = 35 -  8 = (3|3)
+  * e4 = (5-1) + 8·(4-1) = 28 = 35 -  7 = (4|3)
+  * c5 = (3-1) + 8·(5-1) = 34 = 35 -  1 = (2|4)
+  * e5 = (5-1) + 8·(5-1) = 36 = 35 +  1 = (4|4)
+  * c6 = (3-1) + 8·(6-1) = 42 = 35 +  7 = (2|5)
+  * d6 = (4-1) + 8·(6-1) = 43 = 35 +  8 = (3|5)
+  * e6 = (5-1) + 8·(6-1) = 44 = 35 +  9 = (4|5)
+
+
+Unfortunately, I can't simply add these numbers, as some of the moves might be invalid.
+
+Just check the valid moves for a king at a1 = 0 = (0|0):
+  * b1 = (2-1) + 8·(1-1) = 1 = (1|0)
+  * a2 = (1-1) + 8·(2-1) = 8 = (0|1)
+  * b2 = (2-1) + 8·(2-1) = 9 = (1|1)
+
+It easy to say that the moves -9, -8, -7 and -1 are invalid, as all of them would lead to a negative index. But how can I determine that +7 => 7 = (0|7) is invalid?
+
+Well, if to from-coordinates are (x0|y0) and the to-coordinates are (x1|y1), then abs(x0-x1) + abs(y0-y1) <= 2. These are exactly the possible moves, as the kings moves are every combination of (+/-1 | +/-1)
+
+## Shorter code ##
+```
+# Which moves could a king possibly make?
+$kings_moves = array(-9,-8-7,-1,1,7,8,9);
+foreach($kings_moves as $add){
+    $to_index = $from_index + $add;
+    if(0 <= $to_index and $to_index <= 63){
+        $from_coord = getCoordinates($from_index);
+        $to_coord = getCoordinates($to_index);
+        $tmp_x = $to_coord[0];
+        $tmp_y = $to_coord[1];
+        if(abs($tmp_x-$from[0]) + abs($tmp_y-$from[1]) <= 2){
+            $piece = getPieceByIndex($board,getIndex($tmp_x, $tmp_y));
+            if($piece == '0' or isOpponentsPiece($piece, $color)) {
+                $newBoard = getNewBoard($board, $from_index, $to_index);
+                if (!isPlayerCheck($newBoard, $color)){return true;}
+            }
+        }
+    }
+}
+```

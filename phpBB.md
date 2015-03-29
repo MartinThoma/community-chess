@@ -1,0 +1,22 @@
+Some people might want to integrate Community Chess into [phpBB3](http://en.wikipedia.org/wiki/PhpBB). Some reasons could be:
+  * **Higher security**: Although I used mysql\_real\_escape\_string and sometimes intval() to make it not too easy to use MySQL-Injections, I am quite sure that the phpBB3 developers thought of much more vulnerabilities
+  * **Existing project**: As the name suggests, I wrote Community Chess for some specific communities. They might already have their registered users. I don't want to force them to register for my software. There is no use in doing so.
+
+Here is what I've figured out so far:
+
+# My setup #
+  1. Download [phpBB 3.0.9](http://www.phpbb.com/downloads/olympus.php?from=submenu)
+  1. Standard MySQL-installation
+  1. Deleted install directory
+
+# How to integrate Community Chess into phpBB3 #
+Please follow the instructions in install/phpbb3.integration.txt
+
+# Resources #
+  * [wiki.phpbb.com](http://wiki.phpbb.com/Main_Page)
+    * [creating modules](http://wiki.phpbb.com/Creating_modules) ([Erstellen von Modulen](http://wiki.phpbb.com/Main_Page))
+    * [Coding Guidelines](http://area51.phpbb.com/docs/31x/coding-guidelines.html)
+    * [Best Practices:PHP](http://wiki.phpbb.com/Best_Practices:PHP)
+    * [Best Practices: mySQL](http://wiki.phpbb.com/Best_Practices:mySQL)
+    * [Database Abstraction Layer](http://wiki.phpbb.com/Database_Abstraction_Layer)
+  * [Integrating your existing site into phpBB3](http://www.3cc.org/2010/03/integrating-your-existing-site-into-phpbb3/) - Thank you very much! This helped a lot!

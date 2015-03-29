@@ -1,0 +1,67 @@
+# Introduction #
+
+A tournament is a competition involving a relatively large number of active chess players, but by far not the whole community. The general ranking is over all time and the whole community:
+
+| -         | **Tournament**                | **General Ranking** |
+|:----------|:------------------------------|:--------------------|
+| **time**    | short, only a specific time | all time        |
+| **matches** | only matches in tournament count | all matches (also tournament matches!) |
+| **players** | only players who registered for tournament (hopefully 20 - 50 very active players) | all players (hopefully 50+ active players and 500+ who look in from time to time) |
+
+# Principles of a tournament #
+I will try to achieve a fair tournament system according to these principles:
+  1. The best player should be on position 1, the second best player should be on position 2, ...
+  1. Only chess knowledge and not luck with your opponents should lead to a high ranking in a tournament
+  1. As few as possible time which has to be spend on playing with other player should be spent. I don't want to force the best player to resign from the top ranking just because other players can spent night over night with playing chess.
+
+# Why didn't you use ... #
+## Single-elimination tournament ##
+  * **Draw** is possible in chess
+  * **Bad ranking**: Imagine the best player plays against the second best in the first round. The second best player will rank as high as the worst player.
+  * The **number of players** in a [Single-elimination tournament](http://en.wikipedia.org/wiki/Single-elimination_tournament) sould be a a power of two.
+
+## Double-elimination tournament ##
+In [Double-elimination tournament](http://en.wikipedia.org/wiki/Double-elimination_tournament) more games have to be played than in single elemination. This results in a much better ranking, but **draw** and the **number of players** are still a problem.
+
+## Round-robin tournament ##
+In a [Round-robin tournament](http://en.wikipedia.org/wiki/Round-robin_tournament) every player has to play twice against every other player. This means (n\*n - n)/2 games have to be played. I would like to have at least 20 players in every tournament. This would mean 190 games have to be played. This seems to be too much for me.
+
+Additionally, I guess that many player will be quite inactive which will  lead to easy wins.
+
+# Structure #
+Every tournament can be splitted into parts:
+  1. **Opening Phase**: Players may register for participation.
+  1. **Match Phase**: The players play against other players.
+  1. **Computation Phase**: Compute the result of the tournament.
+
+Idea: Use the PageRanking algorithm.
+
+# PageRank like algorithm #
+Every win can be treated as a link from the loser to the winner.
+
+Every draw can be treated as two links (from a to b and b to a).
+
+The player with the highes PageRank is the best player.
+
+```
+REPEAT_PR = 20
+DAMPING_FACTOR = 0.85
+INITIALISATION = 1.0
+Initialise all Players with pagerank = INITIALISATION
+SUMMAND = (1 - DAMPING_FACTOR)/ NR_OF_PLAYERS
+
+for (i=0; i<REPEAT_PR; i++) {
+    foreach (player in players) {
+        // How often did this player either lose or get a draw?
+        outlinks = getLoseOrDraw(player.id) + 1 // +1 to prevent devision by 0
+        // Store this value in the database
+        player.setOutlinks(outlinks)
+        // How often did this player win or get draw?
+        inlinkScore = 0
+        foreach(loser player won/made draw against) {
+            inlinkScore += loser.pagerank / loser.outlinks
+        }
+        player.pagerank = SUMMAND + DAMPING_FACTOR * (score / outlinks)
+    }
+}
+```

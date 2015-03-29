@@ -1,0 +1,14 @@
+# http://yuml.me/ #
+
+```
+# Cool UML Diagram
+[ChessClient]+->[Figure]
+[Figure|#Name: String;#Position;#Color;#NormalMoves;#CaptureMoves|+getPosition();+getNormalMoves();+getCaptureMoves()]^-[King]
+[Figure]^-[Queen]
+[Figure]^-[Rook]
+[Figure]^-[Bishop]
+[Figure]^-[Knight]
+[Figure]^-[Pawn]
+```
+
+![http://community-chess.googlecode.com/svn/trunk/documentation/UML.png](http://community-chess.googlecode.com/svn/trunk/documentation/UML.png)

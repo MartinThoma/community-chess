@@ -1,0 +1,68 @@
+# Introduction #
+
+I removed the medal-part as I don't want to get to many functions which are not really needed (and probably not working correctly) in the first stable release.
+
+Medals can be given players for various reasons. Medals are only given for good things, so you won't have any negative medals.
+
+Here are some ideas:
+
+
+## Fast player ##
+
+It is important for the game, that players continue their games quite fast. If the sum of time the player needed to respond is smaller than 1 hour (no matter if he won or not), he will be given the fast player medal
+
+## Supporter ##
+
+This medal may only be given to a player by a former winner of a tournament. He can give this medal to other players, if they gave him hints how to win a chess game.
+
+## Grandmaster ##
+
+Awarded when a turnament is won.
+
+## Code Supporter ##
+
+Awarded if code the player gave some piece of code to this project
+
+## Security supporter ##
+
+Awarded if the player hinted to some security relevant problems (if it seems to be severe, please mail it directly to me: info@martin-thoma.de)
+
+## Database ##
+```
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chess_medalPlayerCorrelation`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_medalPlayerCorrelation` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `playerID` int(11) NOT NULL,
+  `medalID` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `chess_medalPlayerCorrelation`
+--
+
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chess_medals`
+--
+
+CREATE TABLE IF NOT EXISTS `chess_medals` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `image` varchar(255) NOT NULL COMMENT 'URL',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Dumping data for table `chess_medals`
+--
+
+```
