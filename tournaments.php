@@ -49,7 +49,7 @@ if (isset($_GET['challengeUserID'])) {
     }
 
 
-    $stmt = $conn->prepare('SELECT `user_name` FROM '.USERS_TABLE.' '.
+    $stmt = $conn->prepare('SELECT `username` FROM '.USERS_TABLE.' '.
                            'WHERE `user_id` !=:uid1 AND 
 							`user_id` = :uid2 LIMIT 1');
     $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
@@ -57,7 +57,7 @@ if (isset($_GET['challengeUserID'])) {
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    $challengedUser = $result['user_name'];
+    $challengedUser = $result['username'];
     if ($row !== false) {
         $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' '.
                     'WHERE ((`whiteUserID` = :uid1 AND `blackUserID`=:uid2) '.
@@ -97,7 +97,7 @@ if (isset($_GET['challengeUserID'])) {
                 exit("You have lost at least one game.");
             }
 
-            $stmt = $conn->prepare('SELECT `user_id`, `software_id` '.
+            $stmt = $conn->prepare('SELECT `user_id`, `softwareID` '.
                         'FROM '.USERS_TABLE.' '.
                         'WHERE user_id= :uid1 OR `user_id`= :uid2 LIMIT 2');
             $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
@@ -106,11 +106,11 @@ if (isset($_GET['challengeUserID'])) {
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             if ($result[0]['id'] == USER_ID) {
-                $whitePlayerSoftwareID = $result[0]['software_id'];
-                $blackPlayerSoftwareID = $result[1]['software_id'];
+                $whitePlayerSoftwareID = $result[0]['softwareID'];
+                $blackPlayerSoftwareID = $result[1]['softwareID'];
             } else {
-                $blackPlayerSoftwareID = $result[0]['software_id'];
-                $whitePlayerSoftwareID = $result[1]['software_id'];
+                $blackPlayerSoftwareID = $result[0]['softwareID'];
+                $whitePlayerSoftwareID = $result[1]['softwareID'];
             }
 
             $stmt = $conn->prepare('INSERT INTO `'.GAMES_TABLE.'` '.

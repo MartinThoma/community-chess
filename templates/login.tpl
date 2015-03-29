@@ -23,12 +23,12 @@
     <div id="content">
     <form method="post">
         <p>
-            <label for="user_name">{username}:</label>
-            <input type="text" name="user_name" />
+            <label for="username">{username}:</label>
+            <input type="text" name="username" />
         </p>
         <p>
-            <label for="user_password">{password}:</label>
-            <input type="password" name="user_password" />
+            <label for="password">{password}:</label>
+            <input type="password" name="password" />
         </p>
         <input type="submit"/>
     </form>

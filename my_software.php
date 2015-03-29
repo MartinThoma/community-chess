@@ -20,7 +20,7 @@ $t->assign('USER_ID', USER_ID);
 $msg = array();
 
 if (isset($_GET['addLanguage'])) {
-    $stmt = $conn->prepare('SELECT `id`, `used` FROM '.LANGUAGES_TABLE.' WHERE '.
+    $stmt = $conn->prepare('SELECT `id` FROM '.LANGUAGES_TABLE.' WHERE '.
         '`name` = :langName LIMIT 1');
     $stmt->bindValue(":langName", $_GET['addLanguage']);
     $stmt->execute();
@@ -31,7 +31,7 @@ if (isset($_GET['addLanguage'])) {
 
     if ($result === false) {
         $stmt = $conn->prepare('INSERT INTO `'.LANGUAGES_TABLE.'` '.
-            '(`name`, `used`) VALUES (:name, 1)');
+            '(`name`) VALUES (:name)');
         $stmt->bindValue(":name", $_GET['addLanguage']);
         $stmt->execute();
 
@@ -41,12 +41,6 @@ if (isset($_GET['addLanguage'])) {
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         $langID = $result['id'];
-    } else {
-        $stmt = $conn->prepare('UPDATE `'.LANGUAGES_TABLE.'` SET '.
-                               'used = `used` + 1 '.
-                               'WHERE `id` = :id LIMIT 1');
-        $stmt->bindValue(":id", $result['id'], PDO::PARAM_INT);
-        $stmt->execute();
     }
 
     $stmt = $conn->prepare('INSERT INTO `'.SOFTWARE_LANGUAGES_TABLE.'` '.
@@ -72,12 +66,6 @@ if (isset($_GET['deleteLang'])) {
 
         $stmt->bindValue(':id', (int) $_GET['softwareID'], PDO::PARAM_INT);
         $stmt->execute();
-
-        // Set the used software languages back.
-        $stmt = $conn->prepare('UPDATE `'.LANGUAGES_TABLE.'` SET '.
-                               'used = (`used` - 1) WHERE `id` = :id LIMIT 1');
-        $stmt->bindValue(":id", (int) $_GET['deleteLang'], PDO::PARAM_INT);
-        $stmt->execute();
     }
 }
 
@@ -96,7 +84,7 @@ if (isset($_GET['addTeammate'])) {
     }
 
     $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' WHERE '.
-        '`user_name` = :uname LIMIT 1');
+        '`username` = :uname LIMIT 1');
     $stmt->bindValue(":uname", $_GET['addTeammate']);
     $stmt->execute();
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -147,7 +135,7 @@ if (isset($_GET['deleteTeammate'])) {
 
 if (isset($_GET['setCurrent'])) {
     $stmt = $conn->prepare('UPDATE `'.USERS_TABLE.'` SET '.
-                           'software_id = :sid '.
+                           'softwareID = :sid '.
                            'WHERE `user_id` = :uid LIMIT 1');
     $stmt->bindValue(":sid", (int) $_GET['setCurrent'], PDO::PARAM_INT);
     $stmt->bindValue(":uid", USER_ID, PDO::PARAM_INT);
@@ -231,7 +219,7 @@ if (count($softwareIds) > 0) {
 
         $players = array();
         foreach ($userIDs as $uID) {
-            $stmt = $conn->prepare('SELECT `user_id`, `user_name` '.
+            $stmt = $conn->prepare('SELECT `user_id`, `username` '.
                     'FROM '.USERS_TABLE.' '.
                     'WHERE `user_id`=:uid LIMIT 1');
             $stmt->bindValue(":uid", $uID['user_id']);

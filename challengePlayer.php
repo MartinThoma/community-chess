@@ -24,19 +24,24 @@ if (isset($_GET['user_id'])) {
     challengeUser($_GET['user_id'], $t);
 } else {
     // look at the fix if you change something here!
-    $stmt = $conn->prepare('SELECT `user_id`, `user_name` FROM '.USERS_TABLE.' '.
-            'WHERE `user_id` != :uid '.
+    $stmt = $conn->prepare('SELECT `user_id`, `username` FROM '.USERS_TABLE.' '.
+            'WHERE `user_id` != :uid AND `user_id` NOT IN ('.
+                'SELECT `blackUserID` FROM '.GAMES_TABLE.' '.
+                'WHERE tournamentID IS NULL '.
+                    'AND outcome=-1 '.
+                    'AND `whiteUserID`='.USER_ID.
+            ')'.
             'LIMIT 10');
     $stmt->bindValue(":uid", USER_ID);
     $stmt->execute();
     $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Quick'n dirt fix: 
-    // The template tries to acces $possibleOpponents[$i]['user_name']:
+    // The template tries to acces $possibleOpponents[$i]['username']:
     $fixedRows = array();
     foreach ($rows as $row) {
         $fixedRows[] = array('user_id'=>$row['user_id'], 
-                           'user_name'=>$row['user_name']);
+                           'username'=>$row['username']);
     }
 
     $t->assign('possibleOpponents', $fixedRows);

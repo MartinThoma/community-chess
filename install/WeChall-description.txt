@@ -1,7 +1,0 @@
-Community Chess is a website for chess players and developers. It provides a GUI and 
-an API to play chess.
-
-At the momement it is development. The following features are planned:
-  * Many chess-related challenges
-  * Variations of the standard chess game
-  * Starter-kits in different languages for the creation of chess A.I.

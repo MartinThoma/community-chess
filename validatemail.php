@@ -19,7 +19,7 @@ require_once 'wrapper.inc.php';
 if (isset($_GET['username']) and isset($_GET['email']) and isset($_GET['authkey'])) {
     if ($_GET['authkey'] == WECHALL_AUTH_KEY) {
         $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' '.
-                'WHERE `user_name` = :username AND `user_email` = :email '.
+                'WHERE `username` = :username AND `email` = :email '.
                 'LIMIT 1');
         $stmt->bindValue(":username", $_GET['username']);
         $stmt->bindValue(":email", $_GET['email']);

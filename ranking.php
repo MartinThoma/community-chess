@@ -35,7 +35,7 @@ $t->assign('maxPages', ceil($usercount/100));
 $t->assign('nrOfUsers', $usercount);
 
 // Get users with ranks
-$query  = 'SELECT  `rank` , `user_id` ,  `pageRank` ,  `user_name` ';
+$query  = 'SELECT  `rank` , `user_id` ,  `pageRank` ,  `username` ';
 $query .= 'FROM `'.USERS_TABLE.'` WHERE `rank` > 0 ';
 $query .= 'ORDER BY  `rank` ';
 $query .= 'LIMIT 100';

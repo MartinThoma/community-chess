@@ -114,11 +114,6 @@ function chessMain($t)
         define('MOVE', $move);
     }
 
-    if (isset($_GET['pgn'])) {
-        // TODO: insert Code as soon as possible
-        // define MOVE in my notation
-    }
-
     if (isset($_GET['iccfalpha'])) {
         $array      = getValidMoveQueryFromICCFalpha($_GET['iccfalpha']);
         $move       = $array[0];
@@ -1822,7 +1817,7 @@ function makeMove($from_index, $to_index, $currentBoard, $move, $yourColor,
     $stmt->bindValue(":wcqp", $result['whiteCastlingQueensidePossible']);
     $stmt->bindValue(":bckp", $result['blackCastlingKingsidePossible']);
     $stmt->bindValue(":bcqp", $result['blackCastlingQueensidePossible']);
-    $stmt->bindValue(":enpassant", $result['enPassantPossible']);
+    $stmt->bindValue(":enpassant", $enPassant);
     $stmt->execute();
 
     return $currentBoard;

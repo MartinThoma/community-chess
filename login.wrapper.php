@@ -66,7 +66,7 @@ try {
                 $password   = getRandomString();
 
                 $stmt  = $conn->prepare('INSERT INTO `'.USERS_TABLE.'` '.
-                    '(`user_name`, `user_password`, `user_email`) VALUES '.
+                    '(`username`, `password`, `email`) VALUES '.
                     '(:uname, :upass, :uemail)');
                 $uname = getRandomString();
                 $stmt->bindValue(":uname", $uname);
@@ -77,8 +77,8 @@ try {
                 // get ID
                 $stmt = $conn->prepare('SELECT `user_id` '.
                         'FROM `'.USERS_TABLE.'` '.
-                        'WHERE `user_name` = :uname AND '.
-                        '`user_password` = :upass AND `user_email` = :uemail '.
+                        'WHERE `username` = :uname AND '.
+                        '`password` = :upass AND `email` = :uemail '.
                         'LIMIT 1');
                 $stmt->bindValue(":uname", $uname);
                 $stmt->bindValue(":upass", md5($password));
@@ -115,8 +115,8 @@ try {
 
 $t = new vemplator();
 
-if (isset($_POST['user_name'])) {
-    login($_POST['user_name'], $_POST['user_password']);
+if (isset($_POST['username'])) {
+    login($_POST['username'], $_POST['password']);
 }
 
 /* Assign variables for i18n with gettext ******************************************/

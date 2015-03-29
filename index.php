@@ -23,10 +23,9 @@ $t->assign('USER_ID', USER_ID);
 /* Assign variables for i18n with gettext ******************************************/
 $t->assign('title', _('About Community Chess'));
 $t->assign('firstParagraph', _('Community Chess is hosted on '.
-                              '<a href="http://code.google.com/p/community-chess/">'.
-                              'code.google.com</a>. The latest version can be '.
-                              'downloaded there and all documentation is in the '.
-                              'wiki-section.'));
+                              '<a href="https://github.com/MartinThoma/community-chess">'.
+                              'github.com</a>. The latest version can be '.
+                              'downloaded there.'));
 $t->assign('information', _('Information'));
 $t->assign('loggedInWithID', _('Logged in with UserID '));
 /* Print the html ******************************************************************/

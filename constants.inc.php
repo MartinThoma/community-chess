@@ -30,8 +30,6 @@ define('SOFTWARE_DEVELOPER_TABLE',         $table_prefix.'softwareDeveloper');
 define('SOFTWARE_LANGUAGES_TABLE',         $table_prefix.'softwareLanguages');
 define('LANGUAGES_TABLE',                  $table_prefix.'languages');
 
-define('CHALLENGES_TABLE',                 $table_prefix.'challenges');
-
 /***********************************************************************************/
 /* Others                                                                          */
 /***********************************************************************************/

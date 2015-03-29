@@ -25,7 +25,7 @@ define('DB_USER', 'chessuser');
 define('DB_PASS', 'localpass');
 define('DB_DATABASE', 'chess');
 
-$dsn = 'mysql:dbname='.DB_DATABASE.';charset=UTF-8;host='.DB_HOST;
+$dsn = 'mysql:dbname='.DB_DATABASE.';charset=utf8;host='.DB_HOST;
 
 try {
     $conn = new PDO($dsn, DB_USER, DB_PASS);
@@ -74,12 +74,10 @@ function getUserID()
  */
 function getIdRow($table)
 {
-    if ($table == CHALLENGES_TABLE) {
-        $row = 'challenge_id';
-    } else if ($table == USERS_TABLE) {
+    if ($table == USERS_TABLE) {
         $row = 'user_id';
     } else if ($table == USERS_OPENID) {
-        $row = 'userOpenID_id';
+        $row = 'id';
     } else if ($table == TOURNAMENTS_TABLE) {
         $row = 'id';
     } else if ($table == TOURNAMENT_PLAYERS_TABLE) {
@@ -102,19 +100,19 @@ function getIdRow($table)
 
 /** This function logs the user in. The session variables get stored.
  * 
- * @param string  $user_name     the username
- * @param string  $user_password the plaintext password
+ * @param string  $username     the username
+ * @param string  $password the plaintext password
  * @param boolean $redirect      should the user be redirected to index.php?
  *
  * @return string session_id()
  */
-function login($user_name, $user_password, $redirect = true)
+function login($username, $password, $redirect = true)
 {
     global $conn;
     $stmt = $conn->prepare('SELECT `user_id` FROM '.USERS_TABLE.' '.
-            'WHERE `user_name`= :uname AND user_password= :upass');
-    $stmt->bindValue(":uname", $user_name);
-    $stmt->bindValue(":upass", md5($user_password));
+            'WHERE `username`= :uname AND password= :upass');
+    $stmt->bindValue(":uname", $username);
+    $stmt->bindValue(":upass", md5($password));
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 

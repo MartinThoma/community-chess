@@ -8,92 +8,7 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-    <div id="leftBar">
-      <img src="styling/logo.png" alt="Logo" title="logo"/>
-      <ul>
-        <li>
-            <a href="index.php" title="Home">
-                <img src="styling/house.png" alt="Home" title="Home"/>
-                <span>Home</span>
-            </a>
-        </li>
-        <li>
-            <a href="http://martin-thoma.com/tag/community-chess/" title="News">
-                <img src="styling/newspaper.png" alt="News" title="News"/>
-                <span>News</span>
-            </a>
-        </li>
-        <li>
-            <a href="challenges.php" title="Challenges">
-                <img src="styling/control_play.png" alt="Challenges" title="Challenges"/>
-                <span>Challenges</span>
-            </a>
-        </li>
-        <li>
-            <a href="ranking.php" title="Ranking">
-                <img src="styling/chart_bar.png" alt="Ranking" title="Ranking"/>
-                <span>Ranking</span>
-            </a>
-        </li>
-        <li>
-            <a href="profile.php" title="Profile" id="activetab">
-                <img src="styling/user.png" alt="Profile" title="Profile"/>
-                <span>Profile</span>
-            </a>
-        </li>
-        <li>
-            <a href="forum.php" title="Forum">
-                <img src="styling/group.png" alt="Forum" title="Forum"/>
-                <span>Forum</span>
-            </a>
-        </li>
-      </ul>
-
-
-      <ul>
-        <li>
-            <a href="challengePlayer.php" title="Challenge">
-                <img src="styling/king.png" alt="Challenge" title="Challenge"/>
-                <span>Challenge</span>
-            </a>
-        </li>
-        <li>
-            <a href="status.php" title="My matches">
-                <img src="styling/application_view_list.png" alt="My matches" title="My matches"/>
-                <span>My matches</span>
-            </a>
-        </li>
-        <li>
-            <a href="tournaments.php" title="Tournaments">
-                <img src="styling/sitemap.png" alt="Tournaments" title="Tournaments"/>
-                <span>Tournaments</span>
-            </a>
-        </li>
-      </ul>
-
-
-      <ul>
-        <li>
-            <a href="contact.php" title="Contact">
-                <img src="styling/email.png" alt="Contact" title="Contact"/>
-                <span>Contact</span>
-            </a>
-        </li>
-        <li>
-            <a href="support.php" title="Support us">
-                <img src="styling/heart.png" alt="Support us" title="Support us"/>
-                <span>Support us</span>
-            </a>
-        </li>
-        <li>
-            <a href="logout.php" title="Logout">
-                <img src="styling/sitemap.png" alt="Logout" title="Logout"/>
-                <span>Logout</span>
-            </a>
-        </li>
-      </ul>
-
-    </div>
+    {{navigation}}
     <div>
         <p style="color:#a67000;font-size:38px;margin:0;padding:0;margin-left:180px">Community Chess</p>
     </div>
@@ -156,7 +71,7 @@
     {end}
     <td>Human player</td>
     <td><a href="http://en.wikipedia.org/wiki/Human">Homo sapiens</a></td>
-    <td><a href="my_software?setCurrent=0">set to current</a></td>
+    <td><a href="my_software.php?setCurrent=0">set to current</a></td>
     <td>You</td>
     <td>-</td>
     <td>English</td>
@@ -170,10 +85,10 @@
                 <tr>
             {end}
             <td>{software['name']}</td><td>{software['version']}</td>
-            <td><a href="my_software?setCurrent={software['id']}">set to current</a></td>
+            <td><a href="my_software.php?setCurrent={software['id']}">set to current</a></td>
             <td><ul>
             {foreach:software['players'],i,player}
-                <li>{player['user_name']} ({player['task']})
+                <li>{player['username']} ({player['task']})
                 {if:player['user_id'] != USER_ID}
                     <a href="my_software.php?deleteTeammate={player['user_id']}&softwareID={software['id']}">
                     <img src="styling/delete.png" />

@@ -17,41 +17,29 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chess_challenges`
---
-
-CREATE TABLE IF NOT EXISTS `chess_challenges` (
-  `challenge_id` int(11) NOT NULL AUTO_INCREMENT,
-  `challenge_name` varchar(255) NOT NULL,
-  `challenge_points` int(11) NOT NULL,
-  `path` varchar(255) NOT NULL,
-  PRIMARY KEY (`challenge_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `chess_users`
 --
 
 CREATE TABLE IF NOT EXISTS `chess_users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_name` varchar(255) NOT NULL,
-  `user_password` varchar(32) NOT NULL,
-  `user_email` varchar(255) NOT NULL,
+  `username` varchar(255) NOT NULL COMMENT 'Is needed because I want users to be able to challenge each other',
+  `password` varchar(32) NOT NULL,
+  `email` varchar(255) NOT NULL,
   `rank` int(11) NOT NULL DEFAULT '-1',
   `pageRank` double NOT NULL DEFAULT '0.15',
-  `software_id` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`user_id`)
+  `softwareID` int(11) NULL DEFAULT NULL COMMENT 'Software that this user is currently using',
+  PRIMARY KEY (`user_id`),
+  UNIQUE KEY `username` (`username`),
+  KEY `softwareID` (`softwareID`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 --
 -- Dumping data for table `chess_users`
 --
 
-INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `user_email`, `rank`, `pageRank`, `software_id`) VALUES
-(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 'abc@martin-thoma.de', -1, 0.15, 0),
-(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 'test@martin-thoma.de', -1, 0.15, 0);
+INSERT INTO `chess_users` (`user_id`, `username`, `password`, `email`, `rank`, `pageRank`, `softwareID`) VALUES
+(1, 'abc', '900150983cd24fb0d6963f7d28e17f72', 'abc@martin-thoma.de', -1, 0.15, NULL),
+(2, 'test', '098f6bcd4621d373cade4e832627b4f6', 'test@martin-thoma.de', -1, 0.15, NULL);
 
 
 -- --------------------------------------------------------
@@ -63,14 +51,13 @@ INSERT INTO `chess_users` (`user_id`, `user_name`, `user_password`, `user_email`
 CREATE TABLE IF NOT EXISTS `chess_software` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
-  `adminUserID` int(11) NOT NULL,
+  `adminUserID` int(11) NOT NULL COMMENT 'Usually the user who has written the software',
   `version` varchar(20) NOT NULL,
-  `lastVersionID` int(11) COMMENT 'NULL if this is the first version',
+  `lastVersionID` int(11) NULL COMMENT 'NULL if this is the first version',
   `changelog` text NOT NULL,
-  `BT2450Rating` int(11) NOT NULL DEFAULT '-1',
-  `EloRating` double NOT NULL DEFAULT '-1',
   PRIMARY KEY (`id`),
-  FOREIGN KEY (`adminUserID`) REFERENCES `chess_users`(`user_id`)
+  FOREIGN KEY (`adminUserID`) REFERENCES `chess_users`(`user_id`),
+  FOREIGN KEY (`lastVersionID`) REFERENCES `chess_software`(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -98,7 +85,7 @@ CREATE TABLE IF NOT EXISTS `chess_tournaments` (
 
 CREATE TABLE IF NOT EXISTS `chess_games` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `tournamentID` int(11) NOT NULL DEFAULT '0' COMMENT 'If tournamentID = 0, its not a game of a tournament',
+  `tournamentID` int(11) NULL DEFAULT NULL COMMENT 'If tournamentID = 0, its not a game of a tournament',
   `timeLimit` mediumint(11) NOT NULL DEFAULT '0' COMMENT 'time limit in seconds to make your move. 0, if no time limit is set. Maximum is 16,777,215 which would be over 194 days',
   `currentBoard` char(64) NOT NULL DEFAULT 'RNBQKBNRPPPPPPPP00000000000000000000000000000000pppppppprnbqkbnr' COMMENT 'See http://code.google.com/p/community-chess/wiki/ChessboardDatastructure for representation',
   `moveList` text NOT NULL,
@@ -109,8 +96,8 @@ CREATE TABLE IF NOT EXISTS `chess_games` (
   `blackCastlingQueensidePossible` tinyint(1) NOT NULL DEFAULT '1',
   `whiteUserID` int(11) NOT NULL,
   `blackUserID` int(11) NOT NULL,
-  `whitePlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
-  `blackPlayerSoftwareID` int(11) NOT NULL DEFAULT '0',
+  `whitePlayerSoftwareID` int(11) NULL DEFAULT NULL,
+  `blackPlayerSoftwareID` int(11) NULL DEFAULT NULL,
   `whoseTurnIsIt` tinyint(4) NOT NULL DEFAULT '0' COMMENT '0 means white, 1 means black',
   `startTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `lastMove` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
@@ -151,7 +138,6 @@ CREATE TABLE IF NOT EXISTS `chess_gamesThreefoldRepetition` (
 CREATE TABLE IF NOT EXISTS `chess_languages` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `used` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=12 ;
@@ -160,18 +146,18 @@ CREATE TABLE IF NOT EXISTS `chess_languages` (
 -- Dumping data for table `chess_languages`
 --
 
-INSERT INTO `chess_languages` (`id`, `name`, `used`) VALUES
-(1, 'C', 0),
-(2, 'C#', 0),
-(3, 'C++', 0),
-(4, 'Delphi', 0),
-(5, 'Java', 0),
-(6, 'JavaScript', 0),
-(7, 'LISP', 0),
-(8, 'Perl', 0),
-(9, 'PHP', 0),
-(10, 'Python', 0),
-(11, 'Ruby', 0);
+INSERT INTO `chess_languages` (`id`, `name`) VALUES
+(1, 'C'),
+(2, 'C#'),
+(3, 'C++'),
+(4, 'Delphi'),
+(5, 'Java'),
+(6, 'JavaScript'),
+(7, 'LISP'),
+(8, 'Perl'),
+(9, 'PHP'),
+(10, 'Python'),
+(11, 'Ruby');
 
 -- --------------------------------------------------------
 
@@ -232,9 +218,15 @@ CREATE TABLE IF NOT EXISTS `chess_tournamentPlayers` (
 --
 
 CREATE TABLE IF NOT EXISTS `chess_userOpenID` (
-  `userOpenID_id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `OpenID` text NOT NULL,
-  PRIMARY KEY (`userOpenID_id`),
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `chess_users`(`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- Constraints der Tabelle `chess_users`
+--
+ALTER TABLE `chess_users`
+  ADD CONSTRAINT `chess_users_ibfk_1` FOREIGN KEY (`softwareID`) REFERENCES `chess_software` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION;

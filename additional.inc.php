@@ -21,13 +21,13 @@
 function getUserSoftwareID($user_id)
 {
     global $conn;
-    $stmt = $conn->prepare('SELECT `software_id` FROM '.USERS_TABLE.' '.
+    $stmt = $conn->prepare('SELECT `softwareID` FROM '.USERS_TABLE.' '.
                            'WHERE `user_id`=:uid LIMIT 1');
     $stmt->bindValue(":uid", $user_id, PDO::PARAM_INT);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    return $row['software_id'];
+    return $row['softwareID'];
 }
 
 /** This function makes user-challenges
@@ -39,78 +39,29 @@ function getUserSoftwareID($user_id)
  */
 function challengeUser($user_id, $t)
 {
-    $user_id = (int) $user_id;
-
     global $conn;
-    $stmt = $conn->prepare('SELECT `user_name` FROM '.USERS_TABLE.' '.
-                           'WHERE `user_id` = :uid '.
-                            'AND `user_id` != '.USER_ID.' LIMIT 1');
-    $stmt->bindValue(":uid", (int) $user_id, PDO::PARAM_INT);
-    $stmt->execute();
+    $stmt = $conn->prepare("CALL ChallengeUser(?,?,@startedGamePlayerUsername,@gameID,@incorrectID,@alreadyChallengedPlayer)");
+    $test = USER_ID;
+    $stmt->bindParam(1, $user_id);
+    $stmt->bindParam(2, $test);
+    $returnValue = $stmt->execute();
+
+    if ($returnValue !== true) {
+        print_r("Something went wrong with stored procedure 'ChallengeUser'.");
+    }
+
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $t->assign('gameID', $row['gameID']);
+    $t->assign('incorrectID', $row['incorrectID']);
 
-    $challengedUser = $row['user_name'];
-    if ($row !== false and $row !== null) {
-        $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' '.
-                               'WHERE `whiteUserID` = '.USER_ID.' '.
-                               'AND `blackUserID` :uid '.
-                               'AND `outcome` = -1 LIMIT 1');
-        $stmt->bindValue(":uid", (int) $user_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($row !== false and $row !== null) {
-            $t->assign('alreadyChallengedPlayer', $challengedUser);
-            $t->assign('alreadyChallengedGameID', $row['id']);
-            return "ERROR:You have already challenged this player. ".
-                   "This Game has the gameID ".$row['id'].".";
-        } else {
-            $stmt = $conn->prepare('SELECT `user_id`, `software_id` FROM '.
-                                    USERS_TABLE.' '.'WHERE '.
-                                    '`user_id` = :uid1 OR `user_id`=:uid2 '.
-                                    'LIMIT 2');
-            $stmt->bindValue(":uid1", (int) USER_ID, PDO::PARAM_INT);
-            $stmt->bindValue(":uid2", (int) $user_id, PDO::PARAM_INT);
-            $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            if ($result[0]['user_id'] == USER_ID) {
-                $whitePlayerSoftwareID = $result[0]['software_id'];
-                $blackPlayerSoftwareID = $result[1]['software_id'];
-            } else {
-                $blackPlayerSoftwareID = $result[0]['software_id'];
-                $whitePlayerSoftwareID = $result[1]['software_id'];
-            }
-
-            $stmt = $conn->prepare('INSERT INTO `'.GAMES_TABLE.'` '.
-                '(`whiteUserID`, `blackUserID`, `whitePlayerSoftwareID`, '.
-                '`blackPlayerSoftwareID`, `moveList`) VALUES '.
-                '(:uid1, :uid2, :usid1, :usid2, "")');
-            $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
-            $stmt->bindValue(":uid2", $user_id, PDO::PARAM_INT);
-            $stmt->bindValue(":usid1", $whitePlayerSoftwareID);
-            $stmt->bindValue(":usid2", $blackPlayerSoftwareID);
-            $stmt->execute();
-
-            $stmt = $conn->prepare('SELECT `id` FROM '.GAMES_TABLE.' WHERE '.
-                '`whiteUserID` = :uid1 AND `blackUserID` = :uid2 AND '.
-                '`whitePlayerSoftwareID` = :usid1 AND '.
-                '`blackPlayerSoftwareID` = :usid2 AND `moveList` = "" LIMIT 1');
-            $stmt->bindValue(":uid1", USER_ID, PDO::PARAM_INT);
-            $stmt->bindValue(":uid2", $user_id, PDO::PARAM_INT);
-            $stmt->bindValue(":usid1", $whitePlayerSoftwareID);
-            $stmt->bindValue(":usid2", $blackPlayerSoftwareID);
-            $stmt->execute();
-            $row    = $stmt->fetch(PDO::FETCH_ASSOC);
-            $gameID = $row['id'];
-
-            $t->assign('startedGamePlayerID', $user_id);
-            $t->assign('startedGamePlayerUsername', $challengedUser);
-            $t->assign('startedGameID', $gameID);
-            return $gameID;
-        }
+    if ($row['alreadyChallengedPlayer']) {
+        $t->assign('alreadyChallengedPlayer', $row['startedGamePlayerUsername']);
+        return "ERROR:You have already challenged this player. ".
+               "This Game has the gameID ".$row['gameID'].".";
+    } else if ($row['incorrectID']) {
+        return "ERROR:The user-id ".$user_id."was not valid";
     } else {
-        $t->assign('incorrectID', true);
+        return $row['gameID'];
     }
 }
 
